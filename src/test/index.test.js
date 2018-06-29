@@ -77,12 +77,14 @@ describe('lugiax', () => {
     expect(lugiax.getState()).toEqual({ [model]: state, lugia, });
 
     const newState = { no: '137', ad: 'Fuzhou', };
-    lugiax.register(
-      {
-        model: 'address',
-        state: newState,
-      },
-    );
-    expect(lugiax.getState()).toEqual({ address: newState, [model]: state, lugia, });
+    lugiax.register({
+      model: 'address',
+      state: newState,
+    });
+    expect(lugiax.getState()).toEqual({
+      address: newState,
+      [model]: state,
+      lugia,
+    });
   });
 });
