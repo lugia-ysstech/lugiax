@@ -90,7 +90,8 @@
     "src/**/*.js": [
       "prettier",
       "lint:fix",
-      "lint"
+      "lint",
+      "git add"
     ]
   },
   "jest": {
