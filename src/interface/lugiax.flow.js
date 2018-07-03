@@ -4,10 +4,10 @@
  */
 
 declare module '@lugia/lugiax' {
-  declare type ActionParam = { [key: string]: () => Promise<any> };
-
-  declare type Action = {
-    [key: string]: { name: string }
+  declare type ActionParam = { [ key: string ]: (data: Object) => Promise<any> };
+  declare type Action = { name: string }
+  declare type RegisterResult = {
+    [ key: string ]: Action
   };
 
   declare type RegisterParam = {
@@ -20,19 +20,25 @@ declare module '@lugia/lugiax' {
     force: boolean // 是否强制注册 默认为false
   };
 
-  declare type Lugiax = {
-    register(param: RegisterParam, option?: Option): Action,
-    dispatch(action: Action): void,
-    getState(): Object,
+  declare interface Lugiax {
+    register (param: RegisterParam, option?: Option): RegisterResult,
+
+    dispatch (action: Action): void,
+
+    getState (): Object,
+
     /**
      * 根据model名称订阅相关模型数据变化消息
      * @param modelName
      * @param () => any
      */
-    subscribe(modelName: string, () => any): void,
-    clear(): void,
-    All: string
-  };
+    subscribe (modelName: string, () => any): void,
 
-  declare module.exports: Lugiax;
+    clear (): void,
+
+    subscribeAll (() => any): void,
+  }
+
+  declare module .exports: Lugiax
+;
 }
