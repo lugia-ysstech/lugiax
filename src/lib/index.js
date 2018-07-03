@@ -16,6 +16,21 @@ const GlobalReducer = combineReducers({
 const ReloadAction = '@lugiax/reload';
 let existModel = {};
 let store = createStore(GlobalReducer);
+const All = '@lugia/msg/All';
+let listeners = {};
+function trigger(topic: string, state: Object) {
+  const call = cb => cb(state);
+
+  const listener = listeners[topic];
+  if (listener) {
+    listener.forEach(call);
+  }
+
+  const allListener = listeners[All];
+  if (allListener) {
+    allListener.forEach(call);
+  }
+}
 const modules: Lugiax = {
   register(param: RegisterParam, option: Option = { force: false, }): Action {
     const { model, } = param;
@@ -42,7 +57,8 @@ const modules: Lugiax = {
         switch (type) {
           case ReloadAction: {
             const { modelName, newState, } = action;
-            if (modelName === model) {
+            if (model === modelName) {
+              trigger(model);
               return newState;
             }
           }
@@ -72,10 +88,18 @@ const modules: Lugiax = {
   getState(): Object {
     return store.getState();
   },
-  subscribe(): void {},
+
+  subscribe(topic: string, cb: Function): void {
+    if (!listeners[topic]) {
+      listeners[topic] = [];
+    }
+    listeners[topic].push(cb);
+  },
   clear(): void {
     existModel = {};
+    listeners = {};
     store = createStore(GlobalReducer);
   },
+  All,
 };
 export default modules;

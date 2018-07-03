@@ -24,8 +24,14 @@ declare module '@lugia/lugiax' {
     register(param: RegisterParam, option?: Option): Action,
     dispatch(action: Action): void,
     getState(): Object,
-    subscribe(() => any): void,
-    clear(): void
+    /**
+     * 根据model名称订阅相关模型数据变化消息
+     * @param modelName
+     * @param () => any
+     */
+    subscribe(modelName: string, () => any): void,
+    clear(): void,
+    All: string
   };
 
   declare module.exports: Lugiax;
