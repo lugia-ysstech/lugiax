@@ -2,7 +2,9 @@
   "name": "@lugia/lugiax",
   "version": "1.0.0-beta",
   "dependencies": {
+    "immutable": "^3.8.2",
     "redux": "^4.0.0",
+    "redux-immutable": "^4.0.0",
     "redux-saga": "^0.16.0"
   },
   "author": "ysstech",
@@ -60,7 +62,6 @@
     "html-webpack-plugin": "2.29.0",
     "husky": "^0.14.3",
     "identity-obj-proxy": "3.0.0",
-    "immutable": "3.8.1",
     "install": "0.10.1",
     "isomorphic-fetch": "2.2.1",
     "jest": "20.0.4",

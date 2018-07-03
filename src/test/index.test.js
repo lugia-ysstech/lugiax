@@ -22,7 +22,34 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState()).toEqual({ [ model ]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
+  });
+
+  it('register mutil level state', () => {
+    const state = {
+      data: [
+        {
+          title: 'hello',
+          value: 1,
+        },
+        {
+          title: 'hello2',
+          value: 2,
+        },
+      ],
+    };
+    const model = 'user';
+    lugiax.register({
+      model,
+      state,
+    });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('data')
+        .toJS()
+    ).toEqual(state.data);
   });
 
   it('subscribeAll for force register', async () => {
@@ -50,7 +77,7 @@ describe('lugiax', () => {
       { force: true, }
     );
     expect(await trigger).toBe(state);
-    expect(lugiax.getState()).toEqual({ [ model ]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
   });
 
   it('subscribe model name is "user" for force register', async () => {
@@ -66,12 +93,12 @@ describe('lugiax', () => {
         res(state);
       });
     });
-
     lugiax.register({
       model,
       state,
     });
-    expect(lugiax.getState()[ model ]).toBe(state);
+    const oldState = lugiax.getState().get(model);
+    expect(oldState.toJS()).toEqual(state);
     const otherState = {
       name: 'king',
       pwd: '4',
@@ -81,6 +108,7 @@ describe('lugiax', () => {
       model: otherModel,
       state: otherState,
     });
+    expect(lugiax.getState().get(model)).toBe(oldState);
 
     lugiax.register(
       {
@@ -89,8 +117,9 @@ describe('lugiax', () => {
       },
       { force: true, }
     );
-    expect(lugiax.getState()[ model ]).toBe(state);
-    expect(lugiax.getState()[ otherModel ]).toBe(otherState);
+    expect(lugiax.getState().get(model)).not.toBe(oldState);
+
+    expect(lugiax.getState().toJS()[otherModel]).toEqual(otherState);
 
     expect(await trigger).toBe(state);
     expect(triggerCnt).toBe(1);
@@ -106,14 +135,14 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState()).toEqual({ [ model ]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
     expect(() =>
       lugiax.register({
         model,
         state,
       })
     ).toThrow('重复注册模块');
-    expect(lugiax.getState()).toEqual({ [ model ]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
   });
   it('register force repeact same model ', () => {
     const state = {
@@ -125,7 +154,7 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState()).toEqual({ [ model ]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
 
     const newState = { name: 'kxy', pwd: '654321', };
     lugiax.register(
@@ -135,7 +164,7 @@ describe('lugiax', () => {
       },
       { force: true, }
     );
-    expect(lugiax.getState()).toEqual({ [ model ]: newState, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({ [model]: newState, lugia, });
   });
 
   it('register force different  model ', () => {
@@ -148,22 +177,21 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState()).toEqual({ [ model ]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
 
     const newState = { no: '137', ad: 'Fuzhou', };
     lugiax.register({
       model: 'address',
       state: newState,
     });
-    expect(lugiax.getState()).toEqual({
+    expect(lugiax.getState().toJS()).toEqual({
       address: newState,
-      [ model ]: state,
+      [model]: state,
       lugia,
     });
   });
 
-
-  it('action', async () => {
+  it('dispatch for changeModel', async () => {
     const state = {
       name: 'ligx',
       pwd: '9',
@@ -171,27 +199,51 @@ describe('lugiax', () => {
     const model = 'user';
     let obj = {};
     const actionName = '@lugiax/user.changeUseName';
-    const actionPromise = new Promise((res) => {
 
-      let action = {
-        async changeUseName (modelData: Object) {
-          expect(modelData).toBe(state);
+    const newName = '100';
+    const otherModel = 'otherModel';
+    const otherState = {
+      hello: '无形',
+    };
+    lugiax.register({
+      model: otherModel,
+      state: otherState,
+    });
+
+    const actionPromise = new Promise(res => {
+      const action = {
+        async changeUseName(modelData: Object) {
+          expect(lugiax.getState().get(model)).toBe(modelData);
+          expect(modelData.toJS()).toEqual(state);
+          expect(modelData.toJS()).toEqual(state);
           res(true);
-        }
+          return modelData.set('name', newName);
+        },
       };
       obj = lugiax.register({
         model,
         state,
         action,
       });
-      expect(lugiax.action2Process).toEqual({ [ actionName ]: { body: action.changeUseName, modelName: model } })
 
+      expect(lugiax.action2Process).toEqual({
+        [actionName]: { body: action.changeUseName, modelName: model, },
+      });
     });
 
-    const { changeUseName } = obj;
-    expect(changeUseName).toEqual({ name: actionName });
+    const { changeUseName, } = obj;
+    expect(changeUseName).toEqual({ name: actionName, });
+    const oldModelData = lugiax.getState().get(model);
+
     lugiax.dispatch(obj.changeUseName);
     await actionPromise;
-  });
 
+    expect(lugiax.getState().get(model)).not.toBe(oldModelData);
+    expect(lugiax.getState().get(otherModel)).not.toBe(otherState);
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: { pwd: state.pwd, name: newName, },
+      lugia,
+      [otherModel]: otherState,
+    });
+  });
 });
