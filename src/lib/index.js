@@ -26,6 +26,7 @@ const All = '@lugia/msg/All';
 const ChangeModel = '@lugiax/changeModel';
 
 class LugiaxImpl implements Lugiax {
+  modelName2Action: { [key: string]: RegisterResult };
   action2Process: { [key: string]: { body: Function, modelName: string } };
   existModel: { [key: string]: RegisterParam };
   listeners: { [key: string]: Array<Function> };
@@ -36,6 +37,7 @@ class LugiaxImpl implements Lugiax {
     this.existModel = {};
     this.listeners = {};
     this.action2Process = {};
+    this.modelName2Action = {};
   }
 
   trigger(topic: string, state: Object) {
@@ -119,23 +121,35 @@ class LugiaxImpl implements Lugiax {
     }
     const result: RegisterResult = {};
     Object.keys(action).forEach((key: string) => {
-      result[key] = { name: this.generateAction(model, key, action[key]), };
+      const name = { name: this.generateAction(model, key, action[key]), };
+      result[key] = (param: Object) => {
+        this.dispatch(name, param);
+      };
     });
+    this.modelName2Action[model] = result;
     return result;
   }
 
-  async dispatch(action: Action): Promise<any> {
+  async dispatch(action: Action, param: ?Object): Promise<any> {
     const { name, } = action;
 
     const { body, modelName, } = this.action2Process[name];
     if (body) {
       const state = this.getState();
-      const newState = await body(state.get(modelName));
-      this.store.dispatch({
-        type: ChangeModel,
-        modelName,
-        newState,
+
+      const newState = await body(state.get(modelName), param, {
+        dispatch: async (action: Action, param: ?Object) => {
+          await this.dispatch(action, param);
+        },
+        action: this.modelName2Action[modelName],
       });
+      if (newState) {
+        this.store.dispatch({
+          type: ChangeModel,
+          modelName,
+          newState,
+        });
+      }
     }
   }
 
@@ -154,6 +168,7 @@ class LugiaxImpl implements Lugiax {
   clear(): void {
     this.existModel = {};
     this.listeners = {};
+    this.modelName2Action = {};
     this.action2Process = {};
     this.store = createStore(GlobalReducer);
   }

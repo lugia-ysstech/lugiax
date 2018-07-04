@@ -215,7 +215,6 @@ describe('lugiax', () => {
         async changeUseName(modelData: Object) {
           expect(lugiax.getState().get(model)).toBe(modelData);
           expect(modelData.toJS()).toEqual(state);
-          expect(modelData.toJS()).toEqual(state);
           res(true);
           return modelData.set('name', newName);
         },
@@ -232,10 +231,9 @@ describe('lugiax', () => {
     });
 
     const { changeUseName, } = obj;
-    expect(changeUseName).toEqual({ name: actionName, });
     const oldModelData = lugiax.getState().get(model);
 
-    lugiax.dispatch(obj.changeUseName);
+    await changeUseName();
     await actionPromise;
 
     expect(lugiax.getState().get(model)).not.toBe(oldModelData);
@@ -245,5 +243,91 @@ describe('lugiax', () => {
       lugia,
       [otherModel]: otherState,
     });
+  });
+
+  it('dispatch  param and return undefined dispatch same model', async () => {
+    const state = {
+      name: '',
+      pwd: '',
+    };
+    const model = 'login';
+    const param = { name: 'ligx', pwd: 'hello', };
+    let obj = {};
+
+    const actionPromise = new Promise(res => {
+      obj = lugiax.register({
+        model,
+        state,
+        action: {
+          async login(modelData: Object, inParam: Object, { action, }) {
+            const { changeUserInfo, } = action;
+            expect(inParam).toBe(param);
+            // login verify
+            await changeUserInfo(inParam);
+          },
+
+          async changeUserInfo(modelData: Object, inParam: Object) {
+            res(true);
+            return modelData.merge(inParam);
+          },
+        },
+      });
+    });
+
+    const { login, } = obj;
+    await login(param);
+    await actionPromise;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .toJS()
+    ).toEqual(param);
+  });
+
+  it('dispatch  param and return undefined dispatch same model', async () => {
+    const state = {
+      name: '',
+      pwd: '',
+    };
+    const userModelName = 'user';
+    const userInfoParam = { name: 'ligx', pwd: 'hello', };
+    let loginModel = {};
+
+    const actionPromise = new Promise(res => {
+      const userModel = lugiax.register({
+        model: userModelName,
+        state,
+        action: {
+          async changeUserInfo(modelData: Object, inParam: Object) {
+            res(true);
+            return modelData.merge(inParam);
+          },
+        },
+      });
+
+      loginModel = lugiax.register({
+        model: 'login',
+        state: {},
+        action: {
+          async login(modelData: Object, inParam: Object) {
+            expect(inParam).toBe(userInfoParam);
+            // login verify
+            const { changeUserInfo, } = userModel;
+            await changeUserInfo(inParam);
+          },
+        },
+      });
+    });
+
+    const { login, } = loginModel;
+    await login(userInfoParam);
+    await actionPromise;
+    expect(
+      lugiax
+        .getState()
+        .get(userModelName)
+        .toJS()
+    ).toEqual(userInfoParam);
   });
 });

@@ -4,10 +4,20 @@
  */
 
 declare module '@lugia/lugiax' {
-  declare type ActionParam = { [key: string]: (data: Object) => Promise<any> };
+  declare type Handler = {
+    dispatch(action: Action, param: ?Object): Promise<any>,
+    action: RegisterResult
+  };
+  declare type ActionParam = {
+    [key: string]: (
+      data: Object,
+      param: Object,
+      handle: Handler
+    ) => Promise<any>
+  };
   declare type Action = { name: string };
   declare type RegisterResult = {
-    [key: string]: Action
+    [key: string]: Function
   };
 
   declare type RegisterParam = {
@@ -22,8 +32,6 @@ declare module '@lugia/lugiax' {
 
   declare interface Lugiax {
     register(param: RegisterParam, option?: Option): RegisterResult;
-
-    dispatch(action: Action): Promise<any>;
 
     getState(): Object;
 
