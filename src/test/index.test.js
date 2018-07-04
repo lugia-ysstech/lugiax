@@ -7,7 +7,6 @@
 import lugiax from '../lib';
 import { delay, } from '@lugia/react-test-utils';
 
-const lugia = {};
 describe('lugiax', () => {
   beforeEach(() => {
     lugiax.clear();
@@ -23,7 +22,12 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: { user: false, },
+      },
+    });
   });
 
   it('register mutil level state', () => {
@@ -78,7 +82,14 @@ describe('lugiax', () => {
       { force: true, }
     );
     expect(await trigger).toBe(state);
-    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: {
+          [model]: false,
+        },
+      },
+    });
   });
 
   it('subscribe model name is "user" for force register', async () => {
@@ -136,14 +147,28 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: {
+          [model]: false,
+        },
+      },
+    });
     expect(() =>
       lugiax.register({
         model,
         state,
       })
     ).toThrow('重复注册模块');
-    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: {
+          [model]: false,
+        },
+      },
+    });
   });
   it('register force repeact same model ', () => {
     const state = {
@@ -155,7 +180,14 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: {
+          [model]: false,
+        },
+      },
+    });
 
     const newState = { name: 'kxy', pwd: '654321', };
     lugiax.register(
@@ -165,7 +197,14 @@ describe('lugiax', () => {
       },
       { force: true, }
     );
-    expect(lugiax.getState().toJS()).toEqual({ [model]: newState, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: newState,
+      lugia: {
+        loading: {
+          [model]: false,
+        },
+      },
+    });
   });
 
   it('register force different  model ', () => {
@@ -178,17 +217,30 @@ describe('lugiax', () => {
       model,
       state,
     });
-    expect(lugiax.getState().toJS()).toEqual({ [model]: state, lugia, });
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: {
+          [model]: false,
+        },
+      },
+    });
 
     const newState = { no: '137', ad: 'Fuzhou', };
+    const addressModel = 'address';
     lugiax.register({
-      model: 'address',
+      model: addressModel,
       state: newState,
     });
     expect(lugiax.getState().toJS()).toEqual({
       address: newState,
       [model]: state,
-      lugia,
+      lugia: {
+        loading: {
+          [model]: false,
+          [addressModel]: false,
+        },
+      },
     });
   });
   it('mutations for changeModel ', async () => {
@@ -241,12 +293,12 @@ describe('lugiax', () => {
     expect(lugiax.action2Process).toEqual({
       '@lugiax/user/async/changeName': {
         body: asyncMutations.changeName,
-        modelName: model,
+        model,
         type: 'async',
       },
       '@lugiax/user/sync/changePwd': {
         body: syncMutations.changePwd,
-        modelName: model,
+        model,
         type: 'sync',
       },
     });
@@ -263,7 +315,7 @@ describe('lugiax', () => {
     expect(lugiax.getState().get(otherModel)).not.toBe(otherState);
     expect(lugiax.getState().toJS()).toEqual({
       [model]: { pwd: state.pwd, name: newName, },
-      lugia,
+      lugia: { loading: { [obj.model]: false, [otherModel]: false, }, },
       [otherModel]: otherState,
     });
 
@@ -281,7 +333,7 @@ describe('lugiax', () => {
     expect(lugiax.getState().get(otherModel)).not.toBe(otherState);
     expect(lugiax.getState().toJS()).toEqual({
       [model]: { pwd: newPwd, name: newName, },
-      lugia,
+      lugia: { loading: { [obj.model]: false, [otherModel]: false, }, },
       [otherModel]: otherState,
     });
   });
@@ -308,7 +360,7 @@ describe('lugiax', () => {
     expect(await result).toBeTruthy();
   });
 
-  it('doMutation  param and return undefined doMutation same model', async () => {
+  it('doAsyncMutation  param and return undefined doAsyncMutation same model', async () => {
     const state = {
       name: '',
       pwd: '',
@@ -353,11 +405,12 @@ describe('lugiax', () => {
     ).toEqual(param);
   });
 
-  it('doMutation  param and return undefined doMutation same model', async () => {
+  it('doAsyncMutation  param and return undefined doAsyncMutation same model', async () => {
     const state = {
       name: '',
       pwd: '',
     };
+    const loginModelName = 'login';
     const userModelName = 'user';
     const userInfoParam = { name: 'ligx', pwd: 'hello', };
     let loginModel = {};
@@ -369,6 +422,12 @@ describe('lugiax', () => {
         mutations: {
           sync: {
             changeUserInfo(modelData: Object, inParam: Object) {
+              const loading = lugiax
+                .getState()
+                .get('lugia')
+                .get('loading')
+                .get(userModelName);
+              expect(loading).toBeTruthy();
               res(true);
               return modelData.merge(inParam);
             },
@@ -377,11 +436,25 @@ describe('lugiax', () => {
       });
 
       loginModel = lugiax.register({
-        model: 'login',
+        model: loginModelName,
         state: {},
         mutations: {
           async: {
             async login(modelData: Object, inParam: Object): Promise<any> {
+              expect(
+                lugiax
+                  .getState()
+                  .get('lugia')
+                  .get('loading')
+                  .get(loginModelName)
+              ).toBeTruthy();
+              expect(
+                lugiax
+                  .getState()
+                  .get('lugia')
+                  .get('loading')
+                  .get(userModelName)
+              ).toBeFalsy();
               expect(inParam).toBe(userInfoParam);
               await delay(100);
               // login verify
@@ -389,6 +462,13 @@ describe('lugiax', () => {
                 mutations: { changeUserInfo, },
               } = userModel;
               changeUserInfo(inParam);
+              expect(
+                lugiax
+                  .getState()
+                  .get('lugia')
+                  .get('loading')
+                  .get(userModelName)
+              ).toBeFalsy();
             },
           },
         },
@@ -400,7 +480,20 @@ describe('lugiax', () => {
     } = loginModel;
     await asyncLogin(userInfoParam);
     await actionPromise;
-
+    expect(
+      lugiax
+        .getState()
+        .get('lugia')
+        .get('loading')
+        .get(loginModelName)
+    ).toBeFalsy();
+    expect(
+      lugiax
+        .getState()
+        .get('lugia')
+        .get('loading')
+        .get(userModelName)
+    ).toBeFalsy();
     expect(
       lugiax
         .getState()

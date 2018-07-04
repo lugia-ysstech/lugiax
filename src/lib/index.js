@@ -6,31 +6,28 @@
  */
 import type {
   Lugiax,
+  Mutation,
   MutationID,
   Mutations,
   MutationType,
   Option,
   RegisterParam,
   RegisterResult,
-  Mutation,
 } from '@lugia/lugiax';
 import { fromJS, } from 'immutable';
 
 import { createStore, } from 'redux';
 import { combineReducers, } from 'redux-immutable';
 
-const GlobalReducer = combineReducers({
-  lugia() {
-    return {};
-  },
-});
 const ReloadAction = '@lugiax/reload';
 const All = '@lugia/msg/All';
 const ChangeModel = '@lugiax/changeModel';
+const Loading = '@lugiax/Loading';
+const LoadFinished = '@lugiax/LoadFinished';
 
 class LugiaxImpl implements Lugiax {
   modelName2Mutations: { [key: string]: Mutation };
-  action2Process: { [key: string]: { body: Function, modelName: string } };
+  action2Process: { [key: string]: { body: Function, model: string } };
   existModel: { [key: string]: RegisterParam };
   listeners: { [key: string]: Array<Function> };
   store: Object;
@@ -71,19 +68,19 @@ class LugiaxImpl implements Lugiax {
       this.store.dispatch({
         type: ReloadAction,
         newState: fromJS(initState),
-        modelName: model,
+        model,
       });
     }
     existModel[model] = param;
 
-    const generateReducers = (model: string): Function => {
+    const generateReducers = (targetModel: string): Function => {
       return (state = fromJS(initState), action) => {
         const { type, } = action;
         switch (type) {
           case ChangeModel:
           case ReloadAction: {
-            const { modelName, newState, } = action;
-            if (model === modelName) {
+            const { model, newState, } = action;
+            if (model === targetModel) {
               this.trigger(model, state);
               return newState;
             }
@@ -96,15 +93,14 @@ class LugiaxImpl implements Lugiax {
     };
 
     const newReducers = {
-      lugia() {
-        return {};
-      },
+      lugia: this.lugia.bind(this),
     };
 
     Object.keys(existModel).forEach((key: string) => {
       newReducers[key] = generateReducers(key);
     });
     this.store.replaceReducer(combineReducers(newReducers));
+    this.store.dispatch({ type: LoadFinished, model, });
     const { mutations, } = param;
     if (!mutations) {
       return { mutations: {}, model, };
@@ -119,19 +115,19 @@ class LugiaxImpl implements Lugiax {
 
   generateMutation(
     mutations: Mutations,
-    modelName: string,
+    model: string,
     type: MutationType
   ): Mutation {
     const result = {};
     const targetMutations = mutations[type];
     targetMutations &&
       Object.keys(targetMutations).forEach((key: string) => {
-        const name = `@lugiax/${modelName}/${type}/${key}`;
+        const name = `@lugiax/${model}/${type}/${key}`;
         const mutationId = { name, };
 
         this.action2Process[mutationId.name] = {
           body: targetMutations[key],
-          modelName,
+          model,
           type,
         };
 
@@ -141,10 +137,10 @@ class LugiaxImpl implements Lugiax {
           : key;
         const mutation = isAsync
           ? async (param?: Object) => {
-              await this.doMutation(mutationId, param);
+              await this.doAsyncMutation(mutationId, param);
             }
           : (param?: Object) => {
-              this.doMutation(mutationId, param);
+              this.doSyncMutation(mutationId, param);
             };
 
         mutation.mutationType = type;
@@ -154,23 +150,47 @@ class LugiaxImpl implements Lugiax {
     return result;
   }
 
-  async doMutation(action: MutationID, param: ?Object): Promise<any> {
+  async doAsyncMutation(action: MutationID, param: ?Object): Promise<any> {
     const { name, } = action;
 
-    const { body, modelName, } = this.action2Process[name];
+    const { body, model, } = this.action2Process[name];
     if (body) {
       const state = this.getState();
+      this.store.dispatch({ type: Loading, model, });
 
-      const newState = await body(state.get(modelName), param, {
-        mutations: this.modelName2Mutations[modelName],
+      const newState = await body(state.get(model), param, {
+        mutations: this.modelName2Mutations[model],
       });
-      if (newState) {
-        this.store.dispatch({
-          type: ChangeModel,
-          modelName,
-          newState,
-        });
-      }
+
+      this.updateModel(model, newState);
+    }
+  }
+
+  doSyncMutation(action: MutationID, param: ?Object): any {
+    const { name, } = action;
+
+    const { body, model, } = this.action2Process[name];
+    if (body) {
+      const state = this.getState();
+      this.store.dispatch({ type: Loading, model, });
+
+      const newState = body(state.get(model), param, {
+        mutations: this.modelName2Mutations[model],
+      });
+
+      this.updateModel(model, newState);
+    }
+  }
+
+  updateModel(model: string, newState: Object) {
+    this.store.dispatch({ type: LoadFinished, model, });
+
+    if (newState) {
+      this.store.dispatch({
+        type: ChangeModel,
+        model,
+        newState,
+      });
     }
   }
 
@@ -191,7 +211,23 @@ class LugiaxImpl implements Lugiax {
     this.listeners = {};
     this.modelName2Mutations = {};
     this.action2Process = {};
+    const lugia = { lugia: this.lugia.bind(this), };
+    const GlobalReducer = combineReducers(lugia);
     this.store = createStore(GlobalReducer);
+  }
+
+  lugia(state: Object = fromJS({ loading: {}, }), action: Object) {
+    const { type, model, } = action;
+    switch (type) {
+      case LoadFinished:
+      case Loading:
+        let loading = state.get('loading');
+        loading = loading.set(model, type === Loading);
+        state = state.set('loading', loading);
+        return state;
+      default:
+        return state;
+    }
   }
 
   subscribeAll(cb: () => any): void {
