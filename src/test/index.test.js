@@ -5,6 +5,7 @@
  * @flow
  */
 import lugiax from '../lib';
+import { delay, } from '@lugia/react-test-utils';
 
 const lugia = {};
 describe('lugiax', () => {
@@ -190,17 +191,15 @@ describe('lugiax', () => {
       lugia,
     });
   });
-
-  it('dispatch for changeModel', async () => {
+  it('mutations for changeModel ', async () => {
     const state = {
       name: 'ligx',
       pwd: '9',
     };
     const model = 'user';
-    let obj = {};
-    const actionName = '@lugiax/user.changeUseName';
 
     const newName = '100';
+    const newPwd = 'ligx';
     const otherModel = 'otherModel';
     const otherState = {
       hello: '无形',
@@ -209,32 +208,54 @@ describe('lugiax', () => {
       model: otherModel,
       state: otherState,
     });
-
-    const actionPromise = new Promise(res => {
-      const action = {
-        async changeUseName(modelData: Object) {
+    let syncMutations = { changePwd() {}, };
+    const syncMutationPromise = new Promise(res => {
+      syncMutations = {
+        changePwd(modelData: Object) {
+          res(true);
+          return modelData.set('pwd', newPwd);
+        },
+      };
+    });
+    let asyncMutations = { async changeName() {}, };
+    const asyncMutationPromise = new Promise(res => {
+      asyncMutations = {
+        async changeName(modelData: Object) {
+          await delay(100);
           expect(lugiax.getState().get(model)).toBe(modelData);
           expect(modelData.toJS()).toEqual(state);
           res(true);
           return modelData.set('name', newName);
         },
       };
-      obj = lugiax.register({
-        model,
-        state,
-        action,
-      });
-
-      expect(lugiax.action2Process).toEqual({
-        [actionName]: { body: action.changeUseName, modelName: model, },
-      });
+    });
+    const obj = lugiax.register({
+      model,
+      state,
+      mutations: {
+        async: asyncMutations,
+        sync: syncMutations,
+      },
     });
 
-    const { changeUseName, } = obj;
-    const oldModelData = lugiax.getState().get(model);
+    expect(lugiax.action2Process).toEqual({
+      '@lugiax/user/async/changeName': {
+        body: asyncMutations.changeName,
+        modelName: model,
+        type: 'async',
+      },
+      '@lugiax/user/sync/changePwd': {
+        body: syncMutations.changePwd,
+        modelName: model,
+        type: 'sync',
+      },
+    });
 
-    await changeUseName();
-    await actionPromise;
+    const { asyncChangeName, } = obj;
+    let oldModelData = lugiax.getState().get(model);
+    expect(asyncChangeName.mutationType).toBe('async');
+    await asyncChangeName();
+    await asyncMutationPromise;
 
     expect(lugiax.getState().get(model)).not.toBe(oldModelData);
     expect(lugiax.getState().get(otherModel)).not.toBe(otherState);
@@ -243,9 +264,45 @@ describe('lugiax', () => {
       lugia,
       [otherModel]: otherState,
     });
+
+    const { changePwd, } = obj;
+    expect(changePwd.mutationType).toBe('sync');
+
+    oldModelData = lugiax.getState().get(model);
+
+    changePwd();
+    await syncMutationPromise;
+
+    expect(lugiax.getState().get(model)).not.toBe(oldModelData);
+    expect(lugiax.getState().get(otherModel)).not.toBe(otherState);
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: { pwd: newPwd, name: newName, },
+      lugia,
+      [otherModel]: otherState,
+    });
   });
 
-  it('dispatch  param and return undefined dispatch same model', async () => {
+  it('asyncMutation name is only one letter', async () => {
+    let mutation = () => {};
+    const result = new Promise(res => {
+      const { asyncH, } = lugiax.register({
+        model: 'hello',
+        state: {},
+        mutations: {
+          async: {
+            async h() {
+              res(true);
+            },
+          },
+        },
+      });
+      mutation = asyncH;
+    });
+    await mutation();
+    expect(await result).toBeTruthy();
+  });
+
+  it('doMutation  param and return undefined doMutation same model', async () => {
     const state = {
       name: '',
       pwd: '',
@@ -258,24 +315,27 @@ describe('lugiax', () => {
       obj = lugiax.register({
         model,
         state,
-        action: {
-          async login(modelData: Object, inParam: Object, { action, }) {
-            const { changeUserInfo, } = action;
-            expect(inParam).toBe(param);
-            // login verify
-            await changeUserInfo(inParam);
+        mutations: {
+          async: {
+            async login(modelData: Object, inParam: Object, { mutations, }) {
+              const { changeUserInfo, } = mutations;
+              expect(inParam).toBe(param);
+              // login verify
+              changeUserInfo(inParam);
+            },
           },
-
-          async changeUserInfo(modelData: Object, inParam: Object) {
-            res(true);
-            return modelData.merge(inParam);
+          sync: {
+            changeUserInfo(modelData: Object, inParam: Object) {
+              res(true);
+              return modelData.merge(inParam);
+            },
           },
         },
       });
     });
 
-    const { login, } = obj;
-    await login(param);
+    const { asyncLogin, } = obj;
+    await asyncLogin(param);
     await actionPromise;
     expect(
       lugiax
@@ -285,7 +345,7 @@ describe('lugiax', () => {
     ).toEqual(param);
   });
 
-  it('dispatch  param and return undefined dispatch same model', async () => {
+  it('doMutation  param and return undefined doMutation same model', async () => {
     const state = {
       name: '',
       pwd: '',
@@ -298,10 +358,12 @@ describe('lugiax', () => {
       const userModel = lugiax.register({
         model: userModelName,
         state,
-        action: {
-          async changeUserInfo(modelData: Object, inParam: Object) {
-            res(true);
-            return modelData.merge(inParam);
+        mutations: {
+          sync: {
+            changeUserInfo(modelData: Object, inParam: Object) {
+              res(true);
+              return modelData.merge(inParam);
+            },
           },
         },
       });
@@ -309,20 +371,24 @@ describe('lugiax', () => {
       loginModel = lugiax.register({
         model: 'login',
         state: {},
-        action: {
-          async login(modelData: Object, inParam: Object) {
-            expect(inParam).toBe(userInfoParam);
-            // login verify
-            const { changeUserInfo, } = userModel;
-            await changeUserInfo(inParam);
+        mutations: {
+          async: {
+            async login(modelData: Object, inParam: Object): Promise<any> {
+              expect(inParam).toBe(userInfoParam);
+              await delay(100);
+              // login verify
+              const { changeUserInfo, } = userModel;
+              changeUserInfo(inParam);
+            },
           },
         },
       });
     });
 
-    const { login, } = loginModel;
-    await login(userInfoParam);
+    const { asyncLogin, } = loginModel;
+    await asyncLogin(userInfoParam);
     await actionPromise;
+
     expect(
       lugiax
         .getState()

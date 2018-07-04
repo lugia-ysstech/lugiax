@@ -5,27 +5,38 @@
 
 declare module '@lugia/lugiax' {
   declare type Handler = {
-    dispatch(action: Action, param: ?Object): Promise<any>,
-    action: RegisterResult
+    mutations: RegisterResult
   };
-  declare type ActionParam = {
+
+  declare type SyncMutation = {
+    [key: string]: (data: Object, param: Object, handle: Handler) => any
+  };
+
+  declare type AsyncMutation = {
     [key: string]: (
-      data: Object,
+      modelData: Object,
       param: Object,
       handle: Handler
     ) => Promise<any>
   };
-  declare type Action = { name: string };
+
+  declare type Mutations = {
+    sync?: SyncMutation,
+    async?: AsyncMutation
+  };
+  declare type MutationID = { name: string };
   declare type RegisterResult = {
-    [key: string]: Function
+    [key: string]: (param?: Object) => any
   };
 
   declare type RegisterParam = {
     model: string,
     state: Object,
     verify?: Function,
-    action?: ActionParam
+    mutations?: Mutations
   };
+  declare type MutationType = "async" | "sync";
+
   declare type Option = {
     force: boolean // 是否强制注册 默认为false
   };

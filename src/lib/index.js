@@ -5,8 +5,10 @@
  * @flow
  */
 import type {
-  Action,
   Lugiax,
+  MutationID,
+  Mutations,
+  MutationType,
   Option,
   RegisterParam,
   RegisterResult,
@@ -33,11 +35,7 @@ class LugiaxImpl implements Lugiax {
   store: Object;
 
   constructor() {
-    this.store = createStore(GlobalReducer);
-    this.existModel = {};
-    this.listeners = {};
-    this.action2Process = {};
-    this.modelName2Action = {};
+    this.clear();
   }
 
   trigger(topic: string, state: Object) {
@@ -52,16 +50,6 @@ class LugiaxImpl implements Lugiax {
     if (allListener) {
       allListener.forEach(call);
     }
-  }
-
-  generateAction(
-    modelName: string,
-    actionName: string,
-    actionBody: Function
-  ): string {
-    const key = `@lugiax/${modelName}.${actionName}`;
-    this.action2Process[key] = { body: actionBody, modelName, };
-    return key;
   }
 
   register(
@@ -98,6 +86,7 @@ class LugiaxImpl implements Lugiax {
               this.trigger(model, state);
               return newState;
             }
+            break;
           }
           default:
             return state;
@@ -115,22 +104,56 @@ class LugiaxImpl implements Lugiax {
       newReducers[key] = generateReducers(key);
     });
     this.store.replaceReducer(combineReducers(newReducers));
-    const { action, } = param;
-    if (!action) {
+    const { mutations, } = param;
+    if (!mutations) {
       return {};
     }
-    const result: RegisterResult = {};
-    Object.keys(action).forEach((key: string) => {
-      const name = { name: this.generateAction(model, key, action[key]), };
-      result[key] = (param: Object) => {
-        this.dispatch(name, param);
-      };
-    });
-    this.modelName2Action[model] = result;
+
+    const sync = this.generateMutation(mutations, model, 'sync');
+    const async = this.generateMutation(mutations, model, 'async');
+
+    const result = Object.assign({}, sync, async);
+    return (this.modelName2Action[model] = result);
+  }
+
+  generateMutation(
+    mutations: Mutations,
+    modelName: string,
+    type: MutationType
+  ): RegisterResult {
+    const result = {};
+    const targetMutations = mutations[type];
+    targetMutations &&
+      Object.keys(targetMutations).forEach((key: string) => {
+        const name = `@lugiax/${modelName}/${type}/${key}`;
+        const mutationId = { name, };
+
+        this.action2Process[mutationId.name] = {
+          body: targetMutations[key],
+          modelName,
+          type,
+        };
+
+        const isAsync = type === 'async';
+        const mutationName = isAsync
+          ? `async${key.substr(0, 1).toUpperCase()}${key.substr(1)}`
+          : key;
+        const mutation = isAsync
+          ? async (param?: Object) => {
+              await this.doMutation(mutationId, param);
+            }
+          : (param?: Object) => {
+              this.doMutation(mutationId, param);
+            };
+
+        mutation.mutationType = type;
+        result[mutationName] = mutation;
+      });
+
     return result;
   }
 
-  async dispatch(action: Action, param: ?Object): Promise<any> {
+  async doMutation(action: MutationID, param: ?Object): Promise<any> {
     const { name, } = action;
 
     const { body, modelName, } = this.action2Process[name];
@@ -138,10 +161,7 @@ class LugiaxImpl implements Lugiax {
       const state = this.getState();
 
       const newState = await body(state.get(modelName), param, {
-        dispatch: async (action: Action, param: ?Object) => {
-          await this.dispatch(action, param);
-        },
-        action: this.modelName2Action[modelName],
+        mutations: this.modelName2Action[modelName],
       });
       if (newState) {
         this.store.dispatch({

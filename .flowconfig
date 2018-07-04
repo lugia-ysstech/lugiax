@@ -6,6 +6,7 @@
 [libs]
 flow-typed/
 ./src/interface/
+./node_modules/@lugia/react-test-utils/interface/
 [options]
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
