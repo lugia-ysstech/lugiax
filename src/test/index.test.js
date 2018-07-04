@@ -251,7 +251,9 @@ describe('lugiax', () => {
       },
     });
 
-    const { asyncChangeName, } = obj;
+    const {
+      mutations: { asyncChangeName, },
+    } = obj;
     let oldModelData = lugiax.getState().get(model);
     expect(asyncChangeName.mutationType).toBe('async');
     await asyncChangeName();
@@ -265,7 +267,9 @@ describe('lugiax', () => {
       [otherModel]: otherState,
     });
 
-    const { changePwd, } = obj;
+    const {
+      mutations: { changePwd, },
+    } = obj;
     expect(changePwd.mutationType).toBe('sync');
 
     oldModelData = lugiax.getState().get(model);
@@ -285,7 +289,9 @@ describe('lugiax', () => {
   it('asyncMutation name is only one letter', async () => {
     let mutation = () => {};
     const result = new Promise(res => {
-      const { asyncH, } = lugiax.register({
+      const {
+        mutations: { asyncH, },
+      } = lugiax.register({
         model: 'hello',
         state: {},
         mutations: {
@@ -334,7 +340,9 @@ describe('lugiax', () => {
       });
     });
 
-    const { asyncLogin, } = obj;
+    const {
+      mutations: { asyncLogin, },
+    } = obj;
     await asyncLogin(param);
     await actionPromise;
     expect(
@@ -377,7 +385,9 @@ describe('lugiax', () => {
               expect(inParam).toBe(userInfoParam);
               await delay(100);
               // login verify
-              const { changeUserInfo, } = userModel;
+              const {
+                mutations: { changeUserInfo, },
+              } = userModel;
               changeUserInfo(inParam);
             },
           },
@@ -385,7 +395,9 @@ describe('lugiax', () => {
       });
     });
 
-    const { asyncLogin, } = loginModel;
+    const {
+      mutations: { asyncLogin, },
+    } = loginModel;
     await asyncLogin(userInfoParam);
     await actionPromise;
 

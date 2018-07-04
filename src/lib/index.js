@@ -12,6 +12,7 @@ import type {
   Option,
   RegisterParam,
   RegisterResult,
+  Mutation,
 } from '@lugia/lugiax';
 import { fromJS, } from 'immutable';
 
@@ -28,7 +29,7 @@ const All = '@lugia/msg/All';
 const ChangeModel = '@lugiax/changeModel';
 
 class LugiaxImpl implements Lugiax {
-  modelName2Action: { [key: string]: RegisterResult };
+  modelName2Mutations: { [key: string]: Mutation };
   action2Process: { [key: string]: { body: Function, modelName: string } };
   existModel: { [key: string]: RegisterParam };
   listeners: { [key: string]: Array<Function> };
@@ -86,7 +87,7 @@ class LugiaxImpl implements Lugiax {
               this.trigger(model, state);
               return newState;
             }
-            break;
+            return state;
           }
           default:
             return state;
@@ -106,21 +107,21 @@ class LugiaxImpl implements Lugiax {
     this.store.replaceReducer(combineReducers(newReducers));
     const { mutations, } = param;
     if (!mutations) {
-      return {};
+      return { mutations: {}, model, };
     }
 
     const sync = this.generateMutation(mutations, model, 'sync');
     const async = this.generateMutation(mutations, model, 'async');
 
     const result = Object.assign({}, sync, async);
-    return (this.modelName2Action[model] = result);
+    return { mutations: (this.modelName2Mutations[model] = result), model, };
   }
 
   generateMutation(
     mutations: Mutations,
     modelName: string,
     type: MutationType
-  ): RegisterResult {
+  ): Mutation {
     const result = {};
     const targetMutations = mutations[type];
     targetMutations &&
@@ -161,7 +162,7 @@ class LugiaxImpl implements Lugiax {
       const state = this.getState();
 
       const newState = await body(state.get(modelName), param, {
-        mutations: this.modelName2Action[modelName],
+        mutations: this.modelName2Mutations[modelName],
       });
       if (newState) {
         this.store.dispatch({
@@ -188,7 +189,7 @@ class LugiaxImpl implements Lugiax {
   clear(): void {
     this.existModel = {};
     this.listeners = {};
-    this.modelName2Action = {};
+    this.modelName2Mutations = {};
     this.action2Process = {};
     this.store = createStore(GlobalReducer);
   }

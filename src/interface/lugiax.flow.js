@@ -5,7 +5,7 @@
 
 declare module '@lugia/lugiax' {
   declare type Handler = {
-    mutations: RegisterResult
+    mutations: Mutation
   };
 
   declare type SyncMutation = {
@@ -25,8 +25,12 @@ declare module '@lugia/lugiax' {
     async?: AsyncMutation
   };
   declare type MutationID = { name: string };
-  declare type RegisterResult = {
+  declare type Mutation = {
     [key: string]: (param?: Object) => any
+  };
+  declare type RegisterResult = {
+    model: string,
+    mutations: Mutation
   };
 
   declare type RegisterParam = {
