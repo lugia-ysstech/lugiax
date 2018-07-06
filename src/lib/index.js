@@ -15,9 +15,10 @@ import type {
   Option,
   RegisterParam,
   RegisterResult,
+  WaitHandler,
 } from '@lugia/lugiax';
 import { fromJS, } from 'immutable';
-import { take, } from 'redux-saga/effects';
+import { take, takeEvery, } from 'redux-saga/effects';
 
 import { applyMiddleware, compose, createStore, } from 'redux';
 import { combineReducers, } from 'redux-immutable';
@@ -31,7 +32,11 @@ const LoadFinished = '@lugiax/LoadFinished';
 
 class LugiaxImpl implements Lugiax {
   modelName2Mutations: { [key: string]: Mutation };
-  action2Process: {
+  mutationId2Mutaions: {
+    async: { [key: string]: MutationFunction },
+    sync: { [key: string]: MutationFunction }
+  };
+  mutationId2MutationInfo: {
     [key: string]: { body: Function, model: string, mutationId: string }
   };
   existModel: { [key: string]: RegisterParam };
@@ -132,7 +137,7 @@ class LugiaxImpl implements Lugiax {
         const name = `@lugiax/${model}/${type}/${key}`;
         const mutationId = { name, };
 
-        this.action2Process[mutationId.name] = {
+        this.mutationId2MutationInfo[mutationId.name] = {
           body: targetMutations[key],
           model,
           mutationId: name,
@@ -140,9 +145,7 @@ class LugiaxImpl implements Lugiax {
         };
 
         const isAsync = type === 'async';
-        const mutationName = isAsync
-          ? `async${key.substr(0, 1).toUpperCase()}${key.substr(1)}`
-          : key;
+        const mutationName = isAsync ? this.addAsyncPrefix(key) : key;
         const mutation = isAsync
           ? async (param?: Object) => {
               await this.doAsyncMutation(mutationId, param);
@@ -153,16 +156,22 @@ class LugiaxImpl implements Lugiax {
 
         mutation.mutationType = type;
         mutation.mutationId = name;
+        mutation.model = model;
+        this.mutationId2Mutaions[type][name] = mutation;
         result[mutationName] = mutation;
       });
 
     return result;
   }
 
+  addAsyncPrefix(key: string): string {
+    return `async${key.substr(0, 1).toUpperCase()}${key.substr(1)}`;
+  }
+
   async doAsyncMutation(action: MutationID, param: ?Object): Promise<any> {
     const { name, } = action;
 
-    const { body, model, mutationId, } = this.action2Process[name];
+    const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
     if (body) {
       const state = this.getState();
       this.store.dispatch({ type: Loading, model, });
@@ -170,24 +179,28 @@ class LugiaxImpl implements Lugiax {
       const newState = await body(state.get(model), param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
-          return new Promise(res => {
-            this.sagaMiddleware.run(function* () {
-              const { mutationId, } = mutation;
-              const { param, } = yield take(mutationId);
-              res(param);
-            });
-          });
+          return this.wait(mutation);
         },
       });
 
-      this.updateModel(model, newState, mutationId, param);
+      this.updateModel(model, newState, mutationId, param, 'async');
     }
+  }
+
+  wait(mutation: MutationFunction) {
+    return new Promise(res => {
+      this.sagaMiddleware.run(function* () {
+        const { mutationId, } = mutation;
+        const { param, } = yield take(mutationId);
+        res(param);
+      });
+    });
   }
 
   doSyncMutation(action: MutationID, param: ?Object): any {
     const { name, } = action;
 
-    const { body, model, mutationId, } = this.action2Process[name];
+    const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
     if (body) {
       const state = this.getState();
       this.store.dispatch({ type: Loading, model, });
@@ -196,7 +209,7 @@ class LugiaxImpl implements Lugiax {
         mutations: this.modelName2Mutations[model],
       });
 
-      this.updateModel(model, newState, mutationId, param);
+      this.updateModel(model, newState, mutationId, param, 'sync');
     }
   }
 
@@ -204,7 +217,8 @@ class LugiaxImpl implements Lugiax {
     model: string,
     newState: Object,
     mutationId: string,
-    param: ?Object
+    param: ?Object,
+    mutationType: MutationType
   ) {
     this.store.dispatch({ type: LoadFinished, model, });
 
@@ -217,6 +231,7 @@ class LugiaxImpl implements Lugiax {
     }
     this.store.dispatch({
       type: mutationId,
+      mutationType,
       param,
     });
   }
@@ -237,7 +252,8 @@ class LugiaxImpl implements Lugiax {
     this.existModel = {};
     this.listeners = {};
     this.modelName2Mutations = {};
-    this.action2Process = {};
+    this.mutationId2Mutaions = { async: {}, sync: {}, };
+    this.mutationId2MutationInfo = {};
     const lugia = { lugia: this.lugia.bind(this), };
     const GlobalReducer = combineReducers(lugia);
     this.sagaMiddleware = createSagaMiddleware({});
@@ -282,7 +298,27 @@ class LugiaxImpl implements Lugiax {
     return this.subscribe(All, cb);
   }
 
-  takeAll(cb: (mutation: Object, param: AsyncHandler) => Promise<any>): void {}
+  on(cb: WaitHandler): void {
+    const worker = (self: Object) =>
+      function* () {
+        yield takeEvery('*', function* (action: Object) {
+          const { param, type, mutationType, } = action;
+          if (mutationType) {
+            const mutation = self.mutationId2Mutaions[mutationType][type];
+            if (mutation) {
+              const { model, } = mutation;
+              cb(mutation, param, {
+                async wait(mutation: MutationFunction) {
+                  return self.wait(mutation);
+                },
+                mutations: self.modelName2Mutations[model],
+              });
+            }
+          }
+        });
+      };
+    this.sagaMiddleware.run(worker(this));
+  }
 }
 
 export default new LugiaxImpl();
