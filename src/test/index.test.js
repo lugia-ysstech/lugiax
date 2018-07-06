@@ -289,14 +289,17 @@ describe('lugiax', () => {
         sync: syncMutations,
       },
     });
-
+    const changeNameId = '@lugiax/user/async/changeName';
+    const changePwdId = '@lugiax/user/sync/changePwd';
     expect(lugiax.action2Process).toEqual({
-      '@lugiax/user/async/changeName': {
+      [changeNameId]: {
         body: asyncMutations.changeName,
         model,
+        mutationId: changeNameId,
         type: 'async',
       },
-      '@lugiax/user/sync/changePwd': {
+      [changePwdId]: {
+        mutationId: changePwdId,
         body: syncMutations.changePwd,
         model,
         type: 'sync',
@@ -308,6 +311,7 @@ describe('lugiax', () => {
     } = obj;
     let oldModelData = lugiax.getState().get(model);
     expect(asyncChangeName.mutationType).toBe('async');
+    expect(asyncChangeName.mutationId).toBe(changeNameId);
     await asyncChangeName();
     await asyncMutationPromise;
 
@@ -369,13 +373,14 @@ describe('lugiax', () => {
     const param = { name: 'ligx', pwd: 'hello', };
     let obj = {};
 
-    const actionPromise = new Promise(res => {
+    const mutationPromise = new Promise(res => {
       obj = lugiax.register({
         model,
         state,
         mutations: {
           async: {
             async login(modelData: Object, inParam: Object, { mutations, }) {
+              //
               const { changeUserInfo, } = mutations;
               expect(inParam).toBe(param);
               // login verify
@@ -396,7 +401,7 @@ describe('lugiax', () => {
       mutations: { asyncLogin, },
     } = obj;
     await asyncLogin(param);
-    await actionPromise;
+    await mutationPromise;
     expect(
       lugiax
         .getState()
@@ -415,7 +420,7 @@ describe('lugiax', () => {
     const userInfoParam = { name: 'ligx', pwd: 'hello', };
     let loginModel = {};
 
-    const actionPromise = new Promise(res => {
+    const mutationPromise = new Promise(res => {
       const userModel = lugiax.register({
         model: userModelName,
         state,
@@ -428,6 +433,7 @@ describe('lugiax', () => {
                 .get('loading')
                 .get(userModelName);
               expect(loading).toBeTruthy();
+
               res(true);
               return modelData.merge(inParam);
             },
@@ -479,7 +485,7 @@ describe('lugiax', () => {
       mutations: { asyncLogin, },
     } = loginModel;
     await asyncLogin(userInfoParam);
-    await actionPromise;
+    await mutationPromise;
     expect(
       lugiax
         .getState()
@@ -500,5 +506,109 @@ describe('lugiax', () => {
         .get(userModelName)
         .toJS()
     ).toEqual(userInfoParam);
+  });
+
+  it('only immutable', async () => {
+    const state = {
+      name: '',
+      pwd: '',
+    };
+    const model = 'login';
+    const actualFlow = [];
+
+    const {
+      mutations: { asyncHello, },
+    } = lugiax.register({
+      model,
+      state,
+      mutations: {
+        async: {
+          async hello(modelData: Object, inParam: Object) {
+            actualFlow.push(inParam);
+            return { hello: '1223', };
+          },
+        },
+      },
+    });
+    await asyncHello();
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('hello')
+    ).toBe('1223');
+  });
+
+  it('wait mutation', async () => {
+    const model = 'login';
+    const actualFlow = [];
+    const helloState = { hello: '1223', };
+    const sayState = { say: '1223', };
+    const target = lugiax.register({
+      model,
+      state: {},
+      mutations: {
+        async: {
+          async waitHello(
+            modelData: Object,
+            inParam: Object,
+            { mutations, wait, }
+          ) {
+            const { asyncHello, } = mutations;
+            expect(
+              lugiax
+                .getState()
+                .get(model)
+                .toJS()
+            ).toEqual({});
+            actualFlow.push(await wait(asyncHello));
+            expect(
+              lugiax
+                .getState()
+                .get(model)
+                .toJS()
+            ).toEqual(helloState);
+            actualFlow.push(inParam);
+          },
+          async hello(modelData: Object, inParam: Object, { wait, mutations, }) {
+            actualFlow.push(inParam);
+            const { asyncSay, } = mutations;
+            actualFlow.push(await wait(asyncSay));
+            expect(
+              lugiax
+                .getState()
+                .get(model)
+                .toJS()
+            ).toEqual(sayState);
+            return helloState;
+          },
+          async say(modelData: Object, inParam: Object) {
+            actualFlow.push(inParam);
+            return sayState;
+          },
+        },
+      },
+    });
+
+    const {
+      mutations: { asyncSay, asyncHello, asyncWaitHello, },
+    } = target;
+
+    delay(100, async () => {
+      await asyncHello({ index: 2, });
+    });
+
+    delay(200, async () => {
+      await asyncSay({ index: 3, });
+    });
+
+    await asyncWaitHello({ index: 1, });
+    expect(actualFlow).toEqual([
+      { index: 2, },
+      { index: 3, },
+      { index: 3, },
+      { index: 2, },
+      { index: 1, },
+    ]);
   });
 });

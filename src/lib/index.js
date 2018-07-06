@@ -5,8 +5,10 @@
  * @flow
  */
 import type {
+  AsyncHandler,
   Lugiax,
   Mutation,
+  MutationFunction,
   MutationID,
   Mutations,
   MutationType,
@@ -15,9 +17,11 @@ import type {
   RegisterResult,
 } from '@lugia/lugiax';
 import { fromJS, } from 'immutable';
+import { take, } from 'redux-saga/effects';
 
-import { createStore, } from 'redux';
+import { applyMiddleware, compose, createStore, } from 'redux';
 import { combineReducers, } from 'redux-immutable';
+import createSagaMiddleware from 'redux-saga';
 
 const ReloadAction = '@lugiax/reload';
 const All = '@lugia/msg/All';
@@ -27,10 +31,13 @@ const LoadFinished = '@lugiax/LoadFinished';
 
 class LugiaxImpl implements Lugiax {
   modelName2Mutations: { [key: string]: Mutation };
-  action2Process: { [key: string]: { body: Function, model: string } };
+  action2Process: {
+    [key: string]: { body: Function, model: string, mutationId: string }
+  };
   existModel: { [key: string]: RegisterParam };
   listeners: { [key: string]: Array<Function> };
   store: Object;
+  sagaMiddleware: Object;
 
   constructor() {
     this.clear();
@@ -128,6 +135,7 @@ class LugiaxImpl implements Lugiax {
         this.action2Process[mutationId.name] = {
           body: targetMutations[key],
           model,
+          mutationId: name,
           type,
         };
 
@@ -144,6 +152,7 @@ class LugiaxImpl implements Lugiax {
             };
 
         mutation.mutationType = type;
+        mutation.mutationId = name;
         result[mutationName] = mutation;
       });
 
@@ -153,23 +162,32 @@ class LugiaxImpl implements Lugiax {
   async doAsyncMutation(action: MutationID, param: ?Object): Promise<any> {
     const { name, } = action;
 
-    const { body, model, } = this.action2Process[name];
+    const { body, model, mutationId, } = this.action2Process[name];
     if (body) {
       const state = this.getState();
       this.store.dispatch({ type: Loading, model, });
 
       const newState = await body(state.get(model), param, {
         mutations: this.modelName2Mutations[model],
+        wait: async (mutation: MutationFunction) => {
+          return new Promise(res => {
+            this.sagaMiddleware.run(function* () {
+              const { mutationId, } = mutation;
+              const { param, } = yield take(mutationId);
+              res(param);
+            });
+          });
+        },
       });
 
-      this.updateModel(model, newState);
+      this.updateModel(model, newState, mutationId, param);
     }
   }
 
   doSyncMutation(action: MutationID, param: ?Object): any {
     const { name, } = action;
 
-    const { body, model, } = this.action2Process[name];
+    const { body, model, mutationId, } = this.action2Process[name];
     if (body) {
       const state = this.getState();
       this.store.dispatch({ type: Loading, model, });
@@ -178,20 +196,29 @@ class LugiaxImpl implements Lugiax {
         mutations: this.modelName2Mutations[model],
       });
 
-      this.updateModel(model, newState);
+      this.updateModel(model, newState, mutationId, param);
     }
   }
 
-  updateModel(model: string, newState: Object) {
+  updateModel(
+    model: string,
+    newState: Object,
+    mutationId: string,
+    param: ?Object
+  ) {
     this.store.dispatch({ type: LoadFinished, model, });
 
     if (newState) {
       this.store.dispatch({
         type: ChangeModel,
         model,
-        newState,
+        newState: fromJS(newState),
       });
     }
+    this.store.dispatch({
+      type: mutationId,
+      param,
+    });
   }
 
   getState(): Object {
@@ -213,7 +240,28 @@ class LugiaxImpl implements Lugiax {
     this.action2Process = {};
     const lugia = { lugia: this.lugia.bind(this), };
     const GlobalReducer = combineReducers(lugia);
-    this.store = createStore(GlobalReducer);
+    this.sagaMiddleware = createSagaMiddleware({});
+    let middleWare = applyMiddleware(this.sagaMiddleware);
+    let preloadedState = {};
+
+    if (global.window) {
+      if (window.__PRELOADED_STATE__) {
+        preloadedState = window.__PRELOADED_STATE__;
+        delete window.__PRELOADED_STATE__;
+      }
+      const dev =
+        window.__REDUX_DEVTOOLS_EXTENSION__ &&
+        window.__REDUX_DEVTOOLS_EXTENSION__();
+      if (window.dev && dev) {
+        middleWare = compose(
+          this.sagaMiddleware,
+          dev
+        );
+      } else {
+        middleWare = applyMiddleware(this.sagaMiddleware);
+      }
+    }
+    this.store = createStore(GlobalReducer, fromJS(preloadedState), middleWare);
   }
 
   lugia(state: Object = fromJS({ loading: {}, }), action: Object) {
@@ -233,6 +281,8 @@ class LugiaxImpl implements Lugiax {
   subscribeAll(cb: () => any): void {
     return this.subscribe(All, cb);
   }
+
+  takeAll(cb: (mutation: Object, param: AsyncHandler) => Promise<any>): void {}
 }
 
 export default new LugiaxImpl();

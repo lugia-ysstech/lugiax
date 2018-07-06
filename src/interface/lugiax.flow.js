@@ -8,6 +8,10 @@ declare module '@lugia/lugiax' {
     mutations: Mutation
   };
 
+  declare type AsyncHandler = Handler & {
+    wait: MutationFunction => Promise<Object>
+  };
+
   declare type SyncMutation = {
     [key: string]: (data: Object, param: Object, handle: Handler) => any
   };
@@ -16,7 +20,7 @@ declare module '@lugia/lugiax' {
     [key: string]: (
       modelData: Object,
       param: Object,
-      handle: Handler
+      handle: AsyncHandler
     ) => Promise<any>
   };
 
@@ -24,9 +28,15 @@ declare module '@lugia/lugiax' {
     sync?: SyncMutation,
     async?: AsyncMutation
   };
+  declare type MutationType = "async" | "sync";
+
   declare type MutationID = { name: string };
+  declare type MutationFunction = {
+    type: MutationType,
+    mutationId: string
+  } & ((param?: Object) => any);
   declare type Mutation = {
-    [key: string]: (param?: Object) => any
+    [key: string]: MutationFunction
   };
   declare type RegisterResult = {
     model: string,
@@ -39,7 +49,6 @@ declare module '@lugia/lugiax' {
     verify?: Function,
     mutations?: Mutations
   };
-  declare type MutationType = "async" | "sync";
 
   declare type Option = {
     force: boolean // 是否强制注册 默认为false
@@ -60,6 +69,8 @@ declare module '@lugia/lugiax' {
     clear(): void;
 
     subscribeAll(() => any): void;
+
+    takeAll(cb: (mutation: Object, param: AsyncHandler) => Promise<any>): void;
   }
 
   declare module.exports: Lugiax;
