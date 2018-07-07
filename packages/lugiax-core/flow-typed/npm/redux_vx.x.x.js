@@ -76,41 +76,41 @@ declare module 'redux/src/utils/warning' {
 
 // Filename aliases
 declare module 'redux/dist/redux.js' {
-  declare module.exports: $Exports<'redux/dist/redux'>;
+  declare module.exports: $Exports<"redux/dist/redux">;
 }
 declare module 'redux/dist/redux.min.js' {
-  declare module.exports: $Exports<'redux/dist/redux.min'>;
+  declare module.exports: $Exports<"redux/dist/redux.min">;
 }
 declare module 'redux/es/redux.js' {
-  declare module.exports: $Exports<'redux/es/redux'>;
+  declare module.exports: $Exports<"redux/es/redux">;
 }
 declare module 'redux/lib/redux.js' {
-  declare module.exports: $Exports<'redux/lib/redux'>;
+  declare module.exports: $Exports<"redux/lib/redux">;
 }
 declare module 'redux/src/applyMiddleware.js' {
-  declare module.exports: $Exports<'redux/src/applyMiddleware'>;
+  declare module.exports: $Exports<"redux/src/applyMiddleware">;
 }
 declare module 'redux/src/bindActionCreators.js' {
-  declare module.exports: $Exports<'redux/src/bindActionCreators'>;
+  declare module.exports: $Exports<"redux/src/bindActionCreators">;
 }
 declare module 'redux/src/combineReducers.js' {
-  declare module.exports: $Exports<'redux/src/combineReducers'>;
+  declare module.exports: $Exports<"redux/src/combineReducers">;
 }
 declare module 'redux/src/compose.js' {
-  declare module.exports: $Exports<'redux/src/compose'>;
+  declare module.exports: $Exports<"redux/src/compose">;
 }
 declare module 'redux/src/createStore.js' {
-  declare module.exports: $Exports<'redux/src/createStore'>;
+  declare module.exports: $Exports<"redux/src/createStore">;
 }
 declare module 'redux/src/index.js' {
-  declare module.exports: $Exports<'redux/src/index'>;
+  declare module.exports: $Exports<"redux/src/index">;
 }
 declare module 'redux/src/utils/actionTypes.js' {
-  declare module.exports: $Exports<'redux/src/utils/actionTypes'>;
+  declare module.exports: $Exports<"redux/src/utils/actionTypes">;
 }
 declare module 'redux/src/utils/isPlainObject.js' {
-  declare module.exports: $Exports<'redux/src/utils/isPlainObject'>;
+  declare module.exports: $Exports<"redux/src/utils/isPlainObject">;
 }
 declare module 'redux/src/utils/warning.js' {
-  declare module.exports: $Exports<'redux/src/utils/warning'>;
+  declare module.exports: $Exports<"redux/src/utils/warning">;
 }

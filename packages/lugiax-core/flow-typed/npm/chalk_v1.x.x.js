@@ -73,7 +73,7 @@ type $npm$chalk$StyleMap = {
   bgWhite: $npm$chalk$StyleElement
 };
 
-declare module "chalk" {
+declare module 'chalk' {
   declare var enabled: boolean;
   declare var supportsColor: boolean;
   declare var styles: $npm$chalk$StyleMap;

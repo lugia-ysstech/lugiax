@@ -23,14 +23,14 @@ declare module 'global/window' {
 
 // Filename aliases
 declare module 'global/console.js' {
-  declare module.exports: $Exports<'global/console'>;
+  declare module.exports: $Exports<"global/console">;
 }
 declare module 'global/document.js' {
-  declare module.exports: $Exports<'global/document'>;
+  declare module.exports: $Exports<"global/document">;
 }
 declare module 'global/process.js' {
-  declare module.exports: $Exports<'global/process'>;
+  declare module.exports: $Exports<"global/process">;
 }
 declare module 'global/window.js' {
-  declare module.exports: $Exports<'global/window'>;
+  declare module.exports: $Exports<"global/window">;
 }
