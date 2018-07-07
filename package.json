@@ -5,7 +5,8 @@
     "prettier": "prettier --write",
     "lint": "eslint --ext .js packages/lugiax-redux/src",
     "lint:fix": "eslint --fix --ext .js src mock tests",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "test": "./tasks/test.sh"
   },
   "devDependencies": {
     "autoprefixer": "7.1.6",
@@ -30,6 +31,8 @@
     "identity-obj-proxy": "3.0.0",
     "install": "0.10.1",
     "isomorphic-fetch": "2.2.1",
+    "lerna": "^2.11.0",
+    "lerna-changelog": "^0.8.0",
     "lint-staged": "^6.0.0",
     "prettier": "^1.13.5",
     "stylelint": "^9.3.0",
@@ -43,5 +46,6 @@
       "lint",
       "git add"
     ]
-  }
+  },
+  "dependencies": {}
 }
