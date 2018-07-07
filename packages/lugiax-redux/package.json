@@ -1,5 +1,5 @@
 {
-  "name": "@lugia/lugiax",
+  "name": "@lugia/lugiax-core",
   "version": "1.0.0-beta",
   "dependencies": {
     "immutable": "^3.8.2",
@@ -14,11 +14,6 @@
     "dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
     "test": "lugia-complie dev --ig & lugia-complie test --watchAll",
     "cov": "lugia-complie cov",
-    "precommit": "npm run lint-staged",
-    "prettier": "prettier --write",
-    "lint": "eslint --ext .js src mock tests",
-    "lint:fix": "eslint --fix --ext .js src mock tests",
-    "lint-staged": "lint-staged",
     "start": "node scripts/start.js",
     "flow": "flow"
   },
@@ -28,7 +23,6 @@
     "@lugia/react-test-utils": "^1.0.0",
     "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",
-    "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
     "babel-loader": "7.1.2",
     "babel-runtime": "6.26.0",
@@ -40,13 +34,6 @@
     "debug": "2.6.8",
     "dotenv": "4.0.0",
     "enzyme": "3.2.0",
-    "eslint": "4.10.0",
-    "eslint-config-react-app": "^2.1.0",
-    "eslint-loader": "1.9.0",
-    "eslint-plugin-babel": "^5.1.0",
-    "eslint-plugin-flowtype": "2.39.1",
-    "eslint-plugin-import": "2.8.0",
-    "eslint-plugin-jsx-a11y": "5.1.1",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.5",
     "flow-bin": "0.74.0",
@@ -61,7 +48,6 @@
     "gulp-uglify": "2",
     "gulp-watch": "4",
     "html-webpack-plugin": "2.29.0",
-    "husky": "^0.14.3",
     "identity-obj-proxy": "3.0.0",
     "install": "0.10.1",
     "isomorphic-fetch": "2.2.1",
@@ -87,14 +73,6 @@
     "webpack-dev-server": "2.9.4",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3"
-  },
-  "lint-staged": {
-    "src/**/*.js": [
-      "prettier",
-      "lint:fix",
-      "lint",
-      "git add"
-    ]
   },
   "jest": {
     "collectCoverageFrom": [
