@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import lugiax from '../lib';
+import lugiax from '../lib/index';
 import { delay, } from '@lugia/react-test-utils';
 
 describe('lugiax', () => {
