@@ -1,0 +1,43 @@
+{
+	"name": "@lugia/lugiax-core",
+	"version": "1.0.1-2",
+	"dependencies": {
+		"immutable": "^3.8.2",
+		"redux": "^4.0.0",
+		"redux-immutable": "^4.0.0",
+		"redux-saga": "^0.16.0"
+	},
+	"author": "ysstech",
+	"scripts": {
+		"dev": "lugia-complie dev --ig",
+		"build": "lugia-complie lint && lugia-complie build",
+		"dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
+		"test": "lugia-complie dev --ig & lugia-complie test --watchAll",
+		"cov": "lugia-complie cov",
+		"start": "node scripts/start.js",
+		"flow": "flow"
+	},
+	"devDependencies": {
+		"@lugia/jverify": "1.0.1",
+		"@lugia/react-test-utils": "^1.0.0",
+		"debug": "2.6.8",
+		"dotenv": "4.0.0",
+		"enzyme": "3.2.0",
+		"extract-text-webpack-plugin": "3.0.2",
+		"file-loader": "1.1.5",
+		"flow-bin": "0.74.0",
+		"fs-extra": "3.0.1"
+	},
+	"engines": {
+		"node": ">=8.0.0",
+		"npm": ">=5.2.0"
+	},
+	"files": [
+		"lib",
+		"interface"
+	],
+	"directories": [
+		"test/"
+	],
+	"main": "lib/index.js"
+}
