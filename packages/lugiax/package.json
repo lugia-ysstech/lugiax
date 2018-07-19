@@ -1,8 +1,8 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.0.1-1",
+  "version": "1.0.1-2.0",
   "dependencies": {
-    "@lugia/lugiax-core": "1.0.1-2"
+    "@lugia/lugiax-core": "^1.0.1-3"
   },
   "author": "ysstech",
   "scripts": {
