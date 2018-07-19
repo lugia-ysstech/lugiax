@@ -2,7 +2,7 @@
   "name": "@lugia/lugiax",
   "version": "1.0.0",
   "dependencies": {
-    "@lugia/core": "1.0.0"
+    "@lugia/lugiax-core": "1.0.0"
   },
   "author": "ysstech",
   "scripts": {
