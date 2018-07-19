@@ -1,8 +1,8 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.0.1-0",
+  "version": "1.0.1-1",
   "dependencies": {
-    "@lugia/lugiax-core": "1.0.1-1"
+    "@lugia/lugiax-core": "1.0.1-2"
   },
   "author": "ysstech",
   "scripts": {
@@ -13,8 +13,6 @@
     "cov": "lugia-complie cov",
     "start": "node scripts/start.js",
     "flow": "flow"
-  },
-  "devDependencies": {
   },
   "jest": {
     "collectCoverageFrom": [
