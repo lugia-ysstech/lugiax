@@ -7,6 +7,7 @@
     "lint:fix": "eslint --fix --ext .js src mock tests",
     "lint-staged": "lint-staged",
     "test": "./tasks/test.sh",
+    "publish": "./tasks/publish.sh",
     "postinstall": "./tasks/bootstrap.sh"
   },
   "devDependencies": {

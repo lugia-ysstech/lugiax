@@ -4,14 +4,17 @@ cd "$(dirname "$0")"
 # Go to root
 cd ..
 root_path=$PWD
-$lugia-complie="$root_path/node_modules/.bin/lugia-complie"
+lugiac="$root_path/node_modules/.bin/lugia-complie"
 
-ruban="$root_path/node_modules/.bin/ruban"
-
-umdBundler="$root_path/node_modules/.bin/umd-bundler"
-uglifyjs="$root_path/node_modules/.bin/uglifyjs"
 lerna="$root_path/node_modules/.bin/lerna"
 
-cd "$root_path/packages/dva-core"
-$ruban build
-echo 'build dva-core'
+cd "$root_path/packages/lugiax-core"
+$lugiac build
+echo 'build lugiax-core'
+
+cd "$root_path/packages/lugiax"
+$lugiac build
+echo 'build lugiax'
+
+cd "$root_path"
+$lerna publish "$@/target"

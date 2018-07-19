@@ -2,7 +2,7 @@
   "name": "@lugia/lugiax",
   "version": "1.0.1-0",
   "dependencies": {
-    "@lugia/lugiax-core": "1.0.0"
+    "@lugia/lugiax-core": "1.0.1-1"
   },
   "author": "ysstech",
   "scripts": {
@@ -15,10 +15,6 @@
     "flow": "flow"
   },
   "devDependencies": {
-    "jest": "20.0.4",
-    "jest-cli": "20.0.4",
-    "jsdom": "^11.7.0",
-    "lint-staged": "^6.0.0"
   },
   "jest": {
     "collectCoverageFrom": [
