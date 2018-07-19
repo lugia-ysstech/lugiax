@@ -6,9 +6,11 @@
     "lint": "eslint --ext .js packages/lugiax-redux/src",
     "lint:fix": "eslint --fix --ext .js src mock tests",
     "lint-staged": "lint-staged",
-    "test": "./tasks/test.sh"
+    "test": "./tasks/test.sh",
+    "postinstall": "./tasks/bootstrap.sh"
   },
   "devDependencies": {
+    "@lugia/lugia-complie": "^1.0.4",
     "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",
     "babel-eslint": "7.2.3",
@@ -47,5 +49,7 @@
       "git add"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "flow-bin": "^0.76.0"
+  }
 }

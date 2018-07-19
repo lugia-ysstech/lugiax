@@ -5,7 +5,6 @@
  * @flow
  */
 import type {
-  AsyncHandler,
   Lugiax,
   Mutation,
   MutationFunction,
@@ -16,7 +15,7 @@ import type {
   RegisterParam,
   RegisterResult,
   WaitHandler,
-} from '@lugia/lugiax';
+} from '@lugia/lugiax-core';
 import { fromJS, } from 'immutable';
 import { take, takeEvery, } from 'redux-saga/effects';
 
