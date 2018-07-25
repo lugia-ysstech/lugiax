@@ -47,7 +47,7 @@ declare module '@lugia/lugiax-core' {
   declare type RegisterParam = {
     model: string,
     state: Object,
-    verify?: Function,
+    verify?: (newModelData: Object, oldModelData: Object) => Promise<any>,
     mutations?: Mutations
   };
 
@@ -59,6 +59,7 @@ declare module '@lugia/lugiax-core' {
     param: Object,
     handler: AsyncHandler
   ) => Promise<any>;
+
   declare interface Lugiax {
     register(param: RegisterParam, option?: Option): RegisterResult;
 

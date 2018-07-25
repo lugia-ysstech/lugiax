@@ -23,6 +23,8 @@ import { applyMiddleware, compose, createStore, } from 'redux';
 import { combineReducers, } from 'redux-immutable';
 import createSagaMiddleware from 'redux-saga';
 
+import { ObjectUtils, } from '@lugia/type-utils';
+
 const ReloadAction = '@lugiax/reload';
 const All = '@lugia/msg/All';
 const ChangeModel = '@lugiax/changeModel';
@@ -72,6 +74,7 @@ class LugiaxImpl implements Lugiax {
     if (!force && isExist) {
       throw new Error('重复注册模块');
     }
+    this.warnParam(param);
 
     const { state: initState, } = param;
 
@@ -122,6 +125,12 @@ class LugiaxImpl implements Lugiax {
 
     const result = Object.assign({}, sync, async);
     return { mutations: (this.modelName2Mutations[model] = result), model, };
+  }
+
+  warnParam(param: RegisterParam) {
+    if ('mutation' in param || 'mutatons' in param) {
+      console.warn('You may be set mutaions and not muation!');
+    }
   }
 
   generateMutation(
@@ -207,6 +216,9 @@ class LugiaxImpl implements Lugiax {
       const newState = body(state.get(model), param, {
         mutations: this.modelName2Mutations[model],
       });
+      if (ObjectUtils.isPromise(newState)) {
+        throw new Error('state can not be a Promise Object ! ');
+      }
 
       this.updateModel(model, newState, mutationId, param, 'sync');
     }
@@ -219,6 +231,10 @@ class LugiaxImpl implements Lugiax {
     param: ?Object,
     mutationType: MutationType
   ) {
+    const modelParam = this.existModel[model];
+    if (!modelParam) {
+      throw new Error('$model ( name: {model} )  is not exist!');
+    }
     this.store.dispatch({ type: LoadFinished, model, });
 
     if (newState) {
