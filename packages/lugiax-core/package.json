@@ -12,12 +12,13 @@
     "dev": "lugia-complie dev --ig",
     "build": "lugia-complie lint && lugia-complie build",
     "dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
-    "test": "lugia-complie dev --ig & lugia-complie test --watchAll",
+    "test": "./tasks/test.sh",
     "cov": "lugia-complie cov",
     "start": "node scripts/start.js",
     "flow": "flow"
   },
   "devDependencies": {
+    "@lugia/type-utils": "1.0.3",
     "@lugia/jverify": "1.0.1",
     "@lugia/react-test-utils": "^1.0.0",
     "debug": "2.6.8",

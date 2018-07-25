@@ -3,7 +3,8 @@ lugiacomplie="$root_path/node_modules/.bin/lugia-complie"
 lerna="$root_path/node_modules/.bin/lerna"
 
 cd "$root_path"
-yarn config set registry https://192.168.102.79:5001/
+yarn --version
+yarn config set registry http://192.168.102.79:5001/
 yarn config get registry
 $lerna bootstrap "$@"
 

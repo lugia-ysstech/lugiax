@@ -13,6 +13,7 @@
   },
   "commands": {
     "publish": {
+      "access": "target",
       "ignore": [
         "lugiax-example*"
       ]

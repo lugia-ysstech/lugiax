@@ -9,7 +9,7 @@
     "dev": "lugia-complie dev --ig",
     "build": "lugia-complie lint && lugia-complie build",
     "dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
-    "test": "lugia-complie dev --ig & lugia-complie test --watchAll",
+    "test": "./tasks/test.sh",
     "cov": "lugia-complie cov",
     "start": "node scripts/start.js",
     "flow": "flow"
@@ -45,5 +45,8 @@
   "engines": {
     "node": ">=8.0.0",
     "npm": ">=5.2.0"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.77.0"
   }
 }
