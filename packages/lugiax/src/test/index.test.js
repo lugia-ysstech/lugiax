@@ -118,16 +118,10 @@ describe('lugiax', () => {
     expect(getInputValue(target.find('input').at(1))).toBe(pwd);
   });
 
-  it('connect only render by model "user" ', () => {
-    const name = 'ligx';
-    const pwd = 'helol';
-    const userModel = createUserModel(name, pwd);
-
-    const {
-      mutations: { changeInfo, },
-    } = lugiax.register({
-      model: 'infoModel',
-      state: {},
+  function createInfoModel(info: any = '') {
+    return lugiax.register({
+      model: 'info',
+      state: { info, },
       mutations: {
         sync: {
           changeInfo(data: Object, inParam: Object) {
@@ -136,6 +130,16 @@ describe('lugiax', () => {
         },
       },
     });
+  }
+
+  it('connect only render by model "user" ', () => {
+    const name = 'ligx';
+    const pwd = 'helol';
+    const userModel = createUserModel(name, pwd);
+
+    const {
+      mutations: { changeInfo, },
+    } = createInfoModel();
 
     let renderCnt = 0;
 
@@ -174,5 +178,39 @@ describe('lugiax', () => {
     expect(getInputValue(target.find('input').at(1))).toBe(pwd);
 
     expect(renderCnt).toBe(2);
+  });
+
+  it('connect twoModel ', () => {
+    const name = 'ligx';
+    const pwd = 'helol';
+    const info = 'info';
+    const infoModel = createInfoModel(info);
+    const userModel = createUserModel(name, pwd);
+
+    const MyInput = connect(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />,
+          ];
+        }
+      },
+      [userModel, infoModel,],
+      (state: Object) => {
+        const { user, info, } = state;
+        return {
+          name: user.get('name'),
+          pwd: user.get('pwd'),
+          info: info.get('info'),
+        };
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(1))).toBe(pwd);
+    expect(getInputValue(target.find('input').at(2))).toBe(info);
   });
 });
