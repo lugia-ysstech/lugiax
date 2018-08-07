@@ -100,7 +100,7 @@ describe('lugiax', () => {
     let triggerCnt = 0;
     const model = 'user';
     const trigger = new Promise(res => {
-      lugiax.subscribe(model, () => {
+      lugiax.subscribe(model, state => {
         triggerCnt++;
         res(state);
       });
@@ -133,7 +133,7 @@ describe('lugiax', () => {
 
     expect(lugiax.getState().toJS()[otherModel]).toEqual(otherState);
 
-    expect(await trigger).toBe(state);
+    expect(await trigger).toBe(lugiax.getState().get(model));
     expect(triggerCnt).toBe(1);
   });
 
@@ -767,7 +767,7 @@ describe('lugiax', () => {
       hello: 'ligx',
     };
 
-    const waitResult = new Promise(res => {
+    const waitResult = new Promise((res, reject) => {
       const result = [];
       lugiax.on(
         async (mutation: Object, param: Object, { mutations, wait, }) => {
@@ -801,5 +801,52 @@ describe('lugiax', () => {
       ok(okParam);
     });
     expect(await waitResult).toEqual([loginParam, menusParam, okParam,]);
+  });
+
+  it('subscribe for sync mutations', async () => {
+    console.info('---------0---------------', lugiax.version);
+    const model = 'user';
+    const name = 'ligx';
+    const pwd = '123456';
+    const state = {
+      name,
+      pwd,
+    };
+    const {
+      mutations: { changeName, },
+    } = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName(data: Object, inParam: Object) {
+            return data.set('name', inParam.name);
+          },
+        },
+      },
+    });
+    const newName = 'hello new name';
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .toJS()
+    ).toEqual(state);
+    const subscribe = new Promise(res => {
+      lugiax.subscribe(model, state => {
+        console.info(state);
+        expect(lugiax.getState().get(model)).toBe(state);
+        res(true);
+      });
+    });
+    changeName({ name: newName, });
+
+    await subscribe;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toEqual(newName);
   });
 });

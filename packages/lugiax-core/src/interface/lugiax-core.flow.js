@@ -47,7 +47,6 @@ declare module '@lugia/lugiax-core' {
   declare type RegisterParam = {
     model: string,
     state: Object,
-    verify?: (newModelData: Object, oldModelData: Object) => Promise<any>,
     mutations?: Mutations
   };
 
@@ -70,7 +69,7 @@ declare module '@lugia/lugiax-core' {
      * @param modelName
      * @param () => any
      */
-    subscribe(modelName: string, () => any): void;
+    subscribe(modelName: string, (newModelState: Object) => any): void;
 
     clear(): void;
 

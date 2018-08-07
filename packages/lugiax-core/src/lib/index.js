@@ -44,7 +44,6 @@ class LugiaxImpl implements Lugiax {
   listeners: { [key: string]: Array<Function> };
   store: Object;
   sagaMiddleware: Object;
-
   constructor() {
     this.clear();
   }
@@ -79,11 +78,13 @@ class LugiaxImpl implements Lugiax {
     const { state: initState, } = param;
 
     if (isExist) {
+      const newStateJS = fromJS(initState);
       this.store.dispatch({
         type: ReloadAction,
-        newState: fromJS(initState),
+        newState: newStateJS,
         model,
       });
+      this.trigger(model, newStateJS);
     }
     existModel[model] = param;
 
@@ -95,7 +96,6 @@ class LugiaxImpl implements Lugiax {
           case ReloadAction: {
             const { model, newState, } = action;
             if (model === targetModel) {
-              this.trigger(model, state);
               return newState;
             }
             return state;
@@ -238,11 +238,13 @@ class LugiaxImpl implements Lugiax {
     this.store.dispatch({ type: LoadFinished, model, });
 
     if (newState) {
+      const newStateJS = fromJS(newState);
       this.store.dispatch({
         type: ChangeModel,
         model,
-        newState: fromJS(newState),
+        newState: newStateJS,
       });
+      this.trigger(model, newStateJS);
     }
     this.store.dispatch({
       type: mutationId,
