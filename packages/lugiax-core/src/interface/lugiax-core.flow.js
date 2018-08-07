@@ -69,7 +69,10 @@ declare module '@lugia/lugiax-core' {
      * @param modelName
      * @param () => any
      */
-    subscribe(modelName: string, (newModelState: Object) => any): void;
+    subscribe(
+      modelName: string,
+      (newModelState: Object, oldModelState: Object) => any
+    ): void;
 
     clear(): void;
 

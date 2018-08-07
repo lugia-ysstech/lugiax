@@ -99,9 +99,11 @@ describe('lugiax', () => {
     };
     let triggerCnt = 0;
     const model = 'user';
+    const old = lugiax.getState().get(model);
     const trigger = new Promise(res => {
-      lugiax.subscribe(model, state => {
+      lugiax.subscribe(model, (state, old) => {
         triggerCnt++;
+        expect(old).toBe(old);
         res(state);
       });
     });
@@ -826,16 +828,13 @@ describe('lugiax', () => {
       },
     });
     const newName = 'hello new name';
-    expect(
-      lugiax
-        .getState()
-        .get(model)
-        .toJS()
-    ).toEqual(state);
+    const oldState = lugiax.getState().get(model);
+
+    expect(oldState.toJS()).toEqual(state);
     const subscribe = new Promise(res => {
-      lugiax.subscribe(model, state => {
-        console.info(state);
+      lugiax.subscribe(model, (state, old) => {
         expect(lugiax.getState().get(model)).toBe(state);
+        expect(old).toBe(oldState);
         res(true);
       });
     });
