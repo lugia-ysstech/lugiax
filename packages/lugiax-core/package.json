@@ -9,10 +9,10 @@
   },
   "author": "ysstech",
   "scripts": {
-    "dev": "lugia-complie dev --ig",
     "build": "lugia-complie lint && lugia-complie build",
     "dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
     "test": "./tasks/test.sh",
+    "dev": "./tasks/dev.sh",
     "cov": "lugia-complie cov",
     "start": "node scripts/start.js",
     "flow": "flow"
