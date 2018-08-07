@@ -48,7 +48,7 @@ export function connect(
 
     render() {
       const { props, } = this.state;
-      return <Target {...props} />;
+      return <Target {...props} {...this.props} />;
     }
   };
 }

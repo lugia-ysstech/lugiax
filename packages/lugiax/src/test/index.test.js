@@ -89,10 +89,12 @@ describe('lugiax', () => {
       }
     );
 
-    const target = mount(<MyInput />);
+    const mask = "I'm mask";
+    const target = mount(<MyInput mask={mask} />);
 
     expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(getInputValue(target.find('input').at(1))).toBe(pwd);
+    expect(getInputValue(target.find('input').at(2))).toBe(mask);
     return { target, userModel, };
   }
 
