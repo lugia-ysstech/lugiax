@@ -29,7 +29,6 @@ export function connect(
       this.state = { version: 0, };
       models.forEach(model => {
         lugiax.subscribe(model, (...rest) => {
-          console.info('model change', model, rest);
           this.setState({ version: this.state.version + 1, });
         });
       });
@@ -49,8 +48,6 @@ export function connect(
 
     render() {
       const { props, } = this.state;
-      console.info('render1', props);
-
       return <Target {...props} />;
     }
   };
