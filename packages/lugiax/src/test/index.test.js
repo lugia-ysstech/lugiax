@@ -78,7 +78,7 @@ describe('lugiax.connect', () => {
           pwd: user.get('pwd'),
         };
       },
-      { changeName: userModel.mutations.changeName, }
+      ({ user, }) => ({ changeName: user.changeName, })
     )(Input);
 
     const mask = "I'm mask";

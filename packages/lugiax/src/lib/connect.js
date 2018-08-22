@@ -13,15 +13,17 @@ import { getDisplayName, } from './utils';
 export default function(
   modelData: RegisterResult | Array<RegisterResult>,
   mapProps: (state: Object) => Object = () => ({}),
-  mutations: ?Object = {}
+  map2Mutations: (mutations: Object) => Object = () => ({})
 ) {
   if (!Array.isArray(modelData)) {
     modelData = [modelData,];
   }
 
   const models = [];
-  modelData.forEach(({ model, }) => {
+  const modelMutations = {};
+  modelData.forEach(({ model, mutations, }) => {
     models.push(model);
+    modelMutations[model] = mutations;
   });
 
   return (Target: React.ComponentType<any>) => {
@@ -49,11 +51,12 @@ export default function(
         const props = mapProps(state);
         return {
           props,
+          mutations: map2Mutations(modelMutations),
         };
       }
 
       render() {
-        const { props, } = this.state;
+        const { props, mutations, } = this.state;
         return <Target {...props} {...mutations} {...this.props} />;
       }
     }
