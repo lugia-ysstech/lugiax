@@ -806,7 +806,6 @@ describe('lugiax', () => {
   });
 
   it('subscribe for sync mutations', async () => {
-    console.info('---------0---------------', lugiax.version);
     const model = 'user';
     const name = 'ligx';
     const pwd = '123456';

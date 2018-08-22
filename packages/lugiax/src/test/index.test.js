@@ -78,7 +78,6 @@ describe('lugiax', () => {
     const pwd = '123456';
     const userModel = createUserModel(name, pwd);
     const MyInput = connect(
-      Input,
       userModel,
       (state: Object) => {
         const { user, } = state;
@@ -87,7 +86,7 @@ describe('lugiax', () => {
           pwd: user.get('pwd'),
         };
       }
-    );
+    )(Input);
 
     const mask = "I'm mask";
     const target = mount(<MyInput mask={mask} />);
@@ -144,6 +143,15 @@ describe('lugiax', () => {
     let renderCnt = 0;
 
     const MyInput = connect(
+      userModel,
+      (state: Object) => {
+        const { user, } = state;
+        return {
+          name: user.get('name'),
+          pwd: user.get('pwd'),
+        };
+      }
+    )(
       class extends React.Component<any> {
         render() {
           renderCnt++;
@@ -152,14 +160,6 @@ describe('lugiax', () => {
             <input value={this.props.pwd} />,
           ];
         }
-      },
-      userModel,
-      (state: Object) => {
-        const { user, } = state;
-        return {
-          name: user.get('name'),
-          pwd: user.get('pwd'),
-        };
       }
     );
     const target = mount(<MyInput />);
@@ -188,15 +188,6 @@ describe('lugiax', () => {
     const userModel = createUserModel(name, pwd);
 
     const MyInput = connect(
-      class extends React.Component<any> {
-        render() {
-          return [
-            <input value={this.props.name} />,
-            <input value={this.props.pwd} />,
-            <input value={this.props.info} />,
-          ];
-        }
-      },
       [userModel, infoModel,],
       (state: Object) => {
         const { user, info, } = state;
@@ -206,6 +197,16 @@ describe('lugiax', () => {
           info: info.get('info'),
         };
       }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />,
+          ];
+        }
+      }
     );
 
     const target = mount(<MyInput />);
@@ -213,4 +214,5 @@ describe('lugiax', () => {
     expect(getInputValue(target.find('input').at(1))).toBe(pwd);
     expect(getInputValue(target.find('input').at(2))).toBe(info);
   });
+  it('connect twoModel ', () => {});
 });
