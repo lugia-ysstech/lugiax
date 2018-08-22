@@ -59,6 +59,10 @@ declare module '@lugia/lugiax-core' {
     handler: AsyncHandler
   ) => Promise<any>;
 
+  declare type SubscribeResult = {
+    unSubscribe: Function
+  };
+
   declare interface Lugiax {
     register(param: RegisterParam, option?: Option): RegisterResult;
 
@@ -72,11 +76,11 @@ declare module '@lugia/lugiax-core' {
     subscribe(
       modelName: string,
       (newModelState: Object, oldModelState: Object) => any
-    ): void;
+    ): SubscribeResult;
 
     clear(): void;
 
-    subscribeAll(() => any): void;
+    subscribeAll(() => any): SubscribeResult;
 
     on(cb: WaitHandler): void;
   }

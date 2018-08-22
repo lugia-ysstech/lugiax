@@ -14,6 +14,7 @@ import type {
   Option,
   RegisterParam,
   RegisterResult,
+  SubscribeResult,
   WaitHandler,
 } from '@lugia/lugiax-core';
 import { fromJS, } from 'immutable';
@@ -41,7 +42,7 @@ class LugiaxImpl implements Lugiax {
     [key: string]: { body: Function, model: string, mutationId: string }
   };
   existModel: { [key: string]: RegisterParam };
-  listeners: { [key: string]: Array<Function> };
+  listeners: { [key: string]: { [id: string]: Function } };
   store: Object;
   sagaMiddleware: Object;
 
@@ -50,16 +51,22 @@ class LugiaxImpl implements Lugiax {
   }
 
   trigger(topic: string, newState: Object, oldState: Object) {
-    const call = cb => cb(newState, oldState);
+    const call = (cb: Function) => {
+      cb(newState, oldState);
+    };
     const { listeners, } = this;
     const listener = listeners[topic];
     if (listener) {
-      listener.forEach(call);
+      Object.keys(listener).forEach((key: string) => {
+        call(listener[key]);
+      });
     }
 
     const allListener = listeners[All];
     if (allListener) {
-      allListener.forEach(call);
+      Object.keys(allListener).forEach((key: string) => {
+        call(allListener[key]);
+      });
     }
   }
 
@@ -260,17 +267,26 @@ class LugiaxImpl implements Lugiax {
     return this.store.getState();
   }
 
-  subscribe(topic: string, cb: Function): void {
+  subscribeId: number;
+
+  subscribe(topic: string, cb: Function): SubscribeResult {
     const { listeners, } = this;
     if (!listeners[topic]) {
-      listeners[topic] = [];
+      listeners[topic] = {};
     }
-    listeners[topic].push(cb);
+    const topicId = this.subscribeId++ + '';
+    listeners[topic][topicId] = cb;
+    return {
+      unSubscribe() {
+        delete listeners[topic][topicId];
+      },
+    };
   }
 
   clear(): void {
     this.existModel = {};
     this.listeners = {};
+    this.subscribeId = 0;
     this.modelName2Mutations = {};
     this.mutationId2Mutaions = { async: {}, sync: {}, };
     this.mutationId2MutationInfo = {};
@@ -314,7 +330,7 @@ class LugiaxImpl implements Lugiax {
     }
   }
 
-  subscribeAll(cb: () => any): void {
+  subscribeAll(cb: () => any): SubscribeResult {
     return this.subscribe(All, cb);
   }
 

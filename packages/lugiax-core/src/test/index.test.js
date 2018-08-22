@@ -847,4 +847,39 @@ describe('lugiax', () => {
         .get('name')
     ).toEqual(newName);
   });
+
+  it('subscribe for sync mutations unsubscribe', async () => {
+    const model = 'user';
+    const name = 'ligx';
+    const pwd = '123456';
+    const state = {
+      name,
+      pwd,
+    };
+    const {
+      mutations: { changeName, },
+    } = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName(data: Object, inParam: Object) {
+            return data.set('name', inParam.name);
+          },
+        },
+      },
+    });
+    const newName = 'hello new name';
+    const oldState = lugiax.getState().get(model);
+
+    expect(oldState.toJS()).toEqual(state);
+    let change = false;
+    const { unSubscribe, } = lugiax.subscribe(model, () => {
+      change = true;
+    });
+    unSubscribe();
+    changeName({ name: newName, });
+
+    expect(change).toBeFalsy();
+  });
 });
