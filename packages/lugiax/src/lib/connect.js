@@ -32,14 +32,17 @@ export default function(
 
     class Component extends React.Component<any, any> {
       static displayName = `lugiax-${widgetName}`;
+      unSubscribe: Function[];
 
       constructor(props: any) {
         super(props);
         this.state = { version: 0, };
+        this.unSubscribe = [];
         models.forEach(model => {
-          lugiax.subscribe(model, () => {
+          const { unSubscribe, } = lugiax.subscribe(model, () => {
             this.setState({ version: this.state.version + 1, });
           });
+          this.unSubscribe.push(unSubscribe);
         });
       }
 
@@ -62,6 +65,15 @@ export default function(
         return (
           <Target {...props} {...mutations} {...this.props} {...topProps} />
         );
+      }
+
+      componentWillUnmount() {
+        console.info(this.unSubscribe);
+
+        this.unSubscribe.forEach(cb => cb());
+        delete this.unSubscribe;
+        console.info(this.unSubscribe);
+        console.info('ligx----componentWillUnmount');
       }
     }
 

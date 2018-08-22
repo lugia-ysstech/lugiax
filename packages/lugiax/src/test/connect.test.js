@@ -206,4 +206,40 @@ describe('lugiax.connect', () => {
     expect(getInputValue(target.find('input').at(0))).toBe('ligx');
     expect(await waitChangeName).toBe(name);
   });
+  it('unmount ', () => {
+    const name = 'ligx';
+    const pwd = 'helol';
+    const userModel = createUserModel(name, pwd);
+    const MyInput = connect(
+      userModel,
+      (state: Object) => {
+        const { user, } = state;
+        return {
+          name: user.get('name'),
+          pwd: user.get('pwd'),
+        };
+      },
+      ({ user, }) => ({ changeName: user.changeName, })
+    )(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <MyInput />;
+      }
+    }
+
+    const {
+      mutations: { changeName, },
+    } = userModel;
+    const target = mount(<App />);
+
+    const instance = target
+      .children()
+      .at(0)
+      .instance();
+    instance.componentWillUnmount.call(instance);
+    const newName = 'newName newName';
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
+  });
 });
