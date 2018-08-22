@@ -13,7 +13,8 @@ import { getDisplayName, } from './utils';
 export default function(
   modelData: RegisterResult | Array<RegisterResult>,
   mapProps: (state: Object) => Object = () => ({}),
-  map2Mutations: (mutations: Object) => Object = () => ({})
+  map2Mutations: (mutations: Object) => Object = () => ({}),
+  opt?: { props: Object }
 ) {
   if (!Array.isArray(modelData)) {
     modelData = [modelData,];
@@ -57,7 +58,10 @@ export default function(
 
       render() {
         const { props, mutations, } = this.state;
-        return <Target {...props} {...mutations} {...this.props} />;
+        const topProps = opt && opt.props ? opt.props : {};
+        return (
+          <Target {...props} {...mutations} {...this.props} {...topProps} />
+        );
       }
     }
 
