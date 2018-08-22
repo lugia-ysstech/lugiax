@@ -9,37 +9,29 @@ import { connect, } from '../lib';
 import React from 'react';
 import Enzyme, { mount, } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import { getInputValue, } from './utils';
 
 Enzyme.configure({ adapter: new Adapter(), });
 
+const name = '︿(￣︶￣)︿';
+
 class Input extends React.Component<any, any> {
+  onClick = () => {
+    this.props.changeName({ name, });
+  };
+
   render() {
     const { name, pwd, mask, } = this.props;
     return [
       <input value={name} />,
       <input value={pwd} />,
       <input value={mask} />,
+      <button onClick={this.onClick} />,
     ];
   }
 }
 
-function getInputValue(component): any {
-  const target = getInputDomNode(component);
-  if (target) {
-    return target.value;
-  }
-  return '';
-}
-
-function getInputDomNode(component): HTMLInputElement | null {
-  const result = component.getDOMNode();
-  if (result instanceof HTMLInputElement) {
-    return result;
-  }
-  return null;
-}
-
-describe('lugiax', () => {
+describe('lugiax.connect', () => {
   beforeEach(() => {
     lugiax.clear();
   });
@@ -85,7 +77,8 @@ describe('lugiax', () => {
           name: user.get('name'),
           pwd: user.get('pwd'),
         };
-      }
+      },
+      { changeName: userModel.mutations.changeName, }
     )(Input);
 
     const mask = "I'm mask";
@@ -214,5 +207,10 @@ describe('lugiax', () => {
     expect(getInputValue(target.find('input').at(1))).toBe(pwd);
     expect(getInputValue(target.find('input').at(2))).toBe(info);
   });
-  it('connect twoModel ', () => {});
+  it('connect only one model for state change by click', () => {
+    const { target, } = oneModelCase();
+
+    target.find('button').simulate('click');
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
+  });
 });

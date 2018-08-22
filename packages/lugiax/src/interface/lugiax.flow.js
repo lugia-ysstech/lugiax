@@ -7,10 +7,9 @@ import type { RegisterResult, } from '@lugia/lugiax-core';
 declare module '@lugia/lugiax' {
   declare interface Lugiax {
     connect(
-      target: Object,
       model: RegisterResult | Array<RegisterResult>,
       mapProps: (state: Object) => Object
-    ): any;
+    ): (target: Object) => any;
   }
 
   declare module.exports: Lugiax;
