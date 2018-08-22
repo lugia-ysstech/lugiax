@@ -24,13 +24,15 @@ export default function(
 
     class Component extends React.Component<any, any> {
       static displayName = `lugiax-bind-${widgetName}`;
+      unSubscribe: Function;
 
       constructor(props: any) {
         super(props);
         this.state = { version: 0, };
-        lugiax.subscribe(model, () => {
+        const { unSubscribe, } = lugiax.subscribe(model, () => {
           this.setState({ version: this.state.version + 1, });
         });
+        this.unSubscribe = unSubscribe;
       }
 
       static getDerivedStateFromProps() {
@@ -53,6 +55,10 @@ export default function(
       onChange = (e: Object) => {
         trigger(mutations, e);
       };
+      componentWillUnmount() {
+        this.unSubscribe();
+        delete this.unSubscribe;
+      }
     }
 
     return hoistStatics(Component, Target);

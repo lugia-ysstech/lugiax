@@ -77,5 +77,13 @@ describe('lugiax.bind', () => {
         .get('name')
     ).toBe(thirdName);
     expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
+
+    const instance = target
+      .children()
+      .at(0)
+      .instance();
+    instance.componentWillUnmount.call(instance);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
   });
 });
