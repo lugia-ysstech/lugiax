@@ -72,8 +72,6 @@ export default function(
 
         this.unSubscribe.forEach(cb => cb());
         delete this.unSubscribe;
-        console.info(this.unSubscribe);
-        console.info('ligx----componentWillUnmount');
       }
     }
 
