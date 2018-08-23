@@ -296,7 +296,7 @@ class LugiaxImpl implements Lugiax {
     let middleWare = applyMiddleware(this.sagaMiddleware);
     let preloadedState = {};
 
-    if (global.window) {
+    if (typeof window !== 'undefined') {
       if (window.__PRELOADED_STATE__) {
         preloadedState = window.__PRELOADED_STATE__;
         delete window.__PRELOADED_STATE__;
@@ -304,11 +304,10 @@ class LugiaxImpl implements Lugiax {
       const dev =
         window.__REDUX_DEVTOOLS_EXTENSION__ &&
         window.__REDUX_DEVTOOLS_EXTENSION__();
-      if (window.dev && dev) {
-        middleWare = compose(
-          this.sagaMiddleware,
-          dev
-        );
+      if (dev) {
+        console.info(dev(window.__REDUX_DEVTOOLS_EXTENSION__OPTIONS));
+        const cfg = [applyMiddleware(this.sagaMiddleware), dev,];
+        middleWare = compose(...cfg);
       } else {
         middleWare = applyMiddleware(this.sagaMiddleware);
       }
