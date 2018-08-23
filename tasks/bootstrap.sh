@@ -10,3 +10,5 @@ $lerna bootstrap "$@"
 
 cd "$root_path"/packages/lugiax-core
 $lugiacomplie build
+cd "$root_path"/packages/lugiax
+$lugiacomplie build
