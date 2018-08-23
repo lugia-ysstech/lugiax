@@ -51,6 +51,7 @@
       "mjs"
     ]
   },
+  "main": "target/lib/index.js",
   "engines": {
     "node": ">=8.0.0",
     "npm": ">=5.2.0"
