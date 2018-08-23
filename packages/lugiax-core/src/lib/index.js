@@ -305,9 +305,14 @@ class LugiaxImpl implements Lugiax {
         window.__REDUX_DEVTOOLS_EXTENSION__ &&
         window.__REDUX_DEVTOOLS_EXTENSION__();
       if (dev) {
-        console.info(dev(window.__REDUX_DEVTOOLS_EXTENSION__OPTIONS));
-        const cfg = [applyMiddleware(this.sagaMiddleware), dev,];
-        middleWare = compose(...cfg);
+        const composeEnhancers =
+          typeof window === 'object' &&
+          window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+            ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+                shouldHotReload: false,
+              })
+            : compose;
+        middleWare = composeEnhancers(applyMiddleware(this.sagaMiddleware));
       } else {
         middleWare = applyMiddleware(this.sagaMiddleware);
       }
