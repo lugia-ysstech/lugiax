@@ -804,6 +804,70 @@ describe('lugiax', () => {
     });
     expect(await waitResult).toEqual([loginParam, menusParam, okParam,]);
   });
+  it('mutation param.value is null', () => {
+    const model = 'user';
+    const name = 'ligx';
+    const pwd = '123456';
+    const state = {
+      name,
+      pwd,
+    };
+    const {
+      mutations: { changeName, },
+    } = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName(data: Object, inParam: Object) {
+            return data.set('name', inParam.name);
+          },
+        },
+      },
+    });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toBe(name);
+    changeName({ name: '', });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toBe('');
+
+    function reset() {
+      changeName({ name, });
+      expect(
+        lugiax
+          .getState()
+          .get(model)
+          .get('name')
+      ).toBe(name);
+    }
+
+    reset();
+    changeName({ name: null, });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toBe(null);
+
+    reset();
+
+    changeName({ name: undefined, });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toBe(undefined);
+  });
 
   it('subscribe for sync mutations', async () => {
     const model = 'user';
