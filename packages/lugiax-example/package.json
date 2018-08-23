@@ -1,9 +1,10 @@
 {
   "name": "lugiax-example",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "react": "^16.4.2",
+    "@lugia/lugiax": "^1.0.1-2.1",
     "react-dom": "^16.4.2",
     "react-scripts": "1.1.5"
   },

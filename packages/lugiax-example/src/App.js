@@ -1,20 +1,43 @@
 import React, { Component, } from 'react';
-import logo from './logo.svg';
+import login from './models/login';
+import { bind, } from '@lugia/lugiax';
 import './App.css';
+
+class Input extends React.Component<any, any> {
+  render() {
+    return (
+      <input
+        onChange={this.props.onChange}
+        value={this.props.value}
+        {...this.props}
+      />
+    );
+  }
+}
+
+const NameInput = bind(
+  login,
+  model => {
+    return model.get('name');
+  },
+  (mutations, e) => {
+    return mutations.changeName({ name: e.target.value, });
+  }
+)(Input);
+
+const PassWord = bind(
+  login,
+  model => {
+    return model.get('pwd');
+  },
+  (mutations, e) => {
+    return mutations.asyncChangePwd({ pwd: e.target.value, });
+  }
+)(Input);
 
 class App extends Component {
   render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+    return [<NameInput />, <PassWord />,];
   }
 }
 
