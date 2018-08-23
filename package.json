@@ -8,6 +8,7 @@
     "lint-staged": "lint-staged",
     "test": "./tasks/test.sh",
     "publish": "./tasks/publish.sh",
+    "dev": "./tasks/dev.sh",
     "postinstall": "./tasks/bootstrap.sh"
   },
   "devDependencies": {
