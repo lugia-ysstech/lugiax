@@ -5,6 +5,7 @@
  * @flow
  */
 import type {
+  AsyncMutationFunction,
   Lugiax,
   Mutation,
   MutationFunction,
@@ -15,6 +16,7 @@ import type {
   RegisterParam,
   RegisterResult,
   SubscribeResult,
+  SyncMutationFunction,
   WaitHandler,
 } from '@lugia/lugiax-core';
 import { fromJS, } from 'immutable';
@@ -125,15 +127,50 @@ class LugiaxImpl implements Lugiax {
     this.store.replaceReducer(combineReducers(newReducers));
     this.store.dispatch({ type: LoadFinished, model, });
     const { mutations, } = param;
+    const mutaionAddor = {
+      addMutation: this.generateAddMutation(model, 'sync'),
+      addAsyncMutation: this.generateAddMutation(model, 'async'),
+    };
     if (!mutations) {
-      return { mutations: {}, model, };
+      return {
+        mutations: {},
+        model,
+        ...mutaionAddor,
+      };
     }
 
     const sync = this.generateMutation(mutations, model, 'sync');
     const async = this.generateMutation(mutations, model, 'async');
 
     const result = Object.assign({}, sync, async);
-    return { mutations: (this.modelName2Mutations[model] = result), model, };
+    return {
+      mutations: (this.modelName2Mutations[model] = result),
+      model,
+      ...mutaionAddor,
+    };
+  }
+
+  generateAddMutation = (model: string, type: MutationType) => (
+    mutationName: string,
+    func: SyncMutationFunction
+  ) => {
+    this.checkMutationName(model, mutationName, type);
+    const mutations = { [mutationName]: func, };
+    const targetMutation = this.generateMutation(
+      { [type]: mutations, },
+      model,
+      type
+    );
+    Object.assign(this.modelName2Mutations[model], targetMutation);
+  };
+
+  checkMutationName(model: string, mutationName: string, type: MutationType) {
+    const modelMutation = this.modelName2Mutations[model];
+    const innerMutationName =
+      type === 'sync' ? mutationName : this.addAsyncPrefix(mutationName);
+    if (modelMutation && modelMutation[innerMutationName]) {
+      throw new Error(`The ${type} [${model}.${mutationName}] is exist model!`);
+    }
   }
 
   warnParam(param: RegisterParam) {

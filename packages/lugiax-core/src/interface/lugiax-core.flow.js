@@ -12,16 +12,23 @@ declare module '@lugia/lugiax-core' {
     wait: MutationFunction => Promise<Object>
   };
 
+  declare type SyncMutationFunction = (
+    data: Object,
+    param: Object,
+    handle: AsyncHandler
+  ) => any;
   declare type SyncMutation = {
-    [key: string]: (data: Object, param: Object, handle: AsyncHandler) => any
+    [key: string]: SyncMutationFunction
   };
 
+  declare type AsyncMutationFunction = (
+    modelData: Object,
+    param: Object,
+    handle: AsyncHandler
+  ) => Promise<any>;
+
   declare type AsyncMutation = {
-    [key: string]: (
-      modelData: Object,
-      param: Object,
-      handle: AsyncHandler
-    ) => Promise<any>
+    [key: string]: AsyncMutationFunction
   };
 
   declare type Mutations = {
@@ -41,7 +48,12 @@ declare module '@lugia/lugiax-core' {
   };
   declare type RegisterResult = {
     model: string,
-    mutations: Mutation
+    mutations: Mutation,
+    addMutation: (mutationName: string, func: SyncMutationFunction) => void,
+    addAsyncMutation: (
+      mutationName: string,
+      func: AsyncMutationFunction
+    ) => void
   };
 
   declare type RegisterParam = {

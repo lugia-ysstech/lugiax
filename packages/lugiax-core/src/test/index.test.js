@@ -938,6 +938,73 @@ describe('lugiax', () => {
         .get('name')
     ).toEqual(null);
   });
+  it('addMutation is exist mutationName', async () => {
+    const mutationName = 'changeName';
+    const { model, lugiaxModel, } = createTestModel();
+    expect(() =>
+      lugiaxModel.addMutation(mutationName, (data: Object, inParam: Object) => {
+        return data.set('name', inParam.name);
+      })
+    ).toThrow(`The sync [${model}.${mutationName}] is exist model!`);
+  });
+
+  it('addMutation', async () => {
+    const mutationName = 'sdp';
+    const { model, lugiaxModel, } = createTestModel();
+
+    const targetAttr = 'name';
+    const newValue = '寄蜉蝣于天地';
+    lugiaxModel.addMutation(mutationName, (data: Object, inParam: Object) => {
+      return data.set(targetAttr, newValue);
+    });
+    const {
+      mutations: { sdp, },
+    } = lugiaxModel;
+    sdp();
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get(targetAttr)
+    ).toBe(newValue);
+  });
+
+  it('addAsyncMutation', async () => {
+    const mutationName = 'sdp';
+    const { model, lugiaxModel, } = createTestModel();
+
+    const targetAttr = 'name';
+    const newValue = '寄蜉蝣于天地';
+    lugiaxModel.addAsyncMutation(
+      mutationName,
+      async (data: Object, inParam: Object) => {
+        return data.set(targetAttr, newValue);
+      }
+    );
+    const {
+      mutations: { asyncSdp, },
+    } = lugiaxModel;
+    await asyncSdp();
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get(targetAttr)
+    ).toBe(newValue);
+  });
+
+  it('addAsyncMutation is exist mutationName', async () => {
+    const mutationName = 'changePwd';
+    const { model, lugiaxModel, } = createTestModel();
+    expect(() =>
+      lugiaxModel.addAsyncMutation(
+        mutationName,
+        (data: Object, inParam: Object) => {
+          return data.set('name', inParam.name);
+        }
+      )
+    ).toThrow(`The async [${model}.${mutationName}] is exist model!`);
+  });
 
   function createTestModel() {
     const model = 'user';
@@ -955,6 +1022,11 @@ describe('lugiax', () => {
         mutations: {
           sync: {
             changeName(data: Object, inParam: Object) {
+              return data.set('name', inParam.name);
+            },
+          },
+          async: {
+            changePwd(data: Object, inParam: Object) {
               return data.set('name', inParam.name);
             },
           },
