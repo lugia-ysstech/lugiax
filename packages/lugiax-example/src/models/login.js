@@ -6,14 +6,14 @@
  */
 import lugiax from '@lugia/lugiax';
 
-const model = 'user';
+const model = 'login';
 const name = 'ligx';
 const pwd = '123456';
 const state = {
   name,
   pwd,
 };
-export default lugiax.register({
+const loginModel = lugiax.register({
   model,
   state,
   mutations: {
@@ -29,3 +29,5 @@ export default lugiax.register({
     },
   },
 });
+
+export default loginModel;
