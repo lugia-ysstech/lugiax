@@ -24,40 +24,32 @@ export default function(
   const fieldNames = getFieldNames(field2Props);
 
   const field2AutoMutationName = generateAutoMutations(modelData, fieldNames);
-  const field2Event = getField2Event(eventConfig, fieldNames);
 
-  const eventHandle = {
-    [DefaultEvent]: (mutations, ...args) => {
-      fieldNames
-        .filter(defaultOnChangeEvent(field2Event))
-        .forEach(
-          triggerMutations(
-            mutations,
-            field2AutoMutationName,
-            eventConfig,
-            DefaultEvent,
-            ...args
-          )
-        );
-    },
-  };
+  const eventHandle = {};
   const isNotDefaultEvent = key => key !== DefaultEvent;
 
-  Object.keys(eventConfig)
-    .filter(isNotDefaultEvent)
-    .forEach((eventName: string) => {
+  Object.keys(Object.assign({ [DefaultEvent]: true, }, eventConfig)).forEach(
+    (eventName: string) => {
       eventHandle[eventName] = (mutations, ...args) => {
-        fieldNames.forEach(
-          triggerMutations(
-            mutations,
-            field2AutoMutationName,
-            eventConfig,
-            eventName,
-            ...args
-          )
-        );
+        fieldNames
+          .filter(field => {
+            return (
+              isNotDefaultEvent(eventName) ||
+              defaultOnChangeEvent(eventConfig, fieldNames)(field)
+            );
+          })
+          .forEach(
+            triggerMutations(
+              mutations,
+              field2AutoMutationName,
+              eventConfig,
+              eventName,
+              ...args
+            )
+          );
       };
-    });
+    }
+  );
   console.info('eventHandle', eventHandle);
 
   return (Target: React.ComponentType<any>) => {
@@ -69,7 +61,9 @@ export default function(
   };
 }
 
-function defaultOnChangeEvent(field2Event: Object) {
+function defaultOnChangeEvent(eventConfig: EventConfig, fieldNames: string[]) {
+  const field2Event = getField2Event(eventConfig, fieldNames);
+
   return (field: string) => {
     const fieldEventConfig = field2Event[field];
     return (
