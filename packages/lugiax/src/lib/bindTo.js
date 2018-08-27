@@ -15,6 +15,37 @@ const defaultBindProps = 'value';
 const CntName = '_lugiax_event_cnt';
 const DefaultEvent = 'onChange';
 
+export function gettor(model: Object, pathStr: string): Function {
+  return () => {
+    return model.getIn(getPathArray(pathStr));
+  };
+}
+
+export function settor(model: Object, pathStr: string): Function {
+  return (value: any) => {
+    return model.setIn(getPathArray(pathStr), value);
+  };
+}
+
+export function getPathArray(pathStr?: string = ''): string[] {
+  const path = pathStr.split('.');
+
+  const res = [];
+
+  path.forEach((str: string) => {
+    const craftIndex = str.indexOf('[');
+    if (~craftIndex) {
+      const attr = str.substr(0, craftIndex);
+      res.push(attr);
+      const otherStr = str.substr(craftIndex);
+      res.push(otherStr.substr(1, otherStr.length - 2));
+    } else {
+      res.push(str);
+    }
+  });
+  return res;
+}
+
 export default function(
   modelData: RegisterResult,
   bindConfig: BindConfig,
@@ -50,8 +81,6 @@ export default function(
       };
     }
   );
-  console.info('eventHandle', eventHandle);
-
   return (Target: React.ComponentType<any>) => {
     return bind(
       modelData,
@@ -158,7 +187,8 @@ function generateMode2Props(
   return model => {
     const result = {};
     fieldNames.forEach((field: string) => {
-      result[field2Props[field]] = model.get(field);
+      const get = gettor(model, field);
+      result[field2Props[field]] = get();
     });
     return result;
   };
@@ -174,7 +204,8 @@ function generateAutoMutations(
     const autoMutationName = `_lugiax_change${fieldName}`;
     field2AutoMutationName[fieldName] = autoMutationName;
     addMutation(autoMutationName, (data: Object, inParam: Object) => {
-      return data.set(fieldName, inParam[valueAttr]);
+      const set = settor(data, fieldName);
+      return set(inParam[valueAttr]);
     });
   });
   return field2AutoMutationName;

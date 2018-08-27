@@ -5,6 +5,7 @@
     "@lugia/lugiax-core": "^1.0.1-4",
     "hoist-non-react-statics": "^3.0.1",
     "react": "16.4.1",
+    "immutable": "^3.8.2",
     "react-dom": "16.4.1"
   },
   "author": "ysstech",
