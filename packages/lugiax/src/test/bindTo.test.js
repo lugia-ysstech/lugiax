@@ -15,7 +15,8 @@ Enzyme.configure({ adapter: new Adapter(), });
 
 class Input extends React.Component<any, any> {
   render() {
-    return <input onChange={this.props.onChange} value={this.props.value} />;
+    const { value = '', } = this.props;
+    return <input {...this.props} value={value === null ? '' : value} />;
   }
 }
 
@@ -79,12 +80,12 @@ describe('lugiax.bindTo', () => {
     expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
   });
 
-  it('bindTo Pwd', () => {
+  it('bindTo Pwd to Value Props', () => {
     const name = 'ligx';
     const pwd = '123456';
     const userModel = createUserModel(name, pwd);
 
-    const BindInput = bindTo(userModel, { value: 'pwd', })(Input);
+    const BindInput = bindTo(userModel, { pwd: 'value', })(Input);
 
     class App extends React.Component<any, any> {
       render() {
@@ -101,5 +102,188 @@ describe('lugiax.bindTo', () => {
         .get('pwd')
     ).toBe(pwd);
     expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+  });
+
+  it('bindTo pwd: value & name: theName ', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createUserModel(name, pwd);
+
+    const BindInput = bindTo(
+      userModel,
+      { pwd: 'value', name: 'theName', },
+      {
+        onChange: {
+          name: e => {
+            return e.target.value + 'is name';
+          },
+        },
+      }
+    )(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput />;
+      }
+    }
+
+    const target = mount(<App />);
+    const { model, } = userModel;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+    expect(target.find(Input).props().theName).toBe(name);
+
+    const newValue = 'hello';
+
+    target.simulate('change', { target: { value: newValue, }, });
+
+    expect(getInputValue(target.find('input').at(0))).toBe(newValue);
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(newValue);
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toBe(newValue + 'is name');
+  });
+  it('bindTo pwd: value  name: theName different eventHandle', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createUserModel(name, pwd);
+
+    const BindInput = bindTo(
+      userModel,
+      { pwd: 'value', name: 'theName', },
+      {
+        onChange: {
+          name: e => {
+            return e.target.value + 'is name';
+          },
+          pwd: e => {
+            return e.target.value + 'is value';
+          },
+        },
+      }
+    )(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput />;
+      }
+    }
+
+    const target = mount(<App />);
+    const { model, } = userModel;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+    expect(target.find(Input).props().theName).toBe(name);
+
+    const newValue = 'hello';
+
+    target.simulate('change', { target: { value: newValue, }, });
+
+    expect(getInputValue(target.find('input').at(0))).toBe(
+      newValue + 'is value'
+    );
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(newValue + 'is value');
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toBe(newValue + 'is name');
+  });
+
+  it('bindTo pwd: value onClick & name: theName onChange age is Default', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const age = 100;
+    const userModel = createUserModel(name, pwd, age);
+
+    const BindInput = bindTo(
+      userModel,
+      { pwd: 'value', name: 'theName', age: 'theAge', },
+      {
+        onChange: {
+          name: e => {
+            return e.target.value + 'is name';
+          },
+        },
+        onClick: {
+          pwd: e => {
+            return e.target.value + 'is value';
+          },
+        },
+      }
+    )(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput />;
+      }
+    }
+
+    const target = mount(<App />);
+    const { model, } = userModel;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+    expect(target.find(Input).props().theName).toBe(name);
+    expect(target.find(Input).props().theAge).toBe(age);
+
+    const newValue = 'hello';
+
+    target.simulate('change', { target: { value: newValue, }, });
+    expect(target.find(Input).props().theAge).toBe(newValue);
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toBe(newValue + 'is name');
+
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+
+    target.simulate('click', { target: { value: newValue, }, });
+
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(newValue + 'is value');
+    expect(getInputValue(target.find('input').at(0))).toBe(
+      newValue + 'is value'
+    );
   });
 });
