@@ -31,9 +31,9 @@ export default function(
 
       constructor(props: any) {
         super(props);
-        this.state = { version: 0, };
+        this.state = mapValue(lugiax.getState().get(model));
         const { unSubscribe, } = lugiax.subscribe(model, () => {
-          this.setState({ version: this.state.version + 1, });
+          this.setState(mapValue(lugiax.getState().get(model)));
         });
         this.unSubscribe = unSubscribe;
         this.eventHandler = {};
@@ -43,10 +43,6 @@ export default function(
             func.call(null, modelData.mutations, ...rest);
           };
         });
-      }
-
-      static getDerivedStateFromProps() {
-        return mapValue(lugiax.getState().get(model));
       }
 
       render() {

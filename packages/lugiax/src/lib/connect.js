@@ -36,26 +36,31 @@ export default function(
 
       constructor(props: any) {
         super(props);
-        this.state = { version: 0, };
+
+        const modelData = {};
+        models.forEach(model => {
+          modelData[model] = lugiax.getState().get(model);
+        });
+
+        this.state = {
+          modelData,
+          mutations: map2Mutations(modelMutations),
+        };
+
         this.unSubscribe = [];
         models.forEach(model => {
           const { unSubscribe, } = lugiax.subscribe(model, () => {
-            this.setState({ version: this.state.version + 1, });
+            const modelData = this.state.modelData;
+            modelData[model] = lugiax.getState().get(model);
+            this.setState({ modelData, });
           });
           this.unSubscribe.push(unSubscribe);
         });
       }
 
-      static getDerivedStateFromProps(nextProps: Object, preState: Object) {
-        const state = {};
-        models.forEach(model => {
-          state[model] = lugiax.getState().get(model);
-        });
-
-        const props = mapProps(state);
+      static getDerivedStateFromProps(nextProps: Object, state: Object) {
         return {
-          props,
-          mutations: map2Mutations(modelMutations),
+          props: mapProps(state.modelData),
         };
       }
 
@@ -69,7 +74,6 @@ export default function(
 
       componentWillUnmount() {
         console.info(this.unSubscribe);
-
         this.unSubscribe.forEach(cb => cb());
         delete this.unSubscribe;
       }
