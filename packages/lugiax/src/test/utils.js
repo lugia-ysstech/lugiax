@@ -23,12 +23,13 @@ export function getInputDomNode(component: any): HTMLInputElement | null {
   return null;
 }
 
-export function createUserModel(name, pwd) {
+export function createUserModel(name, pwd, age = 18) {
   const model = 'user';
 
   const state = {
     name,
     pwd,
+    age,
   };
   return lugiax.register({
     model,
