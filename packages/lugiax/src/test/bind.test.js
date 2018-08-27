@@ -13,9 +13,13 @@ import { createUserModel, getInputValue, } from './utils';
 
 Enzyme.configure({ adapter: new Adapter(), });
 
+const DisplayName = 'MyInput';
+
 class Input extends React.Component<any, any> {
+  static displayName = DisplayName;
+
   render() {
-    return <input onChange={this.props.onChange} value={this.props.value} />;
+    return <input {...this.props} />;
   }
 }
 
@@ -24,18 +28,25 @@ describe('lugiax.bind', () => {
     lugiax.clear();
   });
 
-  it('connect only one model', () => {
+  it('bind flow', () => {
     const name = 'ligx';
     const pwd = '123456';
+    const newPwd = '我服';
     const userModel = createUserModel(name, pwd);
 
     const BindInput = bind(
       userModel,
       model => {
-        return model.get('name');
+        const result = { value: model.get('name'), pwd: model.get('pwd'), };
+        return result;
       },
-      (mutations, e) => {
-        return mutations.changeName({ name: e.target.value, });
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value, });
+        },
+        onClick: (mutations, e) => {
+          return mutations.changePwd({ pwd: newPwd, });
+        },
       }
     )(Input);
 
@@ -78,6 +89,15 @@ describe('lugiax.bind', () => {
     ).toBe(thirdName);
     expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
 
+    target.simulate('click');
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(newPwd);
+    expect(target.find(DisplayName).props().pwd).toBe(newPwd);
+
     const instance = target
       .children()
       .at(0)
@@ -85,5 +105,56 @@ describe('lugiax.bind', () => {
     instance.componentWillUnmount.call(instance);
     changeName({ name: newName, });
     expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
+  });
+  it('bind not exist eventhandler', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const newPwd = '我服';
+    const userModel = createUserModel(name, pwd);
+
+    const BindInput = bind(
+      userModel,
+      model => {
+        const result = { value: model.get('name'), pwd: model.get('pwd'), };
+        return result;
+      },
+      {}
+    )(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput />;
+      }
+    }
+
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
+    expect(target.find(DisplayName).props().pwd).toBe(pwd);
+  });
+  it('bind not exist eventhandler', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const newPwd = '我服';
+    const userModel = createUserModel(name, pwd);
+
+    const BindInput = bind(
+      userModel,
+      model => {
+        return {};
+      },
+      {}
+    )(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput />;
+      }
+    }
+
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find('input').at(0))).toBe('');
+    expect(target.find(DisplayName).props().pwd).toBeUndefined();
   });
 });

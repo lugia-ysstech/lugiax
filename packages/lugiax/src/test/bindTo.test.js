@@ -24,7 +24,7 @@ describe('lugiax.bindTo', () => {
     lugiax.clear();
   });
 
-  it('connect only one model', () => {
+  it('bindTo default', () => {
     const name = 'ligx';
     const pwd = '123456';
     const userModel = createUserModel(name, pwd);
@@ -77,5 +77,29 @@ describe('lugiax.bindTo', () => {
     instance.componentWillUnmount.call(instance);
     changeName({ name: newName, });
     expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
+  });
+
+  it('bindTo Pwd', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createUserModel(name, pwd);
+
+    const BindInput = bindTo(userModel, { value: 'pwd', })(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput />;
+      }
+    }
+
+    const target = mount(<App />);
+    const { model, } = userModel;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
   });
 });

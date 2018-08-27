@@ -38,6 +38,9 @@ export function createUserModel(name, pwd) {
         changeName(data: Object, inParam: Object) {
           return data.set('name', inParam.name);
         },
+        changePwd(data: Object, inParam: Object) {
+          return data.set('pwd', inParam.pwd);
+        },
       },
       async: {
         async changePwd(data: Object, inParam: Object) {

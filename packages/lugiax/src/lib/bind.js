@@ -13,11 +13,13 @@ import hoistStatics from 'hoist-non-react-statics';
 
 export default function(
   modelData: RegisterResult,
-  mapValue: (state: Object) => any,
-  trigger: (mutations: Object, event: Object) => Function,
-  opt: { valueProps?: string, changeEvent?: string } = {}
+  mapValue: (state: Object) => { [valueName: string]: any },
+  trigger: {
+    [eventName: string]: (mutations: Object, ...args: any) => any
+  } = {}
 ) {
   const { model, mutations, } = modelData;
+  trigger = trigger ? trigger : {};
 
   return (Target: React.ComponentType<any>) => {
     const widgetName = getDisplayName(Target);
@@ -25,6 +27,7 @@ export default function(
     class Component extends React.Component<any, any> {
       static displayName = `lugiax-bind-${widgetName}`;
       unSubscribe: Function;
+      eventHandler: Object;
 
       constructor(props: any) {
         super(props);
@@ -33,28 +36,25 @@ export default function(
           this.setState({ version: this.state.version + 1, });
         });
         this.unSubscribe = unSubscribe;
+        this.eventHandler = {};
+        Object.keys(trigger).forEach((key: string) => {
+          const func = trigger[key];
+          this.eventHandler[key] = (...rest) => {
+            func.call(null, modelData.mutations, ...rest);
+          };
+        });
       }
 
       static getDerivedStateFromProps() {
-        return {
-          value: mapValue(lugiax.getState().get(model)),
-        };
+        return mapValue(lugiax.getState().get(model));
       }
 
       render() {
-        const { value, } = this.state;
-        const { valueProps = 'value', changeEvent = 'onChange', } = opt;
-        const valueConfig = { [valueProps]: value, };
-        const onChange = {
-          [changeEvent]: this.onChange,
-        };
-
-        return <Target {...this.props} {...valueConfig} {...onChange} />;
+        return (
+          <Target {...this.props} {...this.state} {...this.eventHandler} />
+        );
       }
 
-      onChange = (e: Object) => {
-        trigger(mutations, e);
-      };
       componentWillUnmount() {
         this.unSubscribe();
         delete this.unSubscribe;
