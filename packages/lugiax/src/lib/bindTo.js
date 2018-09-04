@@ -5,7 +5,12 @@
  * @flow
  */
 import type { Mutation, RegisterResult, } from '@lugia/lugiax-core';
-import type { BindConfig, EventConfig, Field2Props, } from '@lugia/lugiax';
+import type {
+  BindConfig,
+  EventHandle,
+  EventMuationConfig,
+  Field2Props,
+} from '@lugia/lugiax';
 
 import * as React from 'react';
 import bind from './bind';
@@ -49,7 +54,8 @@ export function getPathArray(pathStr?: string = ''): string[] {
 export default function(
   modelData: RegisterResult,
   bindConfig: BindConfig,
-  eventConfig: EventConfig = {}
+  eventConfig: EventMuationConfig = {},
+  eventHandleConfig: EventHandle = {}
 ) {
   const field2Props = getFieldProps(bindConfig);
   const fieldNames = getFieldNames(field2Props);
@@ -85,12 +91,16 @@ export default function(
     return bind(
       modelData,
       generateMode2Props(fieldNames, field2Props),
-      eventHandle
+      eventHandle,
+      eventHandleConfig
     )(Target);
   };
 }
 
-function defaultOnChangeEvent(eventConfig: EventConfig, fieldNames: string[]) {
+function defaultOnChangeEvent(
+  eventConfig: EventMuationConfig,
+  fieldNames: string[]
+) {
   const field2Event = getField2Event(eventConfig, fieldNames);
 
   return (field: string) => {
@@ -106,7 +116,7 @@ function defaultOnChangeEvent(eventConfig: EventConfig, fieldNames: string[]) {
 function triggerMutations(
   mutations: Mutation,
   field2AutoMutationName: Object,
-  eventConfig: EventConfig,
+  eventConfig: EventMuationConfig,
   eventName: string,
   ...args
 ) {
@@ -117,7 +127,7 @@ function triggerMutations(
   };
 }
 
-function getField2Event(eventConfig: EventConfig, fieldNames: string[]) {
+function getField2Event(eventConfig: EventMuationConfig, fieldNames: string[]) {
   const res = {};
 
   if (!eventConfig) {
@@ -146,7 +156,7 @@ function getField2Event(eventConfig: EventConfig, fieldNames: string[]) {
 const getOnChangeValue = e => e.target.value;
 
 function getValueMethod(
-  eventConfig: EventConfig,
+  eventConfig: EventMuationConfig,
   eventName: string,
   fieldName: string
 ) {

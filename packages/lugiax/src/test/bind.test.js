@@ -9,7 +9,7 @@ import React from 'react';
 import Enzyme, { mount, } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { bind, } from '../lib/';
-import { createUserModel, getInputValue, } from './utils';
+import { createDeepUserModel, createUserModel, getInputValue, } from './utils';
 
 Enzyme.configure({ adapter: new Adapter(), });
 
@@ -156,5 +156,105 @@ describe('lugiax.bind', () => {
 
     expect(getInputValue(target.find('input').at(0))).toBe('');
     expect(target.find(DisplayName).props().pwd).toBeUndefined();
+  });
+
+  it('EventHandle onClick', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createDeepUserModel(name, pwd);
+
+    let MyInput = Input;
+    const changePromise = new Promise(res => {
+      MyInput = bind(
+        userModel,
+        model => {
+          return {};
+        },
+        {},
+        {
+          onClick(e) {
+            res(e.target.value);
+          },
+        }
+      )(Input);
+    });
+    const target = mount(<MyInput />);
+    target.find(Input).simulate('click', { target: { value: name, }, });
+    expect(await changePromise).toBe(name);
+  });
+
+  it('EventHandle onChange and MyInput has onChange', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createDeepUserModel(name, pwd);
+
+    let MyInput = Input;
+    const changePromise = new Promise(res => {
+      MyInput = bind(
+        userModel,
+        model => {
+          return {};
+        },
+        {},
+        {
+          onChange(e) {
+            res(e.target.value);
+          },
+        }
+      )(Input);
+    });
+    let onChange;
+    const theChangeEvent = new Promise(res => {
+      onChange = e => {
+        res(e.target.value);
+      };
+    });
+    const target = mount(<MyInput onChange={onChange} />);
+    target.find(Input).simulate('change', { target: { value: name, }, });
+    expect(await changePromise).toBe(name);
+    expect(await theChangeEvent).toBe(name);
+  });
+  it('EventHandle onChange and MyInput has onChange and has ChangeMutation', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createDeepUserModel(name, pwd);
+
+    let MyInput = Input;
+    const changePromise = new Promise(res => {
+      MyInput = bind(
+        userModel,
+        model => {
+          return {
+            value: model.get('form').get('name'),
+          };
+        },
+        {
+          onChange: (mutations, e) => {
+            return mutations.changeName({ name: e.target.value, });
+          },
+        },
+        {
+          onChange(e) {
+            res(e.target.value);
+          },
+        }
+      )(Input);
+    });
+
+    let onChange;
+    const theChangeEvent = new Promise(res => {
+      onChange = e => {
+        res(e.target.value);
+      };
+    });
+    const newName = '无可奈何而安之若命';
+    const target = mount(<MyInput onChange={onChange} />);
+
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
+
+    target.find(Input).simulate('change', { target: { value: newName, }, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newName);
+    expect(await changePromise).toBe(newName);
+    expect(await theChangeEvent).toBe(newName);
   });
 });

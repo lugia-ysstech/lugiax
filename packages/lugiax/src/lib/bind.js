@@ -4,11 +4,12 @@
  *
  * @flow
  */
+import type { EventHandle, } from '@lugia/lugiax';
 import type { RegisterResult, } from '@lugia/lugiax-core';
 import lugiax from '@lugia/lugiax-core';
 
 import * as React from 'react';
-import { getDisplayName, } from './utils';
+import { getDisplayName, combineFunction, } from './utils';
 import hoistStatics from 'hoist-non-react-statics';
 
 export default function(
@@ -16,7 +17,8 @@ export default function(
   mapValue: (state: Object) => { [valueName: string]: any },
   trigger: {
     [eventName: string]: (mutations: Object, ...args: any) => any
-  } = {}
+  } = {},
+  eventHandleConfig?: EventHandle = {}
 ) {
   const { model, mutations, } = modelData;
   trigger = trigger ? trigger : {};
@@ -46,9 +48,12 @@ export default function(
       }
 
       render() {
-        return (
-          <Target {...this.props} {...this.state} {...this.eventHandler} />
+        const eventMethod = combineFunction(
+          this.props,
+          this.eventHandler,
+          eventHandleConfig
         );
+        return <Target {...this.props} {...this.state} {...eventMethod} />;
       }
 
       componentWillUnmount() {

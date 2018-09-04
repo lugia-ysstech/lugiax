@@ -623,4 +623,98 @@ describe('lugiax.bindTo', () => {
       newValue + 'is value'
     );
   });
+
+  it('EventHandle onClick', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createDeepUserModel(name, pwd);
+
+    let MyInput = Input;
+    const changePromise = new Promise(res => {
+      MyInput = bindTo(
+        userModel,
+        {},
+        {},
+        {
+          onClick(e) {
+            res(e.target.value);
+          },
+        }
+      )(Input);
+    });
+    const target = mount(<MyInput />);
+    target.find(Input).simulate('click', { target: { value: name, }, });
+    expect(await changePromise).toBe(name);
+  });
+
+  it('EventHandle onChange and MyInput has onChange', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createDeepUserModel(name, pwd);
+
+    let MyInput = Input;
+    const changePromise = new Promise(res => {
+      MyInput = bindTo(
+        userModel,
+        {},
+        {},
+        {
+          onChange(e) {
+            res(e.target.value);
+          },
+        }
+      )(Input);
+    });
+    let onChange;
+    const theChangeEvent = new Promise(res => {
+      onChange = e => {
+        res(e.target.value);
+      };
+    });
+    const target = mount(<MyInput onChange={onChange} />);
+    target.find(Input).simulate('change', { target: { value: name, }, });
+    expect(await changePromise).toBe(name);
+    expect(await theChangeEvent).toBe(name);
+  });
+  it('EventHandle onChange and MyInput has onChange and has ChangeMutation', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createDeepUserModel(name, pwd);
+
+    let MyInput = Input;
+    const changePromise = new Promise(res => {
+      MyInput = bindTo(
+        userModel,
+        {
+          'form.name': 'value',
+        },
+        {},
+        {
+          onChange(e) {
+            res(e.target.value);
+          },
+        }
+      )(Input);
+    });
+
+    let onChange;
+    const theChangeEvent = new Promise(res => {
+      onChange = e => {
+        res(e.target.value);
+      };
+    });
+    const newName = '无可奈何而安之若命';
+    const target = mount(<MyInput onChange={onChange} />);
+
+    target.find(Input).simulate('change', { target: { value: newName, }, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newName);
+    expect(
+      lugiax
+        .getState()
+        .get(userModel.model)
+        .getIn(['form', 'name',])
+    ).toBe(newName);
+    expect(await changePromise).toBe(newName);
+    expect(await theChangeEvent).toBe(newName);
+  });
 });

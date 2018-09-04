@@ -5,16 +5,36 @@
 import type { RegisterResult, } from '@lugia/lugiax-core';
 
 declare module '@lugia/lugiax' {
-  declare type EventConfig = {
+  declare type EventMuationConfig = {
     [eventName: string]: { [fieldName: string]: Function }
+  };
+
+  declare type EventHandle = {
+    [eventName: string]: Function
   };
   declare type BindConfig = string | { [fieldName: string]: string };
   declare type Field2Props = { [key: string]: string };
+
   declare interface Lugiax {
     connect(
       model: RegisterResult | Array<RegisterResult>,
       mapProps: (state: Object) => Object
     ): (target: Object) => any;
+
+    bind(
+      modelData: RegisterResult,
+      mapValue: (state: Object) => { [valueName: string]: any },
+      trigger: {
+        [eventName: string]: (mutations: Object, ...args: any) => any
+      }
+    ): any;
+
+    bindTo(
+      modelData: RegisterResult,
+      bindConfig: BindConfig,
+      eventConfig: EventMuationConfig,
+      eventHandle: EventHandle
+    ): any;
   }
 
   declare module.exports: Lugiax;
