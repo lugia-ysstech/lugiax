@@ -5,16 +5,46 @@
  * @flow
  */
 import React, { Component, } from 'react';
+import styled from 'styled-components';
+const hoverColor = 'red';
+const Item = styled.li`
+  user-select: none;
+  cursor: pointer;
+  &:hover {
+    color: ${hoverColor};
+  }
+`;
+
+const CloseIcon = styled.span`
+  user-select: none;
+  cursor: pointer;
+  ${Item}:hover {
+    color: ${hoverColor};
+  }
+  &:hover {
+    color: ${hoverColor};
+  }
+`;
 
 export default class List extends Component {
   render() {
     return <ul>{this.renderList()}</ul>;
   }
 
+  delItem = title => () => {
+    const { delItem, } = this.props;
+    delItem && delItem({ title, });
+  };
+
   renderList() {
     const { data = [], } = this.props;
     return data.map(title => {
-      return <li>{title}</li>;
+      const del = this.delItem(title);
+      return (
+        <Item onClick={del}>
+          {title} <CloseIcon onClick={del}>x</CloseIcon>
+        </Item>
+      );
     });
   }
 }

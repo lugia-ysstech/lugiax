@@ -18,6 +18,10 @@ const TodoList = connect(
   todo,
   state => {
     return { data: state.todo.get('tasks'), };
+  },
+  mutations => {
+    const { todo, } = mutations;
+    return { delItem: todo.delTask, };
   }
 )(List);
 
@@ -37,10 +41,8 @@ const TodoInput = bindTo(
     },
   },
   {
-    onEnter() {
-      console.info(todo.mutations);
+    async onEnter() {
       todo.mutations.addTask();
-      todo.mutations.cleanTaksInput();
     },
   }
 )(InputTask);
