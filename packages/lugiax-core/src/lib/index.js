@@ -202,10 +202,10 @@ class LugiaxImpl implements Lugiax {
         const mutationName = isAsync ? this.addAsyncPrefix(key) : key;
         const mutation = isAsync
           ? async (param?: Object) => {
-              await this.doAsyncMutation(mutationId, param);
+              return await this.doAsyncMutation(mutationId, param);
             }
           : (param?: Object) => {
-              this.doSyncMutation(mutationId, param);
+              return this.doSyncMutation(mutationId, param);
             };
 
         mutation.mutationType = type;
@@ -226,19 +226,21 @@ class LugiaxImpl implements Lugiax {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
+    const state = this.getState();
+    const modelData = state.get(model);
     if (body) {
-      const state = this.getState();
       this.store.dispatch({ type: Loading, model, });
 
-      const newState = await body(state.get(model), param, {
+      const newState = await body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
           return this.wait(mutation);
         },
       });
 
-      this.updateModel(model, newState, mutationId, param, 'async');
+      return this.updateModel(model, newState, mutationId, param, 'async');
     }
+    return modelData;
   }
 
   wait(mutation: MutationFunction) {
@@ -255,19 +257,21 @@ class LugiaxImpl implements Lugiax {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
+    const state = this.getState();
+    const modelData = state.get(model);
     if (body) {
-      const state = this.getState();
       this.store.dispatch({ type: Loading, model, });
 
-      const newState = body(state.get(model), param, {
+      const newState = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
       });
       if (ObjectUtils.isPromise(newState)) {
         throw new Error('state can not be a Promise Object ! ');
       }
 
-      this.updateModel(model, newState, mutationId, param, 'sync');
+      return this.updateModel(model, newState, mutationId, param, 'sync');
     }
+    return modelData;
   }
 
   updateModel(
@@ -282,22 +286,23 @@ class LugiaxImpl implements Lugiax {
       throw new Error('$model ( name: {model} )  is not exist!');
     }
     this.store.dispatch({ type: LoadFinished, model, });
-
+    let state = this.getState().get(model);
     if (newState) {
-      const oldState = this.getState().get(model);
       const newStateJS = fromJS(newState);
       this.store.dispatch({
         type: ChangeModel,
         model,
         newState: newStateJS,
       });
-      this.trigger(model, newStateJS, oldState);
+      this.trigger(model, newStateJS, state);
+      state = this.getState().get(model);
     }
     this.store.dispatch({
       type: mutationId,
       mutationType,
       param,
     });
+    return state;
   }
 
   getState(): Object {

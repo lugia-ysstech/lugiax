@@ -6,6 +6,7 @@
  */
 import lugiax from '../lib/index';
 import { delay, } from '@lugia/react-test-utils';
+import { fromJS, } from 'immutable';
 
 describe('lugiax', () => {
   beforeEach(() => {
@@ -1029,10 +1030,70 @@ describe('lugiax', () => {
             changePwd(data: Object, inParam: Object) {
               return data.set('name', inParam.name);
             },
+            changeForPwd(data: Object, inParam: Object) {
+              return data.set('pwd', inParam.pwd);
+            },
           },
         },
       }),
       state,
     };
   }
+
+  it('mutation return is not a immutable', () => {
+    const model = 'user';
+    const name = 'ligx';
+    const pwd = '123456';
+    const state = {
+      name,
+      pwd,
+    };
+    const {
+      mutations: { changeName, hello, hi, },
+    } = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName(data: Object, inParam: Object) {
+            return { name: 'hello', pwd: 'abc', };
+          },
+          hello() {
+            return null;
+          },
+          hi() {},
+        },
+      },
+    });
+    expect(changeName().toJS()).toEqual({ name: 'hello', pwd: 'abc', });
+    expect(changeName()).toEqual(lugiax.getState().get(model));
+    expect(hello()).toEqual(lugiax.getState().get(model));
+    expect(hi()).toEqual(lugiax.getState().get(model));
+  });
+
+  it('mutation return null or undefined', () => {});
+
+  it('sync mutation return state', () => {
+    const {
+      lugiaxModel: {
+        mutations: { changeName, },
+      },
+    } = createTestModel();
+    expect(changeName({ name: 'hello', }).toJS()).toEqual({
+      name: 'hello',
+      pwd: '123456',
+    });
+  });
+  it('async mutation return state', async () => {
+    const {
+      lugiaxModel: {
+        mutations: { asyncChangeForPwd, },
+      },
+    } = createTestModel();
+    const result = await asyncChangeForPwd({ pwd: 'hello', });
+    expect(result.toJS()).toEqual({
+      name: 'ligx',
+      pwd: 'hello',
+    });
+  });
 });
