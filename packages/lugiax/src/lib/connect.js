@@ -73,7 +73,6 @@ export default function(
       }
 
       componentWillUnmount() {
-        console.info(this.unSubscribe);
         this.unSubscribe.forEach(cb => cb());
         delete this.unSubscribe;
       }
