@@ -41,6 +41,7 @@ declare module '@lugia/lugiax' {
 
   declare type RouterConfig = {
     render: Function,
+    exact: boolean,
     component: Function
   };
 

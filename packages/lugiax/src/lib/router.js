@@ -29,15 +29,15 @@ export function createRoute(
     return null;
   }
   const routes = Object.keys(routerMap).map(path => {
-    const { component, } = routerMap[path];
+    const config = routerMap[path];
+    const { component, } = config;
     if (component) {
-      return <Route exact path={path} component={component} />;
+      return <Route path={path} component={component} />;
     }
-    const { render, } = routerMap[path];
-
+    const { render, exact, } = config;
     return (
       <Route
-        exact
+        exact={exact}
         path={path}
         render={() => {
           const Target = Loadable({
@@ -58,6 +58,7 @@ export function createApp(
   loading: Object = Loading
 ) {
   lugiax.resetStore(routerMiddleware(history), connectRouter(history));
+
   class App extends Component<any, any> {
     render() {
       return (
