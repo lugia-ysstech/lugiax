@@ -1,10 +1,12 @@
 import React from 'react';
 import { createBrowserHistory, } from 'history';
-import { render, } from '@lugia/lugiax/target/lib/router';
+import { createApp, render, } from '@lugia/lugiax/target/lib/router';
 import registerServiceWorker from './registerServiceWorker';
 import Todo from './todo';
+
 const history = createBrowserHistory();
-render(
+
+const App = createApp(
   {
     '/todo': {
       render: () => import('./todo'),
@@ -16,4 +18,9 @@ render(
   history,
   'root'
 );
+
+render(() => {
+  return <App />;
+}, 'root');
+
 registerServiceWorker();
