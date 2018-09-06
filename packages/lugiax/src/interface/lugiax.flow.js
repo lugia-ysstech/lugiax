@@ -18,7 +18,9 @@ declare module '@lugia/lugiax' {
   declare interface Lugiax {
     connect(
       model: RegisterResult | Array<RegisterResult>,
-      mapProps: (state: Object) => Object
+      mapProps: (state: Object) => Object,
+      map2Mutations: (mutations: Object) => Object,
+      opt?: { props: Object }
     ): (target: Object) => any;
 
     bind(
@@ -37,5 +39,13 @@ declare module '@lugia/lugiax' {
     ): any;
   }
 
+  declare type RouterConfig = {
+    render: Function,
+    component: Function
+  };
+
+  declare type RouterMap = {
+    [path: string]: RouterConfig
+  };
   declare module.exports: Lugiax;
 }

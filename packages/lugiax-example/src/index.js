@@ -1,8 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import { createBrowserHistory, } from 'history';
+import { render, } from '@lugia/lugiax/target/lib/router';
 import registerServiceWorker from './registerServiceWorker';
-
-ReactDOM.render(<App />, document.getElementById('root'));
+import Todo from './todo';
+const history = createBrowserHistory();
+render(
+  {
+    '/todo': {
+      render: () => import('./todo'),
+    },
+    '/a': {
+      component: Todo,
+    },
+  },
+  history,
+  'root'
+);
 registerServiceWorker();

@@ -98,34 +98,9 @@ class LugiaxImpl implements Lugiax {
       this.trigger(model, newStateJS, oldState);
     }
     existModel[model] = param;
-
-    const generateReducers = (targetModel: string): Function => {
-      return (state = fromJS(initState), action) => {
-        const { type, } = action;
-        switch (type) {
-          case ChangeModel:
-          case ReloadAction: {
-            const { model, newState, } = action;
-            if (model === targetModel) {
-              return newState;
-            }
-            return state;
-          }
-          default:
-            return state;
-        }
-      };
-    };
-
-    const newReducers = {
-      lugia: this.lugia.bind(this),
-    };
-
-    Object.keys(existModel).forEach((key: string) => {
-      newReducers[key] = generateReducers(key);
-    });
-    this.store.replaceReducer(combineReducers(newReducers));
+    this.replaceReducers(existModel);
     this.store.dispatch({ type: LoadFinished, model, });
+
     const { mutations, } = param;
     const mutaionAddor = {
       addMutation: this.generateAddMutation(model, 'sync'),
@@ -148,6 +123,34 @@ class LugiaxImpl implements Lugiax {
       model,
       ...mutaionAddor,
     };
+  }
+
+  replaceReducers(existModel: Object) {
+    const generateReducers = (targetModel: string): Function => {
+      return (state = fromJS(existModel[targetModel].state), action) => {
+        const { type, } = action;
+        switch (type) {
+          case ChangeModel:
+          case ReloadAction: {
+            const { model, newState, } = action;
+            if (model === targetModel) {
+              return newState;
+            }
+            return state;
+          }
+          default:
+            return state;
+        }
+      };
+    };
+    const newReducers = {
+      lugia: this.lugia.bind(this),
+    };
+
+    Object.keys(existModel).forEach((key: string) => {
+      newReducers[key] = generateReducers(key);
+    });
+    this.store.replaceReducer(this.combineReducers(newReducers));
   }
 
   generateAddMutation = (model: string, type: MutationType) => (
@@ -325,17 +328,25 @@ class LugiaxImpl implements Lugiax {
     };
   }
 
-  clear(): void {
-    this.existModel = {};
-    this.listeners = {};
-    this.subscribeId = 0;
-    this.modelName2Mutations = {};
-    this.mutationId2Mutaions = { async: {}, sync: {}, };
-    this.mutationId2MutationInfo = {};
-    const lugia = { lugia: this.lugia.bind(this), };
-    const GlobalReducer = combineReducers(lugia);
+  reducerMap: ?Function;
+
+  resetStore(configMiddleWare: ?Object, reducerMap: ?Function): void {
+    this.createStore(configMiddleWare, reducerMap);
+    this.replaceReducers(this.existModel);
+  }
+
+  createStore(configMiddleWare: ?Object, reducerMap: ?Function): void {
+    this.reducerMap = reducerMap;
+    const GlobalReducer = this.combineReducers({
+      lugia: this.lugia.bind(this),
+    });
     this.sagaMiddleware = createSagaMiddleware({});
-    let middleWare = applyMiddleware(this.sagaMiddleware);
+    let middleWare;
+    if (configMiddleWare) {
+      middleWare = applyMiddleware(configMiddleWare, this.sagaMiddleware);
+    } else {
+      middleWare = applyMiddleware(this.sagaMiddleware);
+    }
     let preloadedState = {};
 
     if (typeof window !== 'undefined') {
@@ -354,12 +365,29 @@ class LugiaxImpl implements Lugiax {
                 shouldHotReload: false,
               })
             : compose;
-        middleWare = composeEnhancers(applyMiddleware(this.sagaMiddleware));
-      } else {
-        middleWare = applyMiddleware(this.sagaMiddleware);
+        middleWare = composeEnhancers(middleWare);
       }
     }
     this.store = createStore(GlobalReducer, fromJS(preloadedState), middleWare);
+  }
+
+  clear(): void {
+    this.existModel = {};
+    this.listeners = {};
+    this.subscribeId = 0;
+    this.modelName2Mutations = {};
+    this.mutationId2Mutaions = { async: {}, sync: {}, };
+    this.mutationId2MutationInfo = {};
+    this.createStore();
+  }
+
+  combineReducers(target: Object) {
+    const defineCombineReducers = this.reducerMap;
+    if (defineCombineReducers) {
+      return defineCombineReducers(combineReducers(target));
+    }
+
+    return combineReducers(target);
   }
 
   lugia(state: Object = fromJS({ loading: {}, }), action: Object) {
@@ -400,6 +428,10 @@ class LugiaxImpl implements Lugiax {
         });
       };
     this.sagaMiddleware.run(worker(this));
+  }
+
+  getStore() {
+    return this.store;
   }
 }
 

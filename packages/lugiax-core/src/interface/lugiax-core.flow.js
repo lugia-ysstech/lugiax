@@ -79,6 +79,7 @@ declare module '@lugia/lugiax-core' {
     register(param: RegisterParam, option?: Option): RegisterResult;
 
     getState(): Object;
+    getStore(): Object;
 
     /**
      * 根据model名称订阅相关模型数据变化消息
@@ -91,6 +92,7 @@ declare module '@lugia/lugiax-core' {
     ): SubscribeResult;
 
     clear(): void;
+    resetStore(configMiddleWare: ?Object, reducerMap?: Function): void;
 
     subscribeAll(() => any): SubscribeResult;
 
