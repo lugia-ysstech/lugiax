@@ -10,7 +10,6 @@ import List from './components/List';
 import styled from 'styled-components';
 import { bindTo, connect, } from '@lugia/lugiax';
 import todo from './models/todo';
-import Header from '../header';
 
 const Container = styled.div`
   margin: 50px;
@@ -49,9 +48,10 @@ const TodoInput = bindTo(
 )(InputTask);
 
 export default () => {
+  console.info('init todo');
+
   return (
     <Container>
-      <Header />
       <TodoInput />
       <TodoList />
     </Container>

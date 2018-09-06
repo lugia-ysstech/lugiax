@@ -1,5 +1,23 @@
 import React, { Component, } from 'react';
-import Todo from './todo';
+import { createRoute, } from '@lugia/lugiax/target/lib/router';
 import './App.css';
+import Header from './header';
+import Todo from './todo';
+import Tomato from './tomato';
 
-export default Todo;
+export default () => {
+  console.info('init main');
+
+  return [
+    <Header />,
+    createRoute({
+      '/todo': {
+        exact: true,
+        component: Todo,
+      },
+      '/tomato': {
+        component: Tomato,
+      },
+    }),
+  ];
+};
