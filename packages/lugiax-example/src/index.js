@@ -12,7 +12,13 @@ const App = createApp(
     },
   },
   history,
-  'root'
+  {
+    async onBeforeGoUrl(location, go) {},
+
+    async onPageLoad(location, go) {},
+
+    async onPageUnLoad(location, go) {},
+  }
 );
 
 render(() => {

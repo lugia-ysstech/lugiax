@@ -10,6 +10,8 @@ import ReactDOM from 'react-dom';
 import React, { Component, } from 'react';
 import lugiax from '@lugia/lugiax-core';
 import { Provider, } from 'react-redux';
+import go from './go';
+import Link from './Link';
 import {
   ConnectedRouter,
   connectRouter,
@@ -19,7 +21,7 @@ import { Redirect, Route, StaticRouter, Switch, } from 'react-router'; // react-
 import Loadable from 'react-loadable';
 import Loading from './Loading';
 
-export { Route, Switch, StaticRouter, Redirect };
+export { Route, Switch, StaticRouter, Redirect, go, Link };
 
 export function createRoute(
   routerMap: RouterMap,
@@ -81,5 +83,3 @@ export function render(App: Object, domId: string) {
   }
   ReactDOM.render(<App />, dom);
 }
-
-export {};
