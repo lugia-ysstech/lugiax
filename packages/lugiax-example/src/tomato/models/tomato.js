@@ -6,7 +6,6 @@
  */
 import lugiax from '@lugia/lugiax';
 
-console.info('hello');
 const model = 'tomato';
 const state = {
   tomotos: [],
@@ -24,7 +23,7 @@ export default lugiax.register({
         if (!state.get('taskName')) {
           return state.set('error', '请填入任务名称');
         }
-        state = state.get('doing') ? mutations.start() : mutations.stop();
+        state = !state.get('doing') ? mutations.start() : mutations.stop();
         return state.set('error', '');
       },
       start(state: Object, inParam: Object, { mutations, }) {
