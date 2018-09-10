@@ -17,18 +17,18 @@ export default () => {
     <Link to="/tomato/now">当前任务</Link>,
     createRoute({
       '/tomato/history': {
-        render: async () => {
+        render: () => {
           return delay(100, () => require('./pages/history'));
         },
       },
       '/tomato': {
-        render: async () => {
+        render: () => {
           return delay(100, () => require('./pages/now'));
         },
         exact: true,
       },
       '/tomato/now': {
-        render: async () => {
+        render: () => {
           return delay(100, () => require('./pages/now'));
         },
       },
