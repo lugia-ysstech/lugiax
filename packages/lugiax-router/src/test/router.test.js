@@ -82,9 +82,13 @@ describe('router', () => {
             .toJS()
         ).toEqual({
           tomotos: [],
+          doing: false,
+          time: 0,
+          beginAt: '',
+          taskName: '',
         });
         res(true);
-      }, 500);
+      }, 200);
     });
   });
 

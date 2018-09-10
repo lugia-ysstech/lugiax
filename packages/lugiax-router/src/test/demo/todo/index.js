@@ -37,7 +37,7 @@ const TodoInput = bindTo(
     },
   },
   {
-    async onEnter() {
+    onEnter() {
       todo.mutations.addTask();
     },
   }

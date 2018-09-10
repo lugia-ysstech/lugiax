@@ -6,6 +6,8 @@
  */
 import React, { Component, } from 'react';
 import styled from 'styled-components';
+import Timer from './Timer';
+
 const hoverColor = 'red';
 const Item = styled.li`
   user-select: none;
@@ -15,18 +17,7 @@ const Item = styled.li`
   }
 `;
 
-const CloseIcon = styled.span`
-  user-select: none;
-  cursor: pointer;
-  ${Item}:hover {
-    color: ${hoverColor};
-  }
-  &:hover {
-    color: ${hoverColor};
-  }
-`;
-
-export default class List extends Component<any> {
+export default class List extends Component {
   render() {
     return <ul>{this.renderList()}</ul>;
   }
@@ -38,11 +29,11 @@ export default class List extends Component<any> {
 
   renderList(): Object[] {
     const { data = [], } = this.props;
-    return data.map(title => {
-      const del = this.delItem(title);
+    return data.map((item: Object) => {
+      const { beginAt, time, taskName, } = item;
       return (
-        <Item onClick={del}>
-          {title} <CloseIcon onClick={del}>x</CloseIcon>
+        <Item>
+          <Timer beginAt={beginAt} time={time} taskName={taskName} />
         </Item>
       );
     });

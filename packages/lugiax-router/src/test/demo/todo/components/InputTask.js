@@ -7,8 +7,6 @@
 import React, { Component, } from 'react';
 
 export default class InputTask extends Component<any> {
-  static displayName = 'InputTask';
-
   render() {
     return (
       <input
