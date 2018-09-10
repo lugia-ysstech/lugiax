@@ -5,7 +5,7 @@
  * @flow
  */
 import React from 'react';
-import { go, Link, } from '@lugia/lugiax/target/lib/router';
+import { go, Link, } from '@lugia/lugiax-router';
 
 export default class Header extends React.Component {
   constructor(props) {

@@ -39,14 +39,5 @@ declare module '@lugia/lugiax' {
     ): any;
   }
 
-  declare type RouterConfig = {
-    render: Function,
-    exact: boolean,
-    component: Function
-  };
-
-  declare type RouterMap = {
-    [path: string]: RouterConfig
-  };
   declare module.exports: Lugiax;
 }

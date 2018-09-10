@@ -5,7 +5,7 @@
  * @flow
  */
 import React, { Component, } from 'react';
-import { createRoute, Link, } from '@lugia/lugiax/target/lib/router';
+import { createRoute, Link, } from '@lugia/lugiax-router';
 
 export default () => {
   console.info('init tomato');

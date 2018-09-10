@@ -1,5 +1,5 @@
 import React, { Component, } from 'react';
-import { createRoute, } from '@lugia/lugiax/target/lib/router';
+import { createRoute, } from '@lugia/lugiax-router';
 import './App.css';
 import Header from './header';
 import Todo from './todo';
