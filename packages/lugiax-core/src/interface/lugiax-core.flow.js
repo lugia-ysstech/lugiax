@@ -75,7 +75,7 @@ declare module '@lugia/lugiax-core' {
     unSubscribe: Function
   };
 
-  declare interface Lugiax {
+  declare interface LugiaxType {
     register(param: RegisterParam, option?: Option): RegisterResult;
 
     getState(): Object;
@@ -99,5 +99,5 @@ declare module '@lugia/lugiax-core' {
     on(cb: WaitHandler): void;
   }
 
-  declare module.exports: Lugiax;
+  declare module.exports: LugiaxType;
 }

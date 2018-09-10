@@ -6,7 +6,7 @@
  */
 import type {
   AsyncMutationFunction,
-  Lugiax,
+  LugiaxType,
   Mutation,
   MutationFunction,
   MutationID,
@@ -34,7 +34,7 @@ const ChangeModel = '@lugiax/changeModel';
 const Loading = '@lugiax/Loading';
 const LoadFinished = '@lugiax/LoadFinished';
 
-class LugiaxImpl implements Lugiax {
+class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
   mutationId2Mutaions: {
     async: { [key: string]: MutationFunction },
