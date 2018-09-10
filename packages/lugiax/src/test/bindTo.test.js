@@ -105,6 +105,30 @@ describe('lugiax.bindTo', () => {
     ).toBe(pwd);
     expect(getInputValue(target.find('input').at(0))).toBe(pwd);
   });
+  it('bindTo Repeat', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const userModel = createUserModel(name, pwd);
+
+    const BindInputA = bindTo(userModel, { pwd: 'value', })(Input);
+    const BindInputB = bindTo(userModel, { pwd: 'value', })(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInputA />;
+      }
+    }
+
+    const target = mount(<App />);
+    const { model, } = userModel;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+  });
 
   it('bindTo pwd: value & name: theName ', () => {
     const name = 'ligx';

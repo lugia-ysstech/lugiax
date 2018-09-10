@@ -209,14 +209,16 @@ function generateAutoMutations(
   fieldNames: string[]
 ) {
   const field2AutoMutationName = {};
-  const { addMutation, } = modelData;
+  const { addMutation, mutations, } = modelData;
   fieldNames.forEach((fieldName: string) => {
     const autoMutationName = `_lugiax_change${fieldName}`;
     field2AutoMutationName[fieldName] = autoMutationName;
-    addMutation(autoMutationName, (data: Object, inParam: Object) => {
-      const set = settor(data, fieldName);
-      return set(inParam[valueAttr]);
-    });
+    if (!mutations[autoMutationName]) {
+      addMutation(autoMutationName, (data: Object, inParam: Object) => {
+        const set = settor(data, fieldName);
+        return set(inParam[valueAttr]);
+      });
+    }
   });
   return field2AutoMutationName;
 }
