@@ -6,7 +6,7 @@
  */
 import React, { Component, } from 'react';
 
-export default class InputTask extends Component {
+export default class InputTask extends Component<any> {
   render() {
     return (
       <input
@@ -17,12 +17,12 @@ export default class InputTask extends Component {
     );
   }
 
-  onChange = e => {
+  onChange = (e: any) => {
     const { onChange, } = this.props;
     onChange && onChange(e.target.value);
   };
 
-  onKeyDown = e => {
+  onKeyDown = (e: any) => {
     if (e.keyCode === 13) {
       const { onEnter, } = this.props;
       onEnter && onEnter();

@@ -31,12 +31,12 @@ export default class List extends Component {
     return <ul>{this.renderList()}</ul>;
   }
 
-  delItem = title => () => {
+  delItem = (title: string) => () => {
     const { delItem, } = this.props;
     delItem && delItem({ title, });
   };
 
-  renderList() {
+  renderList(): Object[] {
     const { data = [], } = this.props;
     return data.map(title => {
       const del = this.delItem(title);

@@ -8,8 +8,6 @@ import React, { Component, } from 'react';
 import { createRoute, Link, } from '@lugia/lugiax-router';
 
 export default () => {
-  console.info('init tomato');
-
   return [
     <div>番茄工作法 🍅</div>,
     <Link to="/tomato/history">history</Link>,
@@ -17,10 +15,10 @@ export default () => {
     <Link to="/tomato/now">now</Link>,
     createRoute({
       '/tomato/history': {
-        render: async () => import('./history'),
+        render: async () => import('./pages/history'),
       },
       '/tomato/now': {
-        render: () => import('./now'),
+        render: () => import('./pages/now'),
       },
     }),
   ];
