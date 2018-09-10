@@ -4,11 +4,11 @@
  */
 import type { RegisterResult, } from '@lugia/lugiax-core';
 
-declare module '@lugia/lugiax' {
+declare module '@lugia/lugiax-router' {
   declare type RouterConfig = {
-    render: Function,
-    exact: boolean,
-    component: Function
+    render?: Function,
+    exact?: boolean,
+    component?: ?Function
   };
 
   declare type RouterMap = {

@@ -37,19 +37,22 @@ export function createRoute(
       return <Route path={path} component={component} />;
     }
     const { render, exact, } = config;
-    return (
-      <Route
-        exact={exact}
-        path={path}
-        render={() => {
-          const Target = Loadable({
-            loader: render,
-            loading,
-          });
-          return <Target />;
-        }}
-      />
-    );
+    if (render) {
+      return (
+        <Route
+          exact={exact}
+          path={path}
+          render={() => {
+            const Target = Loadable({
+              loader: render,
+              loading,
+            });
+            return <Target />;
+          }}
+        />
+      );
+    }
+    return 'render or component is not found!';
   });
   return <Switch>{routes}</Switch>;
 }
