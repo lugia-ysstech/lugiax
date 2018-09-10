@@ -1,3 +1,2 @@
-packages/lugiax-redux/coverage
-packages/lugiax-redux/flow-typed
-packages/lugiax-redux/target
+packages/lugiax-core/flow-typed
+packages/lugiax-router/flow-typed
