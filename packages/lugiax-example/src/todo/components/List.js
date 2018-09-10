@@ -26,7 +26,7 @@ const CloseIcon = styled.span`
   }
 `;
 
-export default class List extends Component {
+export default class List extends Component<any> {
   render() {
     return <ul>{this.renderList()}</ul>;
   }

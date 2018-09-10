@@ -7,8 +7,8 @@
 import React from 'react';
 import { go, Link, } from '@lugia/lugiax-router';
 
-export default class Header extends React.Component {
-  constructor(props) {
+export default class Header extends React.Component<any> {
+  constructor(props: any) {
     super(props);
     console.info('init header');
   }
