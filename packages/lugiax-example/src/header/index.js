@@ -16,10 +16,13 @@ export default class Header extends React.Component {
   render() {
     return (
       <div>
-        <buton onClick={this.onClick}>go</buton>
-        <Link to="/tomato">番茄钟</Link>
-        &nbsp;
-        <Link to="/todo">todo</Link>
+        <button onClick={this.onClick}>gotodo</button>
+
+        <div>
+          <Link to="/tomato">番茄钟</Link>
+          &nbsp;
+          <Link to="/todo">todo</Link>
+        </div>
       </div>
     );
   }

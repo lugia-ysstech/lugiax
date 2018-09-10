@@ -61,6 +61,7 @@
     "npm": ">=5.2.0"
   },
   "devDependencies": {
+    "styled-components": "^3.4.5",
     "history": "^4.7.2",
     "@lugia/react-test-utils": "^1.0.0",
     "ramda": "0.22.0",
