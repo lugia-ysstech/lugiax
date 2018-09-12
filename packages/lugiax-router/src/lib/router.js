@@ -4,13 +4,13 @@
  *
  * @flow
  */
-import type { RouterMap, } from '@lugia/lugiax';
+import type { CreateAppParam, RouterMap, } from '@lugia/lugiax-router';
 
 import ReactDOM from 'react-dom';
 import React, { Component, } from 'react';
 import lugiax from '@lugia/lugiax-core';
 import { Provider, } from 'react-redux';
-import go from './go';
+import go, { GoModel, } from './go';
 import Link from './Link';
 import {
   ConnectedRouter,
@@ -57,12 +57,27 @@ export function createRoute(
   return <Switch>{routes}</Switch>;
 }
 
+const {
+  mutations: { asyncBeforeGo, asyncGo, },
+} = GoModel;
+
 export function createApp(
   routerMap: RouterMap,
   history: Object,
-  loading: Object = Loading
+  param?: CreateAppParam = {}
 ) {
+  const { loading = Loading, onBeforeGo, } = param;
   lugiax.resetStore(routerMiddleware(history), connectRouter(history));
+  lugiax.on(async (mutation, param) => {
+    if (mutation === asyncBeforeGo) {
+      let checkUrl = true;
+      if (onBeforeGo) {
+        const { url, } = param;
+        checkUrl = await onBeforeGo({ url, });
+      }
+      checkUrl && (await asyncGo(param));
+    }
+  });
 
   class App extends Component<any, any> {
     render() {

@@ -3,6 +3,7 @@
  * @flow
  */
 import type { RegisterResult, } from '@lugia/lugiax-core';
+import React from 'react';
 
 declare module '@lugia/lugiax-router' {
   declare type RouterConfig = {
@@ -13,5 +14,12 @@ declare module '@lugia/lugiax-router' {
 
   declare type RouterMap = {
     [path: string]: RouterConfig
+  };
+  declare type BeforeParam = {
+    url: string
+  };
+  declare type CreateAppParam = {
+    loading?: React.Component<any>,
+    onBeforeGo?: (param: BeforeParam) => Promise<boolean>
   };
 }

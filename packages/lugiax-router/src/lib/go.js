@@ -14,6 +14,9 @@ const model = lugiax.register({
   },
   mutations: {
     async: {
+      async beforeGo(state: Object) {
+        return state;
+      },
       async go(state: Object, inParam: Object) {
         const store = lugiax.getStore();
         const { url, } = inParam;
@@ -25,4 +28,5 @@ const model = lugiax.register({
     },
   },
 });
-export default model.mutations.asyncGo;
+export const GoModel = model;
+export default model.mutations.asyncBeforeGo;

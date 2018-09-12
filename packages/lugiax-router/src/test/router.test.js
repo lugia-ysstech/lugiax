@@ -8,10 +8,11 @@ import React from 'react';
 import Enzyme, { mount, } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import Main from './demo';
-import { createApp, Link, } from '../lib';
+import { createApp, go, Link, } from '../lib';
 import lugiax from '@lugia/lugiax-core';
 import { createMemoryHistory, } from 'history';
 import { push, } from 'connected-react-router';
+import { delay, } from '@lugia/react-test-utils';
 
 Enzyme.configure({ adapter: new Adapter(), });
 
@@ -25,7 +26,12 @@ describe('router', () => {
           component: Main,
         },
       },
-      history
+      history,
+      {
+        async onBeforeGo({ url, }) {
+          return url !== '/not';
+        },
+      }
     );
     cmp = mount(<App />);
   });
@@ -103,6 +109,7 @@ describe('router', () => {
     const links = cmp.find(Link).find('a');
     const todoLink = links.at(1);
     todoLink.simulate('click', {});
+    await delay(100);
     cmp.update();
     checkUrl('/todo');
     const input = cmp.find('input');
@@ -115,6 +122,7 @@ describe('router', () => {
     const btn = cmp.find('button');
     const todoLink = btn.at(0);
     todoLink.simulate('click', {});
+    await delay(100);
     cmp.update();
     checkUrl('/todo');
   });
@@ -159,6 +167,15 @@ describe('router', () => {
         res(true);
       }, 200);
     });
+  });
+
+  it('onBeforeGo', async () => {
+    const oldUrl = '/tomato/now';
+    goAndCheckUrl(oldUrl);
+    const targetUrl = '/not';
+    await go({ url: targetUrl, });
+    await delay(100);
+    checkUrl(oldUrl);
   });
 
   function goAndCheckUrl(targetUrl: string) {

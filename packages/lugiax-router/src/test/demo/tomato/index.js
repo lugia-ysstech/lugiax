@@ -4,10 +4,11 @@
  *
  * @flow
  */
-import React, { Component, } from 'react';
+import React from 'react';
 import { delay, } from '@lugia/react-test-utils';
 
 import { createRoute, Link, } from '../../../lib/';
+import NotAccess from './pages/NotAccess';
 
 export default () => {
   return [
@@ -31,6 +32,9 @@ export default () => {
         render: () => {
           return delay(100, () => require('./pages/now'));
         },
+      },
+      '/not': {
+        component: NotAccess,
       },
     }),
   ];
