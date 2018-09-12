@@ -8,11 +8,6 @@ import React from 'react';
 import { go, Link, } from '@lugia/lugiax-router';
 
 export default class Header extends React.Component<any> {
-  constructor(props: any) {
-    super(props);
-    console.info('init header');
-  }
-
   render() {
     return (
       <div>
@@ -22,6 +17,7 @@ export default class Header extends React.Component<any> {
           <Link to="/tomato">番茄钟</Link>
           &nbsp;
           <Link to="/todo">todo</Link>
+          <Link to="/nowPower">nowPower</Link>
         </div>
       </div>
     );

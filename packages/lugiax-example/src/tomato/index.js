@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import React, { Component, } from 'react';
+import React from 'react';
 import { createRoute, Link, } from '@lugia/lugiax-router';
 
 export default () => {

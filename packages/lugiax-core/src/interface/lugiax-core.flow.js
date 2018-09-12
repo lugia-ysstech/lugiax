@@ -79,6 +79,7 @@ declare module '@lugia/lugiax-core' {
     register(param: RegisterParam, option?: Option): RegisterResult;
 
     getState(): Object;
+
     getStore(): Object;
 
     /**
@@ -92,11 +93,14 @@ declare module '@lugia/lugiax-core' {
     ): SubscribeResult;
 
     clear(): void;
+
     resetStore(configMiddleWare: ?Object, reducerMap?: Function): void;
 
     subscribeAll(() => any): SubscribeResult;
 
     on(cb: WaitHandler): void;
+
+    takeEveryAction(cb: (action: Object) => Promise<any>): any;
   }
 
   declare module.exports: LugiaxType;

@@ -409,25 +409,30 @@ class LugiaxImpl implements LugiaxType {
   }
 
   on(cb: WaitHandler): void {
-    const worker = (self: Object) =>
-      function* () {
-        yield takeEvery('*', function* (action: Object) {
-          const { param, type, mutationType, } = action;
-          if (mutationType) {
-            const mutation = self.mutationId2Mutaions[mutationType][type];
-            if (mutation) {
-              const { model, } = mutation;
-              cb(mutation, param, {
-                async wait(mutation: MutationFunction) {
-                  return self.wait(mutation);
-                },
-                mutations: self.modelName2Mutations[model],
-              });
-            }
-          }
-        });
-      };
-    this.sagaMiddleware.run(worker(this));
+    const worker = (self: Object) => async (action: Object) => {
+      const { param, type, mutationType, } = action;
+      if (mutationType) {
+        const mutation = this.mutationId2Mutaions[mutationType][type];
+        if (mutation) {
+          const { model, } = mutation;
+          cb(mutation, param, {
+            async wait(mutation: MutationFunction) {
+              return self.wait(mutation);
+            },
+            mutations: this.modelName2Mutations[model],
+          });
+        }
+      }
+    };
+    this.takeEveryAction(worker(this));
+  }
+
+  takeEveryAction(cb: (action: Object) => Promise<any>) {
+    this.sagaMiddleware.run(function* () {
+      yield takeEvery('*', function* (action: Object): any {
+        yield cb(action);
+      });
+    });
   }
 
   getStore() {

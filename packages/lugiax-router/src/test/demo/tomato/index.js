@@ -33,7 +33,7 @@ export default () => {
           return delay(100, () => require('./pages/now'));
         },
       },
-      '/not': {
+      '/403': {
         component: NotAccess,
       },
     }),

@@ -67,15 +67,34 @@ export function createApp(
   param?: CreateAppParam = {}
 ) {
   const { loading = Loading, onBeforeGo, } = param;
+
   lugiax.resetStore(routerMiddleware(history), connectRouter(history));
+
+  async function checkBefore(param, cb?: (param: Object) => Promise<any>) {
+    let res = true;
+    if (onBeforeGo) {
+      const { url, } = param;
+      res = await onBeforeGo({ url, });
+    }
+    res && cb && (await cb(param));
+  }
+
   lugiax.on(async (mutation, param) => {
     if (mutation === asyncBeforeGo) {
-      let checkUrl = true;
-      if (onBeforeGo) {
-        const { url, } = param;
-        checkUrl = await onBeforeGo({ url, });
-      }
-      checkUrl && (await asyncGo(param));
+      await checkBefore(param, async param => {
+        await asyncGo(param);
+      });
+    }
+  });
+
+  lugiax.takeEveryAction(async (action: Object) => {
+    if (action.type === '@@router/LOCATION_CHANGE') {
+      const {
+        payload: {
+          location: { pathname, },
+        },
+      } = action;
+      await checkBefore({ url: pathname, });
     }
   });
 

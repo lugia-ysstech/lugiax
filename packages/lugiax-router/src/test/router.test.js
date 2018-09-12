@@ -29,6 +29,10 @@ describe('router', () => {
       history,
       {
         async onBeforeGo({ url, }) {
+          if (url === '/nowPower') {
+            await go({ url: '/403', });
+            return false;
+          }
           return url !== '/not';
         },
       }
@@ -176,6 +180,21 @@ describe('router', () => {
     await go({ url: targetUrl, });
     await delay(100);
     checkUrl(oldUrl);
+  });
+  it('onBeforeGo go to 403', async () => {
+    const oldUrl = '/tomato/now';
+    goAndCheckUrl(oldUrl);
+    const targetUrl = '/nowPower';
+    await go({ url: targetUrl, });
+    await delay(100);
+    cmp.update();
+    expect(
+      cmp
+        .find('div')
+        .at(2)
+        .text()
+    ).toBe('403');
+    checkUrl('/403');
   });
 
   function goAndCheckUrl(targetUrl: string) {

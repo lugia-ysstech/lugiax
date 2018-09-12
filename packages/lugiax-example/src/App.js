@@ -4,6 +4,7 @@ import './App.css';
 import Header from './header';
 import Todo from './todo';
 import Tomato from './tomato';
+import NotAccess from './access/NotAccess';
 
 export default () => {
   console.info('init main');
@@ -17,6 +18,10 @@ export default () => {
       },
       '/tomato': {
         component: Tomato,
+      },
+      '/403': {
+        component: NotAccess,
+        exact: true,
       },
     }),
   ];
