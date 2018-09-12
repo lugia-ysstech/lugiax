@@ -9,7 +9,9 @@ declare module '@lugia/lugiax-router' {
   declare type RouterConfig = {
     render?: Function,
     exact?: boolean,
-    component?: ?Function
+    component?: Function,
+    onPageLoad?: Function,
+    onPageUnLoad?: ?Function
   };
 
   declare type RouterMap = {

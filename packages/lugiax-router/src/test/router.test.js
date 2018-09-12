@@ -197,6 +197,40 @@ describe('router', () => {
     checkUrl('/403');
   });
 
+  it('onPageLoad ', async () => {
+    expect(
+      lugiax
+        .getState()
+        .get('pageload')
+        .get('load')
+    ).toBeFalsy();
+    const oldUrl = '/tomato/pageload';
+    goAndCheckUrl(oldUrl);
+    await delay(100);
+    cmp.update();
+    expect(
+      cmp
+        .find('div')
+        .at(3)
+        .text()
+    ).toBe('PageLoad');
+    expect(
+      lugiax
+        .getState()
+        .get('pageload')
+        .get('load')
+    ).toBeTruthy();
+    goAndCheckUrl('/tomato/now');
+    cmp.update();
+    await delay(100);
+    expect(
+      lugiax
+        .getState()
+        .get('pageload')
+        .get('load')
+    ).toBeFalsy();
+  });
+
   function goAndCheckUrl(targetUrl: string) {
     goUrl(targetUrl);
     cmp.update();

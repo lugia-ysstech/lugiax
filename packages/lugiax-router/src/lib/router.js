@@ -23,6 +23,31 @@ import Loading from './Loading';
 
 export { Route, Switch, StaticRouter, Redirect, go, Link };
 
+const WrapPageLoad = (
+  Target: Object,
+  event: { onPageLoad: ?Function, onPageUnLoad: ?Function }
+) => {
+  return class extends React.Component<any> {
+    componentDidMount() {
+      const { onPageLoad, } = event;
+      if (onPageLoad) {
+        onPageLoad(this.props);
+      }
+    }
+
+    componentWillUnmount() {
+      const { onPageUnLoad, } = event;
+      if (onPageUnLoad) {
+        onPageUnLoad(this.props);
+      }
+    }
+
+    render() {
+      return <Target {...this.props} />;
+    }
+  };
+};
+
 export function createRoute(
   routerMap: RouterMap,
   loading?: Object = Loading
@@ -32,9 +57,21 @@ export function createRoute(
   }
   const routes = Object.keys(routerMap).map(path => {
     const config = routerMap[path];
-    const { component, } = config;
+    const { component, onPageLoad, onPageUnLoad, } = config;
     if (component) {
-      return <Route path={path} component={component} />;
+      return (
+        <Route
+          path={path}
+          component={
+            onPageLoad || onPageUnLoad
+              ? WrapPageLoad(component, {
+                  onPageLoad,
+                  onPageUnLoad,
+                })
+              : component
+          }
+        />
+      );
     }
     const { render, exact, } = config;
     if (render) {

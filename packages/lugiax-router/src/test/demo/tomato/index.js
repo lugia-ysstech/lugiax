@@ -8,7 +8,8 @@ import React from 'react';
 import { delay, } from '@lugia/react-test-utils';
 
 import { createRoute, Link, } from '../../../lib/';
-import NotAccess from './pages/NotAccess';
+import pageload from './models/pageload';
+import PageLoad from './pages/PageLoad';
 
 export default () => {
   return [
@@ -33,8 +34,20 @@ export default () => {
           return delay(100, () => require('./pages/now'));
         },
       },
-      '/403': {
-        component: NotAccess,
+      '/tomato/pageload': {
+        component: PageLoad,
+        onPageLoad() {
+          const {
+            mutations: { pageLoad, },
+          } = pageload;
+          pageLoad();
+        },
+        onPageUnLoad() {
+          const {
+            mutations: { pageUnLoad, },
+          } = pageload;
+          pageUnLoad();
+        },
       },
     }),
   ];
