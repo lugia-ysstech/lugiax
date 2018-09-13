@@ -57,13 +57,17 @@ export function createRoute(
   }
   const routes = Object.keys(routerMap).map(path => {
     const config = routerMap[path];
-    const { component, onPageLoad, onPageUnLoad, } = config;
+    const { component, onPageLoad, onPageUnLoad, exact, strict, } = config;
+    const needWrap = onPageLoad || onPageUnLoad;
+
     if (component) {
       return (
         <Route
           path={path}
+          exact={exact}
+          strict={strict}
           component={
-            onPageLoad || onPageUnLoad
+            needWrap
               ? WrapPageLoad(component, {
                   onPageLoad,
                   onPageUnLoad,
@@ -73,17 +77,24 @@ export function createRoute(
         />
       );
     }
-    const { render, exact, } = config;
+    const { render, } = config;
     if (render) {
       return (
         <Route
           exact={exact}
+          strict={strict}
           path={path}
           render={() => {
-            const Target = Loadable({
+            const Comp = Loadable({
               loader: render,
               loading,
             });
+            const Target = needWrap
+              ? WrapPageLoad(Comp, {
+                  onPageLoad,
+                  onPageUnLoad,
+                })
+              : Comp;
             return <Target />;
           }}
         />

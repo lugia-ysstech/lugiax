@@ -250,4 +250,7 @@ describe('router', () => {
         .toJS().pathname
     ).toBe(url);
   }
+
+  it('exact', () => {});
+  it('strict', () => {});
 });
