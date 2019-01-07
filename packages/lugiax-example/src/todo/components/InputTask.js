@@ -9,11 +9,14 @@ import React, { Component, } from 'react';
 export default class InputTask extends Component<any> {
   render() {
     return (
-      <input
-        onChange={this.onChange}
-        onKeyDown={this.onKeyDown}
-        value={this.props.value}
-      />
+      <React.Fragment>
+        <label>{'[' + this.props.label + ']'}</label>
+        <input
+          onChange={this.onChange}
+          onKeyDown={this.onKeyDown}
+          value={this.props.value}
+        />
+      </React.Fragment>
     );
   }
 

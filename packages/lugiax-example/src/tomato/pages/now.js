@@ -23,7 +23,7 @@ const TomatoButton = bindTo(
   {},
   {
     onClick() {
-      mutations.switch();
+      mutations.asyncSwitch();
     },
   }
 )(Button);

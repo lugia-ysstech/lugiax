@@ -23,6 +23,11 @@ export default lugiax.register({
         if (!task) {
           return state;
         }
+        return mutations.addTaskByTitle({ task, });
+      },
+
+      addTaskByTitle(state, inParam, { mutations, }) {
+        const { task, } = inParam;
         let tasks = state.get('tasks');
         tasks = tasks.push(task);
         state = mutations.cleanTaksInput();

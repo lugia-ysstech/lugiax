@@ -5,6 +5,8 @@
  * @flow
  */
 import lugiax from '@lugia/lugiax';
+import todo from '../../todo/models/todo';
+const { mutations: todoMutations, } = todo;
 
 const model = 'tomato';
 const state = {
@@ -14,30 +16,21 @@ const state = {
   beginAt: '',
   taskName: '',
 };
+
+async function delay(time: number, cb: Function) {
+  return new Promise(res => {
+    setInterval(() => {
+      cb();
+      res();
+    }, time);
+  });
+}
+
 export default lugiax.register({
   model,
   state,
   mutations: {
     sync: {
-      switch(state: Object, inParam: Object, { mutations, }) {
-        if (!state.get('taskName')) {
-          return state.set('error', '请填入任务名称');
-        }
-        state = !state.get('doing') ? mutations.start() : mutations.stop();
-        return state.set('error', '');
-      },
-      start(state: Object, inParam: Object, { mutations, }) {
-        state = state.set('beginAt', new Date().toString());
-        state = state.set('doing', true);
-        state = state.set(
-          'interval',
-          setInterval(() => {
-            mutations.updateTime();
-          }, 1000)
-        );
-        return state;
-      },
-
       stop(state: Object) {
         clearInterval(state.get('interval'));
         state = state.set('interval', -1);
@@ -53,6 +46,33 @@ export default lugiax.register({
 
       updateTime(state: Object) {
         return state.set('time', state.get('time') + 1);
+      },
+    },
+    async: {
+      async switch(state: Object, inParam: Object, { mutations, }) {
+        const taskName = state.get('taskName');
+        if (!taskName) {
+          return state.set('error', '请填入任务名称');
+        }
+        state = !state.get('doing')
+          ? await mutations.asyncStart()
+          : mutations.stop();
+        todoMutations.addTaskByTitle({ task: taskName, });
+        return state.set('error', '');
+      },
+
+      async start(state: Object, inParam: Object, { mutations, }) {
+        state = state.set('beginAt', new Date().toString());
+        state = state.set('doing', true);
+        await delay(1000, () => {});
+
+        state = state.set(
+          'interval',
+          setInterval(() => {
+            mutations.updateTime();
+          }, 1000)
+        );
+        return state;
       },
     },
   },
