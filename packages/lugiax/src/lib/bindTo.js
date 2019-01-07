@@ -198,7 +198,14 @@ function generateMode2Props(
     const result = {};
     fieldNames.forEach((field: string) => {
       const get = gettor(model, field);
-      result[field2Props[field]] = get();
+      const field2Prop = field2Props[field];
+      if (Array.isArray(field2Prop)) {
+        field2Prop.forEach(prop => {
+          result[prop] = get();
+        });
+      } else {
+        result[field2Prop] = get();
+      }
     });
     return result;
   };

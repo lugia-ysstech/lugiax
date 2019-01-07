@@ -503,6 +503,38 @@ describe('lugiax.bindTo', () => {
     expect(getInputValue(target.find('input').at(0))).toBe(phone[1]);
   });
 
+  it('bindTo form.phone[1] to two Props value & label for deepModel', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const age = 15;
+    const phone = ['a', 'b', 'c',];
+    const userModel = createDeepUserModel(name, pwd, age, phone);
+
+    const BindInput = bindTo(userModel, {
+      'form.phone[1]': ['value', 'label',],
+    })(Input);
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput />;
+      }
+    }
+
+    const target = mount(<App />);
+    const { model, } = userModel;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('form')
+        .get('phone')
+        .get(1)
+    ).toBe(phone[1]);
+    expect(target.find(Input).props().value).toBe(phone[1]);
+    expect(target.find(Input).props().label).toBe(phone[1]);
+    expect(getInputValue(target.find('input').at(0))).toBe(phone[1]);
+  });
+
   it('bindTo pwd: value  name: theName different eventHandle  for deepModel', () => {
     const name = 'ligx';
     const pwd = '123456';
