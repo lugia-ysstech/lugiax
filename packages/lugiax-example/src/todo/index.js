@@ -27,17 +27,13 @@ const fieldName = fieldPath.join('.');
 const TodoInput = bindTo(
   todo,
   {
-    [fieldName]: 'value',
-    label: 'label',
+    [fieldName]: ['value', 'label',],
   },
   {
     onChange: {
       [fieldName](v) {
         const split = v.split('-');
         return 'hello-' + (split[1] || split[0]);
-      },
-      label(v) {
-        return v;
       },
     },
   },
