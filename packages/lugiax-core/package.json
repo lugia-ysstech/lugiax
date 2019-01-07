@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax-core",
-  "version": "1.0.1-5",
+  "version": "1.0.2-0",
   "dependencies": {
     "immutable": "^3.8.2",
     "redux": "^4.0.0",
@@ -18,9 +18,9 @@
     "flow": "flow"
   },
   "devDependencies": {
-    "@lugia/type-utils": "1.0.3",
     "@lugia/jverify": "1.0.1",
     "@lugia/react-test-utils": "^1.0.0",
+    "@lugia/type-utils": "1.0.3",
     "debug": "2.6.8",
     "dotenv": "4.0.0",
     "enzyme": "3.2.0",
