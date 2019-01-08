@@ -82,25 +82,24 @@ export function createRoute(
     }
     const { render, } = config;
     if (render) {
+      const getRender = () => {
+        const Comp = Loadable({
+          loader: render,
+          loading,
+        });
+        const Target = needWrap
+          ? WrapPageLoad(Comp, {
+              onPageLoad,
+              onPageUnLoad,
+            })
+          : Comp;
+        return <Target />;
+      };
+      if (path === 'NotFound') {
+        return <Route component={component} render={getRender} />;
+      }
       return (
-        <Route
-          exact={exact}
-          strict={strict}
-          path={path}
-          render={() => {
-            const Comp = Loadable({
-              loader: render,
-              loading,
-            });
-            const Target = needWrap
-              ? WrapPageLoad(Comp, {
-                  onPageLoad,
-                  onPageUnLoad,
-                })
-              : Comp;
-            return <Target />;
-          }}
-        />
+        <Route exact={exact} strict={strict} path={path} render={getRender} />
       );
     }
     return 'render or component is not found!';
