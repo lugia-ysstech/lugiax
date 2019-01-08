@@ -61,7 +61,7 @@ export function createRoute(
     const needWrap = onPageLoad || onPageUnLoad;
 
     if (component) {
-      return (
+      const packRoute = (path?: string) => (
         <Route
           path={path}
           exact={exact}
@@ -76,6 +76,10 @@ export function createRoute(
           }
         />
       );
+      if (path === 'NotFound') {
+        return packRoute(undefined);
+      }
+      return packRoute(path);
     }
     const { render, } = config;
     if (render) {
