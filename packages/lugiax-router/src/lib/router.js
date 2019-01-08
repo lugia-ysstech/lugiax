@@ -61,21 +61,27 @@ export function createRoute(
     const needWrap = onPageLoad || onPageUnLoad;
 
     if (component) {
-      const packRoute = (path?: string) => (
-        <Route
-          path={path}
-          exact={exact}
-          strict={strict}
-          component={
-            needWrap
-              ? WrapPageLoad(component, {
-                  onPageLoad,
-                  onPageUnLoad,
-                })
-              : component
-          }
-        />
-      );
+      const packRoute = (path?: string) => {
+        const pathConfig = {};
+        if (path) {
+          pathConfig.path = path;
+        }
+        return (
+          <Route
+            {...pathConfig}
+            exact={exact}
+            strict={strict}
+            component={
+              needWrap
+                ? WrapPageLoad(component, {
+                    onPageLoad,
+                    onPageUnLoad,
+                  })
+                : component
+            }
+          />
+        );
+      };
       if (path === 'NotFound') {
         return packRoute(undefined);
       }
