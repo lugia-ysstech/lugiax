@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax-router",
-  "version": "1.0.6-y.2",
+  "version": "1.0.6-y.3",
   "dependencies": {
     "@lugia/lugiax-core": "^1.0.3",
     "connected-react-router": "^4.4.1",
@@ -15,7 +15,7 @@
   },
   "author": "ysstech",
   "scripts": {
-    "build": "lugia-complie lint && lugia-complie build",
+    "build": "lugia-complie build",
     "dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
     "dev": "./tasks/dev.sh",
     "test": "./tasks/test.sh",
