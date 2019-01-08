@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax-router",
-  "version": "1.0.6-y.1",
+  "version": "1.0.6-y.2",
   "dependencies": {
     "@lugia/lugiax-core": "^1.0.3",
     "connected-react-router": "^4.4.1",
