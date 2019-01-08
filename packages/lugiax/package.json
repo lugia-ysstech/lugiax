@@ -1,8 +1,8 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "dependencies": {
-    "@lugia/lugiax-core": "^1.0.2",
+    "@lugia/lugiax-core": "^1.0.3",
     "hoist-non-react-statics": "^3.0.1",
     "immutable": "^3.8.2"
   },
@@ -20,6 +20,10 @@
     "start": "node scripts/start.js",
     "flow": "flow"
   },
+  "files": [
+    "target",
+    "package.json"
+  ],
   "babel": {
     "presets": [
       "react-app"

@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax-core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "dependencies": {
     "immutable": "^3.8.2",
     "redux": "^4.0.0",
@@ -29,6 +29,10 @@
     "flow-bin": "0.74.0",
     "fs-extra": "3.0.1"
   },
+  "files": [
+    "target",
+    "package.json"
+  ],
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,mjs}"
