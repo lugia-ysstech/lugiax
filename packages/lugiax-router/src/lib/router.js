@@ -96,7 +96,7 @@ export function createRoute(
         return <Target />;
       };
       if (path === 'NotFound') {
-        return <Route component={component} render={getRender} />;
+        return <Route render={getRender} />;
       }
       return (
         <Route exact={exact} strict={strict} path={path} render={getRender} />
