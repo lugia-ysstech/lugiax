@@ -1,8 +1,8 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "dependencies": {
-    "@lugia/lugiax-core": "^1.0.3",
+    "@lugia/lugiax-core": "^1.0.4",
     "immutable": "^3.8.2"
   },
   "peerDependencies": {

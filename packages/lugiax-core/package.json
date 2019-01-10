@@ -1,13 +1,13 @@
 {
   "name": "@lugia/lugiax-core",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "dependencies": {
     "immutable": "^3.8.2",
     "redux": "^4.0.0",
     "redux-immutable": "^4.0.0",
     "redux-saga": "^0.16.0"
   },
-  "author": "ysstech",
+  "author": "ysstech-yjy",
   "scripts": {
     "build": "lugia-complie lint && lugia-complie build",
     "dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
