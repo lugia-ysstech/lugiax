@@ -246,7 +246,7 @@ class LugiaxImpl implements LugiaxType {
     return modelData;
   }
 
-  wait(mutation: MutationFunction) {
+  wait(mutation: MutationFunction): Promise<any> {
     return new Promise(res => {
       this.sagaMiddleware.run(function* () {
         const { mutationId, } = mutation;
