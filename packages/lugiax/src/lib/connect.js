@@ -72,6 +72,16 @@ export default function(
         );
       }
 
+      componentDidUpdate(): void {
+        const { lugiaxDidUpdate, } = this.props;
+        lugiaxDidUpdate && lugiaxDidUpdate();
+      }
+
+      componentDidMount(): void {
+        const { lugiaxDidMount, } = this.props;
+        lugiaxDidMount && lugiaxDidMount();
+      }
+
       componentWillUnmount() {
         this.unSubscribe.forEach(cb => cb());
         delete this.unSubscribe;
