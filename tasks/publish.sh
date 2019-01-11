@@ -10,9 +10,9 @@ lerna="$root_path/node_modules/.bin/lerna"
 
 cd "$root_path/packages/lugiax-core"
 $lugiac build
-echo 'build lugiax-core
+echo 'build lugiax-core'
 
-'cd "$root_path/packages/lugiax-router"
+cd "$root_path/packages/lugiax-router"
 $lugiac build
 echo 'build lugiax-router'
 
