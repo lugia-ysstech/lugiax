@@ -1,8 +1,8 @@
 {
   "name": "@lugia/lugiax-router",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "dependencies": {
-    "@lugia/lugiax-core": "^1.0.4",
+    "@lugia/lugiax-core": "^1.0.5",
     "connected-react-router": "^4.4.1",
     "react-loadable": "^5.5.0",
     "react-redux": "^5.0.7",
@@ -66,7 +66,7 @@
     "npm": ">=5.2.0"
   },
   "devDependencies": {
-    "@lugia/lugiax": "^1.0.5",
+    "@lugia/lugiax": "^1.0.6",
     "@lugia/react-test-utils": "^1.0.0",
     "babel-jest": "^23.4.0",
     "babel-preset-react-app": "^3.1.2",
