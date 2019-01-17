@@ -218,7 +218,7 @@ function generateAutoMutations(
   const field2AutoMutationName = {};
   const { addMutation, mutations, } = modelData;
   fieldNames.forEach((fieldName: string) => {
-    const autoMutationName = `_lugiax_change${fieldName}`;
+    const autoMutationName = `_alugiax_change${fieldName}`;
     field2AutoMutationName[fieldName] = autoMutationName;
     if (!mutations[autoMutationName]) {
       addMutation(autoMutationName, (data: Object, inParam: Object) => {
