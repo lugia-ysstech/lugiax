@@ -323,11 +323,13 @@ describe('lugiax', () => {
 
     expect(lugiax.getState().get(model)).not.toBe(oldModelData);
     expect(lugiax.getState().get(otherModel)).not.toBe(otherState);
+    const newState = { pwd: state.pwd, name: newName, };
     expect(lugiax.getState().toJS()).toEqual({
-      [model]: { pwd: state.pwd, name: newName, },
+      [model]: newState,
       lugia: { loading: { [obj.model]: false, [otherModel]: false, }, },
       [otherModel]: otherState,
     });
+    expect(obj.getState().toJS()).toEqual(newState);
 
     const {
       mutations: { changePwd, },
