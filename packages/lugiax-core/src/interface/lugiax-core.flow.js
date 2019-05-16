@@ -47,6 +47,7 @@ declare module '@lugia/lugiax-core' {
     [key: string]: MutationFunction
   };
   declare type RegisterResult = {
+    getState: () => Object,
     model: string,
     mutations: Mutation,
     addMutation: (mutationName: string, func: SyncMutationFunction) => void,

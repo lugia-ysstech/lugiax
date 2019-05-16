@@ -106,11 +106,15 @@ class LugiaxImpl implements LugiaxType {
       addMutation: this.generateAddMutation(model, 'sync'),
       addAsyncMutation: this.generateAddMutation(model, 'async'),
     };
+    const getState = () => {
+      return this.getState().get(model);
+    };
     if (!mutations) {
       return {
         mutations: {},
         model,
         ...mutaionAddor,
+        getState,
       };
     }
 
@@ -122,6 +126,7 @@ class LugiaxImpl implements LugiaxType {
       mutations: (this.modelName2Mutations[model] = result),
       model,
       ...mutaionAddor,
+      getState,
     };
   }
 

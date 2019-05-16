@@ -146,10 +146,11 @@ describe('lugiax', () => {
       pwd: '5',
     };
     const model = 'user';
-    lugiax.register({
+    const { getState, } = lugiax.register({
       model,
       state,
     });
+    expect(getState().toJS()).toEqual(state);
     expect(lugiax.getState().toJS()).toEqual({
       [model]: state,
       lugia: {
@@ -292,6 +293,8 @@ describe('lugiax', () => {
         sync: syncMutations,
       },
     });
+    expect(obj.getState().toJS()).toEqual(state);
+
     const changeNameId = '@lugiax/user/async/changeName';
     const changePwdId = '@lugiax/user/sync/changePwd';
     expect(lugiax.mutationId2MutationInfo).toEqual({
