@@ -60,14 +60,16 @@ class LugiaxImpl implements LugiaxType {
     const listener = listeners[topic];
     if (listener) {
       Object.keys(listener).forEach((key: string) => {
-        call(listener[key]);
+        const handle = listener[key];
+        handle && call(handle);
       });
     }
 
     const allListener = listeners[All];
     if (allListener) {
       Object.keys(allListener).forEach((key: string) => {
-        call(allListener[key]);
+        const handle = allListener[key];
+        handle && call(handle);
       });
     }
   }

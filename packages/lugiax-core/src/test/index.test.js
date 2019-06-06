@@ -6,7 +6,6 @@
  */
 import lugiax from '../lib/index';
 import { delay, } from '@lugia/react-test-utils';
-import { fromJS, } from 'immutable';
 
 describe('lugiax', () => {
   beforeEach(() => {
@@ -68,6 +67,44 @@ describe('lugiax', () => {
       lugiax.subscribeAll(() => {
         res(state);
       });
+    });
+
+    lugiax.register({
+      model,
+      state,
+    });
+
+    lugiax.register(
+      {
+        model,
+        state,
+      },
+      { force: true, }
+    );
+    expect(await trigger).toBe(state);
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: {
+          [model]: false,
+        },
+      },
+    });
+  });
+
+  it('subscribeAll for unSubscirbeAll', async () => {
+    const state = {
+      name: 'ligx',
+      pwd: '2',
+    };
+    const model = 'user';
+    const trigger = new Promise(res => {
+      let result;
+      lugiax.subscribeAll(() => {
+        result.unSubscribe();
+        res(state);
+      });
+      result = lugiax.subscribeAll(() => {});
     });
 
     lugiax.register({
@@ -882,6 +919,40 @@ describe('lugiax', () => {
         expect(old).toBe(oldState);
         res(true);
       });
+    });
+    changeName({ name: newName, });
+
+    await subscribe;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('name')
+    ).toEqual(newName);
+  });
+
+  it('subscribe for sync mutations remove sucribe', async () => {
+    const {
+      model,
+      state,
+      lugiaxModel: {
+        mutations: { changeName, },
+      },
+    } = createTestModel();
+
+    const newName = 'hello new name';
+    const oldState = lugiax.getState().get(model);
+
+    expect(oldState.toJS()).toEqual(state);
+    const subscribe = new Promise(res => {
+      let result;
+      lugiax.subscribe(model, (state, old) => {
+        expect(lugiax.getState().get(model)).toBe(state);
+        expect(old).toBe(oldState);
+        result.unSubscribe();
+        res(true);
+      });
+      result = lugiax.subscribe(model, (state, old) => {});
     });
     changeName({ name: newName, });
 
