@@ -11,7 +11,7 @@ export default function Link(props: Object) {
   return (
     <a onClick={() => go({ url: props.to, })} href="javascript:void(0)">
       {' '}
-      {props.children}>
+      {props.children}
     </a>
   );
 }
