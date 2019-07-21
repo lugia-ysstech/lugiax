@@ -5,8 +5,9 @@
 [include]
 [libs]
 flow-typed/
-./src/interface/
-./node_modules/@lugia/lugiax-core/target/interface
+./interface/
+./node_modules/@lugia/lugiax/interface
+./node_modules/@lugia/lugiax-core/interface
 ./node_modules/@lugia/react-test-utils/interface
 [options]
 esproposal.class_static_fields=enable

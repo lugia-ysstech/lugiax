@@ -29,8 +29,9 @@
     "plugins": []
   },
   "files": [
-    "target",
-    "package.json"
+    "lib",
+    "interface",
+    "yarn.lock"
   ],
   "jest": {
     "collectCoverageFrom": [
@@ -60,7 +61,7 @@
       "mjs"
     ]
   },
-  "main": "target/lib",
+  "main": "lib/index.js",
   "engines": {
     "node": ">=8.0.0",
     "npm": ">=5.2.0"
@@ -68,10 +69,6 @@
   "devDependencies": {
     "@lugia/lugiax": "^1.0.7",
     "@lugia/react-test-utils": "^1.0.0",
-    "babel-jest": "^23.4.0",
-    "babel-preset-react-app": "^3.1.2",
-    "enzyme": "3.2.0",
-    "enzyme-adapter-react-16": "1.1.1",
     "flow-bin": "^0.77.0",
     "history": "^4.7.2",
     "ramda": "0.22.0",

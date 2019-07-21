@@ -5,8 +5,8 @@
 [include]
 [libs]
 flow-typed/
-./src/interface/
-./node_modules/@lugia/lugiax-core/target/interface
+./interface/
+./node_modules/@lugia/lugiax-core/interface
 [options]
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable

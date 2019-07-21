@@ -1,0 +1,7 @@
+{
+  "scope": "@lugia",
+  "packagesDirName": "packages",
+  "igronPkgs": [
+    "lugia-theme-example"
+  ]
+}

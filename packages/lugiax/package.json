@@ -20,8 +20,9 @@
     "flow": "flow"
   },
   "files": [
-    "target",
-    "package.json"
+    "lib",
+    "interface",
+    "yarn.lock"
   ],
   "babel": {
     "presets": [
@@ -63,10 +64,6 @@
     "npm": ">=5.2.0"
   },
   "devDependencies": {
-    "babel-jest": "^23.4.0",
-    "babel-preset-react-app": "^3.1.2",
-    "enzyme": "3.2.0",
-    "enzyme-adapter-react-16": "1.1.1",
     "flow-bin": "^0.77.0",
     "react-dev-utils": "4.2.1",
     "react-test-renderer": "16.4.1"
