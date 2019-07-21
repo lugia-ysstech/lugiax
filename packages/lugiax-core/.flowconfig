@@ -4,7 +4,7 @@
 .*/benchmarks/.*
 [include]
 [libs]
-flow-typed/
+./flow-typed/
 ./interface/
 ./node_modules/@lugia/react-test-utils/interface/
 ./node_modules/@lugia/type-utils/interface/

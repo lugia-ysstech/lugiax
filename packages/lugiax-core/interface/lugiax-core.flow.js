@@ -76,7 +76,7 @@ declare module '@lugia/lugiax-core' {
     unSubscribe: Function
   };
 
-  declare interface LugiaxType {
+  declare export interface LugiaxType {
     register(param: RegisterParam, option?: Option): RegisterResult;
 
     getState(): Object;

@@ -4,12 +4,6 @@
  *
  * @flow
  */
-/**
- *
- * create by ligx
- *
- * @flow
- */
 
 import React, { Component, } from 'react';
 import styled from 'styled-components';
