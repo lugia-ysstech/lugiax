@@ -8,7 +8,7 @@ import type { CreateAppParam, RouterMap, } from '@lugia/lugiax-router';
 
 import ReactDOM from 'react-dom';
 import React, { Component, } from 'react';
-import lugiax from '@lugia/lugiax-core';
+import lugiax from '@lugia/lugiax';
 import { Provider, } from 'react-redux';
 import go, { GoModel, } from './go';
 import Link from './Link';

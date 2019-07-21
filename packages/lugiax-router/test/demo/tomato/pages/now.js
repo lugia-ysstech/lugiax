@@ -13,7 +13,6 @@ import Button from '../components/Button';
 import NowTimer from '../components/NowTimer';
 import Message from '../components/Message';
 import tomato from '../models/tomato';
-
 const { mutations, } = tomato;
 const TomatoButton = bindTo(
   tomato,

@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import lugiax from '@lugia/lugiax-core';
+import lugiax from '@lugia/lugiax';
 import { push, } from 'connected-react-router';
 
 const model = lugiax.register({
