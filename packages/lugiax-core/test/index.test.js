@@ -22,6 +22,7 @@ describe('lugiax', () => {
       model,
       state,
     });
+    lugiax._microfe_ = true;
     expect(lugiax.getState().toJS()).toEqual({
       [model]: state,
       lugia: {

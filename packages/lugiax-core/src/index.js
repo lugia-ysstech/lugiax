@@ -17,22 +17,22 @@ import type {
   RegisterResult,
   SubscribeResult,
   SyncMutationFunction,
-  WaitHandler,
-} from '@lugia/lugiax-core';
-import { fromJS, } from 'immutable';
-import { take, takeEvery, } from 'redux-saga/effects';
+  WaitHandler
+} from "@lugia/lugiax-core";
+import { fromJS } from "immutable";
+import { take, takeEvery } from "redux-saga/effects";
 
-import { applyMiddleware, compose, createStore, } from 'redux';
-import { combineReducers, } from 'redux-immutable';
-import createSagaMiddleware from 'redux-saga';
+import { applyMiddleware, compose, createStore } from "redux";
+import { combineReducers } from "redux-immutable";
+import createSagaMiddleware from "redux-saga";
 
-import { ObjectUtils, } from '@lugia/type-utils';
+import { ObjectUtils } from "@lugia/type-utils";
 
-const ReloadAction = '@lugiax/reload';
-const All = '@lugia/msg/All';
-const ChangeModel = '@lugiax/changeModel';
-const Loading = '@lugiax/Loading';
-const LoadFinished = '@lugiax/LoadFinished';
+const ReloadAction = "@lugiax/reload";
+const All = "@lugia/msg/All";
+const ChangeModel = "@lugiax/changeModel";
+const Loading = "@lugiax/Loading";
+const LoadFinished = "@lugiax/LoadFinished";
 
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
@@ -56,7 +56,7 @@ class LugiaxImpl implements LugiaxType {
     const call = (cb: Function) => {
       cb(newState, oldState);
     };
-    const { listeners, } = this;
+    const { listeners } = this;
     const listener = listeners[topic];
     if (listener) {
       Object.keys(listener).forEach((key: string) => {
@@ -76,70 +76,70 @@ class LugiaxImpl implements LugiaxType {
 
   register(
     param: RegisterParam,
-    option: Option = { force: false, }
+    option: Option = { force: false }
   ): RegisterResult {
-    const { model, } = param;
-    const { force, } = option;
-    const { existModel, } = this;
+    const { model } = param;
+    const { force } = option;
+    const { existModel } = this;
     const isExist = existModel[model];
     if (!force && isExist) {
-      throw new Error('重复注册模块');
+      throw new Error("重复注册模块");
     }
     this.warnParam(param);
 
-    const { state: initState, } = param;
+    const { state: initState } = param;
 
     if (isExist) {
-      const oldState = this.getState().get(model);
+      const oldState = this._getState_().get(model);
       const newStateJS = fromJS(initState);
       this.store.dispatch({
         type: ReloadAction,
         newState: newStateJS,
-        model,
+        model
       });
       this.trigger(model, newStateJS, oldState);
     }
     existModel[model] = param;
     this.replaceReducers(existModel);
-    this.store.dispatch({ type: LoadFinished, model, });
+    this.store.dispatch({ type: LoadFinished, model });
 
-    const { mutations, } = param;
+    const { mutations } = param;
     const mutaionAddor = {
-      addMutation: this.generateAddMutation(model, 'sync'),
-      addAsyncMutation: this.generateAddMutation(model, 'async'),
+      addMutation: this.generateAddMutation(model, "sync"),
+      addAsyncMutation: this.generateAddMutation(model, "async")
     };
     const getState = () => {
-      return this.getState().get(model);
+      return this._getState_().get(model);
     };
     if (!mutations) {
       return {
         mutations: {},
         model,
         ...mutaionAddor,
-        getState,
+        getState
       };
     }
 
-    const sync = this.generateMutation(mutations, model, 'sync');
-    const async = this.generateMutation(mutations, model, 'async');
+    const sync = this.generateMutation(mutations, model, "sync");
+    const async = this.generateMutation(mutations, model, "async");
 
     const result = Object.assign({}, sync, async);
     return {
       mutations: (this.modelName2Mutations[model] = result),
       model,
       ...mutaionAddor,
-      getState,
+      getState
     };
   }
 
   replaceReducers(existModel: Object) {
     const generateReducers = (targetModel: string): Function => {
       return (state = fromJS(existModel[targetModel].state), action) => {
-        const { type, } = action;
+        const { type } = action;
         switch (type) {
           case ChangeModel:
           case ReloadAction: {
-            const { model, newState, } = action;
+            const { model, newState } = action;
             if (model === targetModel) {
               return newState;
             }
@@ -151,7 +151,7 @@ class LugiaxImpl implements LugiaxType {
       };
     };
     const newReducers = {
-      lugia: this.lugia.bind(this),
+      lugia: this.lugia.bind(this)
     };
 
     Object.keys(existModel).forEach((key: string) => {
@@ -165,9 +165,9 @@ class LugiaxImpl implements LugiaxType {
     func: SyncMutationFunction
   ) => {
     this.checkMutationName(model, mutationName, type);
-    const mutations = { [mutationName]: func, };
+    const mutations = { [mutationName]: func };
     const targetMutation = this.generateMutation(
-      { [type]: mutations, },
+      { [type]: mutations },
       model,
       type
     );
@@ -177,15 +177,15 @@ class LugiaxImpl implements LugiaxType {
   checkMutationName(model: string, mutationName: string, type: MutationType) {
     const modelMutation = this.modelName2Mutations[model];
     const innerMutationName =
-      type === 'sync' ? mutationName : this.addAsyncPrefix(mutationName);
+      type === "sync" ? mutationName : this.addAsyncPrefix(mutationName);
     if (modelMutation && modelMutation[innerMutationName]) {
       throw new Error(`The ${type} [${model}.${mutationName}] is exist model!`);
     }
   }
 
   warnParam(param: RegisterParam) {
-    if ('mutation' in param || 'mutatons' in param) {
-      console.warn('You may be set mutaions and not muation!');
+    if ("mutation" in param || "mutatons" in param) {
+      console.warn("You may be set mutaions and not muation!");
     }
   }
 
@@ -199,16 +199,16 @@ class LugiaxImpl implements LugiaxType {
     targetMutations &&
       Object.keys(targetMutations).forEach((key: string) => {
         const name = `@lugiax/${model}/${type}/${key}`;
-        const mutationId = { name, };
+        const mutationId = { name };
 
         this.mutationId2MutationInfo[mutationId.name] = {
           body: targetMutations[key],
           model,
           mutationId: name,
-          type,
+          type
         };
 
-        const isAsync = type === 'async';
+        const isAsync = type === "async";
         const mutationName = isAsync ? this.addAsyncPrefix(key) : key;
         const mutation = isAsync
           ? async (param?: Object) => {
@@ -233,53 +233,53 @@ class LugiaxImpl implements LugiaxType {
   }
 
   async doAsyncMutation(action: MutationID, param: ?Object): Promise<any> {
-    const { name, } = action;
+    const { name } = action;
 
-    const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
-    const state = this.getState();
+    const { body, model, mutationId } = this.mutationId2MutationInfo[name];
+    const state = this._getState_();
     const modelData = state.get(model);
     if (body) {
-      this.store.dispatch({ type: Loading, model, });
+      this.store.dispatch({ type: Loading, model });
 
       const newState = await body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
           return this.wait(mutation);
-        },
+        }
       });
 
-      return this.updateModel(model, newState, mutationId, param, 'async');
+      return this.updateModel(model, newState, mutationId, param, "async");
     }
     return modelData;
   }
 
   wait(mutation: MutationFunction): Promise<any> {
     return new Promise(res => {
-      this.sagaMiddleware.run(function* () {
-        const { mutationId, } = mutation;
-        const { param, } = yield take(mutationId);
+      this.sagaMiddleware.run(function*() {
+        const { mutationId } = mutation;
+        const { param } = yield take(mutationId);
         res(param);
       });
     });
   }
 
   doSyncMutation(action: MutationID, param: ?Object): any {
-    const { name, } = action;
+    const { name } = action;
 
-    const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
-    const state = this.getState();
+    const { body, model, mutationId } = this.mutationId2MutationInfo[name];
+    const state = this._getState_();
     const modelData = state.get(model);
     if (body) {
-      this.store.dispatch({ type: Loading, model, });
+      this.store.dispatch({ type: Loading, model });
 
       const newState = body(modelData, param, {
-        mutations: this.modelName2Mutations[model],
+        mutations: this.modelName2Mutations[model]
       });
       if (ObjectUtils.isPromise(newState)) {
-        throw new Error('state can not be a Promise Object ! ');
+        throw new Error("state can not be a Promise Object ! ");
       }
 
-      return this.updateModel(model, newState, mutationId, param, 'sync');
+      return this.updateModel(model, newState, mutationId, param, "sync");
     }
     return modelData;
   }
@@ -293,45 +293,53 @@ class LugiaxImpl implements LugiaxType {
   ) {
     const modelParam = this.existModel[model];
     if (!modelParam) {
-      throw new Error('$model ( name: {model} )  is not exist!');
+      throw new Error("$model ( name: {model} )  is not exist!");
     }
-    this.store.dispatch({ type: LoadFinished, model, });
-    let state = this.getState().get(model);
+    this.store.dispatch({ type: LoadFinished, model });
+    let state = this._getState_().get(model);
     if (newState) {
       const newStateJS = fromJS(newState);
       this.store.dispatch({
         type: ChangeModel,
         model,
-        newState: newStateJS,
+        newState: newStateJS
       });
       this.trigger(model, newStateJS, state);
-      state = this.getState().get(model);
+      state = this._getState_().get(model);
     }
     this.store.dispatch({
       type: mutationId,
       mutationType,
-      param,
+      param
     });
     return state;
   }
 
+  _microfe_: any;
+
   getState(): Object {
+    if (this._microfe_) {
+      console.warn("Currently in micro-front-end mode, not recommended!");
+    }
+    return this._getState_();
+  }
+  _getState_(): Object {
     return this.store.getState();
   }
 
   subscribeId: number;
 
   subscribe(topic: string, cb: Function): SubscribeResult {
-    const { listeners, } = this;
+    const { listeners } = this;
     if (!listeners[topic]) {
       listeners[topic] = {};
     }
-    const topicId = this.subscribeId++ + '';
+    const topicId = this.subscribeId++ + "";
     listeners[topic][topicId] = cb;
     return {
       unSubscribe() {
         delete listeners[topic][topicId];
-      },
+      }
     };
   }
 
@@ -345,7 +353,7 @@ class LugiaxImpl implements LugiaxType {
   createStore(configMiddleWare: ?Object, reducerMap: ?Function): void {
     this.reducerMap = reducerMap;
     const GlobalReducer = this.combineReducers({
-      lugia: this.lugia.bind(this),
+      lugia: this.lugia.bind(this)
     });
     this.sagaMiddleware = createSagaMiddleware({});
     let middleWare;
@@ -356,7 +364,7 @@ class LugiaxImpl implements LugiaxType {
     }
     let preloadedState = {};
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (window.__PRELOADED_STATE__) {
         preloadedState = window.__PRELOADED_STATE__;
         delete window.__PRELOADED_STATE__;
@@ -366,10 +374,10 @@ class LugiaxImpl implements LugiaxType {
         window.__REDUX_DEVTOOLS_EXTENSION__();
       if (dev) {
         const composeEnhancers =
-          typeof window === 'object' &&
+          typeof window === "object" &&
           window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
             ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-                shouldHotReload: false,
+                shouldHotReload: false
               })
             : compose;
         middleWare = composeEnhancers(middleWare);
@@ -383,7 +391,7 @@ class LugiaxImpl implements LugiaxType {
     this.listeners = {};
     this.subscribeId = 0;
     this.modelName2Mutations = {};
-    this.mutationId2Mutaions = { async: {}, sync: {}, };
+    this.mutationId2Mutaions = { async: {}, sync: {} };
     this.mutationId2MutationInfo = {};
     this.createStore();
   }
@@ -397,14 +405,14 @@ class LugiaxImpl implements LugiaxType {
     return combineReducers(target);
   }
 
-  lugia(state: Object = fromJS({ loading: {}, }), action: Object) {
-    const { type, model, } = action;
+  lugia(state: Object = fromJS({ loading: {} }), action: Object) {
+    const { type, model } = action;
     switch (type) {
       case LoadFinished:
       case Loading:
-        let loading = state.get('loading');
+        let loading = state.get("loading");
         loading = loading.set(model, type === Loading);
-        state = state.set('loading', loading);
+        state = state.set("loading", loading);
         return state;
       default:
         return state;
@@ -417,16 +425,16 @@ class LugiaxImpl implements LugiaxType {
 
   on(cb: WaitHandler): void {
     const worker = (self: Object) => async (action: Object) => {
-      const { param, type, mutationType, } = action;
+      const { param, type, mutationType } = action;
       if (mutationType) {
         const mutation = this.mutationId2Mutaions[mutationType][type];
         if (mutation) {
-          const { model, } = mutation;
+          const { model } = mutation;
           cb(mutation, param, {
             async wait(mutation: MutationFunction) {
               return self.wait(mutation);
             },
-            mutations: this.modelName2Mutations[model],
+            mutations: this.modelName2Mutations[model]
           });
         }
       }
@@ -435,8 +443,8 @@ class LugiaxImpl implements LugiaxType {
   }
 
   takeEveryAction(cb: (action: Object) => Promise<any>) {
-    this.sagaMiddleware.run(function* () {
-      yield takeEvery('*', function* (action: Object): any {
+    this.sagaMiddleware.run(function*() {
+      yield takeEvery("*", function*(action: Object): any {
         yield cb(action);
       });
     });
