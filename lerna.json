@@ -22,5 +22,6 @@
   "packages": [
     "packages/*"
   ],
+  "npmClient": "yarn",
   "version": "independent"
 }
