@@ -106,6 +106,85 @@ describe("lugiax.bind", () => {
     changeName({ name: newName });
     expect(getInputValue(target.find("input").at(0))).toBe(thirdName);
   });
+  it("bind flow has props pwd", () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const newPwd = "我服";
+    const userModel = createUserModel(name, pwd);
+
+    const BindInput = bind(
+      userModel,
+      model => {
+        const result = { value: model.get("name"), pwd: model.get("pwd") };
+        return result;
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        },
+        onClick: (mutations, e) => {
+          return mutations.changePwd({ pwd: newPwd });
+        }
+      }
+    )(Input);
+    const propsValue = "ligx";
+
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInput value={propsValue} />;
+      }
+    }
+
+    const target = mount(<App />);
+    const { model } = userModel;
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get("name")
+    ).toBe(name);
+    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+
+    const newName = "my name is ";
+    target.simulate("change", { target: { value: newName } });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get("name")
+    ).toBe(newName);
+    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    const thirdName = "thirdName";
+    changeName({ name: thirdName });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get("name")
+    ).toBe(thirdName);
+    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+
+    target.simulate("click");
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get("pwd")
+    ).toBe(newPwd);
+    expect(target.find(DisplayName).props().pwd).toBe(newPwd);
+
+    const instance = target
+      .children()
+      .at(0)
+      .instance();
+    instance.componentWillUnmount.call(instance);
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+  });
   it("bind not exist eventhandler", () => {
     const name = "ligx";
     const pwd = "123456";

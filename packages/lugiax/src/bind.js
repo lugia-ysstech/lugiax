@@ -4,13 +4,13 @@
  *
  * @flow
  */
-import type { EventHandle, } from '@lugia/lugiax';
-import type { RegisterResult, } from '@lugia/lugiax-core';
-import lugiax from '@lugia/lugiax-core';
+import type { EventHandle } from "@lugia/lugiax";
+import type { RegisterResult } from "@lugia/lugiax-core";
+import lugiax from "@lugia/lugiax-core";
 
-import * as React from 'react';
-import { getDisplayName, combineFunction, } from './utils';
-import hoistStatics from 'hoist-non-react-statics';
+import * as React from "react";
+import { getDisplayName, combineFunction } from "./utils";
+import hoistStatics from "hoist-non-react-statics";
 
 export default function(
   modelData: RegisterResult,
@@ -20,7 +20,7 @@ export default function(
   } = {},
   eventHandleConfig?: EventHandle = {}
 ) {
-  const { model, mutations, } = modelData;
+  const { model, mutations } = modelData;
   trigger = trigger ? trigger : {};
 
   return (Target: React.ComponentType<any>) => {
@@ -34,7 +34,7 @@ export default function(
       constructor(props: any) {
         super(props);
         this.state = mapValue(modelData.getState());
-        const { unSubscribe, } = lugiax.subscribe(model, () => {
+        const { unSubscribe } = lugiax.subscribe(model, () => {
           this.setState(mapValue(modelData.getState()));
         });
         this.unSubscribe = unSubscribe;
@@ -53,7 +53,7 @@ export default function(
           this.eventHandler,
           eventHandleConfig
         );
-        return <Target {...this.props} {...this.state} {...eventMethod} />;
+        return <Target {...this.state} {...this.props} {...eventMethod} />;
       }
 
       componentWillUnmount() {
