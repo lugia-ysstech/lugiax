@@ -13,7 +13,7 @@ import { getDisplayName } from "./utils";
 export default function(
   modelData: RegisterResult | Array<RegisterResult>,
   mapProps: (state: Object) => Object = () => ({}),
-  map2Mutations: (mutations: Object) => Object = () => ({}),
+  map2Mutations: (mutations: any) => Object = () => ({}),
   opt?: { props: Object }
 ) {
   if (!Array.isArray(modelData)) {
@@ -21,13 +21,13 @@ export default function(
   }
 
   const models = [];
-  const modelMutations = {};
+  const modelMutations = [];
   const model2handle = {};
   modelData.forEach((item: Object) => {
     const { model, mutations } = item;
     models.push(model);
     model2handle[model] = item;
-    modelMutations[model] = mutations;
+    modelMutations.push(mutations);
   });
 
   return (Target: React.ComponentType<any>) => {
@@ -40,21 +40,25 @@ export default function(
       constructor(props: any) {
         super(props);
 
-        const modelData = {};
-        models.forEach(model => {
-          modelData[model] = model2handle[model].getState();
+        const modelData = [];
+        const model2Index = {};
+        models.forEach((model: string, index: number) => {
+          model2Index[model] = index;
+          modelData.push(model2handle[model].getState());
         });
 
         this.state = {
           modelData,
-          mutations: map2Mutations(modelMutations)
+          mutations: map2Mutations(
+            modelMutations.length === 1 ? modelMutations[0] : modelMutations
+          )
         };
 
         this.unSubscribe = [];
         models.forEach(model => {
           const { unSubscribe } = lugiax.subscribe(model, () => {
             const modelData = this.state.modelData;
-            modelData[model] = model2handle[model].getState();
+            modelData[model2Index[model]] = model2handle[model].getState();
             this.setState({ modelData });
           });
           this.unSubscribe.push(unSubscribe);
@@ -62,8 +66,9 @@ export default function(
       }
 
       static getDerivedStateFromProps(nextProps: Object, state: Object) {
+        const models = state.modelData;
         return {
-          props: mapProps(state.modelData)
+          props: mapProps(models.length === 1 ? models[0] : models)
         };
       }
 

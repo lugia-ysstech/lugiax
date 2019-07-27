@@ -4,120 +4,118 @@
  *
  * @flow
  */
-import lugiax from '@lugia/lugiax-core';
-import { connect, } from '../src';
-import React from 'react';
-import Enzyme, { mount, } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import { createUserModel, getInputValue, } from './utils';
+import lugiax from "@lugia/lugiax-core";
+import { connect } from "../src";
+import React from "react";
+import Enzyme, { mount } from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
+import { createUserModel, getInputValue } from "./utils";
 
-Enzyme.configure({ adapter: new Adapter(), });
+Enzyme.configure({ adapter: new Adapter() });
 
-const name = '︿(￣︶￣)︿';
+const name = "︿(￣︶￣)︿";
 
 class Input extends React.Component<any, any> {
   onClick = () => {
-    this.props.changeName({ name, });
+    this.props.changeName({ name });
   };
 
   render() {
-    const { name, pwd, mask, } = this.props;
+    const { name, pwd, mask } = this.props;
     return [
       <input value={name} />,
       <input value={pwd} />,
       <input value={mask} />,
-      <button onClick={this.onClick} />,
+      <button onClick={this.onClick} />
     ];
   }
 }
 
-describe('lugiax.connect', () => {
+describe("lugiax.connect", () => {
   beforeEach(() => {
     lugiax.clear();
   });
 
-  it('connect only one model', () => {
+  it("connect only one model", () => {
     oneModelCase();
   });
 
   function oneModelCase(opt?: Object) {
-    const name = 'ligx';
-    const pwd = '123456';
+    const name = "ligx";
+    const pwd = "123456";
     const userModel = createUserModel(name, pwd);
     const MyInput = connect(
       userModel,
-      (state: Object) => {
-        const { user, } = state;
+      (user: Object) => {
         return {
-          name: user.get('name'),
-          pwd: user.get('pwd'),
+          name: user.get("name"),
+          pwd: user.get("pwd")
         };
       },
-      ({ user, }) => ({ changeName: user.changeName, }),
+      user => ({ changeName: user.changeName }),
       opt
     )(Input);
 
     const mask = "I'm mask";
     const target = mount(<MyInput mask={mask} />);
 
-    expect(getInputValue(target.find('input').at(0))).toBe(name);
-    expect(getInputValue(target.find('input').at(1))).toBe(pwd);
-    expect(getInputValue(target.find('input').at(2))).toBe(mask);
-    return { target, userModel, };
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    expect(getInputValue(target.find("input").at(2))).toBe(mask);
+    return { target, userModel };
   }
 
-  it('connect only one model for state change', () => {
-    const { target, userModel, } = oneModelCase();
+  it("connect only one model for state change", () => {
+    const { target, userModel } = oneModelCase();
     const {
-      mutations: { changeName, },
+      mutations: { changeName }
     } = userModel;
-    const name = 'hello new name';
-    changeName({ name, });
-    expect(getInputValue(target.find('input').at(0))).toBe(name);
+    const name = "hello new name";
+    changeName({ name });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
   });
 
-  it('connect only one model for async state change', async () => {
-    const { target, userModel, } = oneModelCase();
+  it("connect only one model for async state change", async () => {
+    const { target, userModel } = oneModelCase();
     const {
-      mutations: { asyncChangePwd, },
+      mutations: { asyncChangePwd }
     } = userModel;
-    const pwd = '1234567';
-    await asyncChangePwd({ pwd, });
-    expect(getInputValue(target.find('input').at(1))).toBe(pwd);
+    const pwd = "1234567";
+    await asyncChangePwd({ pwd });
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
   });
 
-  function createInfoModel(info: any = '') {
+  function createInfoModel(info: any = "") {
     return lugiax.register({
-      model: 'info',
-      state: { info, },
+      model: "info",
+      state: { info },
       mutations: {
         sync: {
           changeInfo(data: Object, inParam: Object) {
-            return data.set('info', inParam.value);
-          },
-        },
-      },
+            return data.set("info", inParam.value);
+          }
+        }
+      }
     });
   }
 
   it('connect only render by model "user" ', () => {
-    const name = 'ligx';
-    const pwd = 'helol';
+    const name = "ligx";
+    const pwd = "helol";
     const userModel = createUserModel(name, pwd);
 
     const {
-      mutations: { changeInfo, },
+      mutations: { changeInfo }
     } = createInfoModel();
 
     let renderCnt = 0;
 
     const MyInput = connect(
       userModel,
-      (state: Object) => {
-        const { user, } = state;
+      (user: Object) => {
         return {
-          name: user.get('name'),
-          pwd: user.get('pwd'),
+          name: user.get("name"),
+          pwd: user.get("pwd")
         };
       }
     )(
@@ -126,44 +124,44 @@ describe('lugiax.connect', () => {
           renderCnt++;
           return [
             <input value={this.props.name} />,
-            <input value={this.props.pwd} />,
+            <input value={this.props.pwd} />
           ];
         }
       }
     );
     const target = mount(<MyInput />);
     expect(renderCnt).toBe(1);
-    changeInfo({ value: 'helolo', });
+    changeInfo({ value: "helolo" });
     expect(renderCnt).toBe(1);
     const {
-      mutations: { changeName, },
+      mutations: { changeName }
     } = userModel;
-    expect(getInputValue(target.find('input').at(0))).toBe(name);
-    expect(getInputValue(target.find('input').at(1))).toBe(pwd);
-    const newName = 'abcd';
-    changeName({ name: newName, });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    const newName = "abcd";
+    changeName({ name: newName });
 
-    expect(getInputValue(target.find('input').at(0))).toBe(newName);
-    expect(getInputValue(target.find('input').at(1))).toBe(pwd);
+    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
 
     expect(renderCnt).toBe(2);
   });
 
-  it('connect twoModel ', () => {
-    const name = 'ligx';
-    const pwd = 'helol';
-    const info = 'info';
+  it("connect twoModel ", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "info";
     const infoModel = createInfoModel(info);
     const userModel = createUserModel(name, pwd);
 
     const MyInput = connect(
-      [userModel, infoModel,],
+      [userModel, infoModel],
       (state: Object) => {
-        const { user, info, } = state;
+        const [user, info] = state;
         return {
-          name: user.get('name'),
-          pwd: user.get('pwd'),
-          info: info.get('info'),
+          name: user.get("name"),
+          pwd: user.get("pwd"),
+          info: info.get("info")
         };
       }
     )(
@@ -172,54 +170,53 @@ describe('lugiax.connect', () => {
           return [
             <input value={this.props.name} />,
             <input value={this.props.pwd} />,
-            <input value={this.props.info} />,
+            <input value={this.props.info} />
           ];
         }
       }
     );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find('input').at(0))).toBe(name);
-    expect(getInputValue(target.find('input').at(1))).toBe(pwd);
-    expect(getInputValue(target.find('input').at(2))).toBe(info);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    expect(getInputValue(target.find("input").at(2))).toBe(info);
   });
-  it('connect only one model for state change by click', () => {
-    const { target, } = oneModelCase();
+  it("connect only one model for state change by click", () => {
+    const { target } = oneModelCase();
 
-    target.find('button').simulate('click');
-    expect(getInputValue(target.find('input').at(0))).toBe(name);
+    target.find("button").simulate("click");
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
   });
-  it('topProps', async () => {
+  it("topProps", async () => {
     let opt;
     const waitChangeName = new Promise(res => {
       opt = {
         props: {
-          changeName({ name, }) {
+          changeName({ name }) {
             res(name);
-          },
-        },
+          }
+        }
       };
     });
-    const { target, } = oneModelCase(opt);
+    const { target } = oneModelCase(opt);
 
-    target.find('button').simulate('click');
-    expect(getInputValue(target.find('input').at(0))).toBe('ligx');
+    target.find("button").simulate("click");
+    expect(getInputValue(target.find("input").at(0))).toBe("ligx");
     expect(await waitChangeName).toBe(name);
   });
-  it('unmount ', () => {
-    const name = 'ligx';
-    const pwd = 'helol';
+  it("unmount ", () => {
+    const name = "ligx";
+    const pwd = "helol";
     const userModel = createUserModel(name, pwd);
     const MyInput = connect(
       userModel,
-      (state: Object) => {
-        const { user, } = state;
+      (user: Object) => {
         return {
-          name: user.get('name'),
-          pwd: user.get('pwd'),
+          name: user.get("name"),
+          pwd: user.get("pwd")
         };
       },
-      ({ user, }) => ({ changeName: user.changeName, })
+      (user) => ({ changeName: user.changeName })
     )(Input);
 
     class App extends React.Component<any, any> {
@@ -229,7 +226,7 @@ describe('lugiax.connect', () => {
     }
 
     const {
-      mutations: { changeName, },
+      mutations: { changeName }
     } = userModel;
     const target = mount(<App />);
 
@@ -238,8 +235,8 @@ describe('lugiax.connect', () => {
       .at(0)
       .instance();
     instance.componentWillUnmount.call(instance);
-    const newName = 'newName newName';
-    changeName({ name: newName, });
-    expect(getInputValue(target.find('input').at(0))).toBe(name);
+    const newName = "newName newName";
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
   });
 });
