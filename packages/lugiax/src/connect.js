@@ -19,7 +19,6 @@ export default function(
   if (!Array.isArray(modelData)) {
     modelData = [modelData];
   }
-  const { withRef = false } = opt;
 
   const models = [];
   const modelMutations = [];
@@ -75,7 +74,8 @@ export default function(
       target: any;
       render() {
         const { props, mutations } = this.state;
-        const topProps = opt && opt.props ? opt.props : {};
+        const { withRef = false, props: topProps = {} } = opt;
+
         const refConfig: Object = {};
 
         if (withRef === true) {
