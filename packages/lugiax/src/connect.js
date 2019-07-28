@@ -14,11 +14,12 @@ export default function(
   modelData: RegisterResult | Array<RegisterResult>,
   mapProps: (state: Object) => Object = () => ({}),
   map2Mutations: (mutations: any) => Object = () => ({}),
-  opt?: { props: Object }
+  opt?: { props?: Object, withRef?: boolean } = {}
 ) {
   if (!Array.isArray(modelData)) {
     modelData = [modelData];
   }
+  const { withRef = false } = opt;
 
   const models = [];
   const modelMutations = [];
@@ -71,13 +72,32 @@ export default function(
           props: mapProps(models.length === 1 ? models[0] : models)
         };
       }
-
+      target: any;
       render() {
         const { props, mutations } = this.state;
         const topProps = opt && opt.props ? opt.props : {};
+        const refConfig: Object = {};
+
+        if (withRef === true) {
+          refConfig.ref = (cmp: any) => {
+            this.target = cmp;
+          };
+        }
         return (
-          <Target {...props} {...mutations} {...this.props} {...topProps} />
+          <Target
+            {...props}
+            {...mutations}
+            {...this.props}
+            {...topProps}
+            {...refConfig}
+          />
         );
+      }
+
+      getWrappedInstance() {
+        if (this.target) {
+          return this.target;
+        }
       }
 
       componentDidUpdate(): void {

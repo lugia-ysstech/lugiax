@@ -21,7 +21,7 @@ declare module "@lugia/lugiax" {
     model: RegisterResult | Array<RegisterResult>,
     mapProps: (state: Object) => Object,
     map2Mutations: (mutations: Object) => Object,
-    opt?: { props: Object }
+    opt?: { props?: Object, withRef?: boolean }
   ): (target: Object) => any;
 
   declare export function bind(

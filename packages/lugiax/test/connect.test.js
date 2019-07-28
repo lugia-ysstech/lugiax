@@ -16,6 +16,7 @@ Enzyme.configure({ adapter: new Adapter() });
 const name = "︿(￣︶￣)︿";
 
 class Input extends React.Component<any, any> {
+  static displayName = "MyInput";
   onClick = () => {
     this.props.changeName({ name });
   };
@@ -57,7 +58,7 @@ describe("lugiax.connect", () => {
     )(Input);
 
     const mask = "I'm mask";
-    const target = mount(<MyInput mask={mask} />);
+    const target: Object = mount(<MyInput mask={mask} />);
 
     expect(getInputValue(target.find("input").at(0))).toBe(name);
     expect(getInputValue(target.find("input").at(1))).toBe(pwd);
@@ -73,6 +74,29 @@ describe("lugiax.connect", () => {
     const name = "hello new name";
     changeName({ name });
     expect(getInputValue(target.find("input").at(0))).toBe(name);
+  });
+
+  it("connect withRef true", () => {
+    const { target } = oneModelCase({
+      withRef: true
+    });
+
+    expect(
+      target.instance().getWrappedInstance() instanceof Input
+    ).toBeTruthy();
+  });
+
+  it("connect withRef false", () => {
+    const { target } = oneModelCase({
+      withRef: false
+    });
+
+    expect(target.instance().getWrappedInstance()).toBeUndefined();
+  });
+
+  it("connect withRef default is false", () => {
+    const { target } = oneModelCase({});
+    expect(target.instance().getWrappedInstance()).toBeUndefined();
   });
 
   it("connect only one model for async state change", async () => {
@@ -216,7 +240,7 @@ describe("lugiax.connect", () => {
           pwd: user.get("pwd")
         };
       },
-      (user) => ({ changeName: user.changeName })
+      user => ({ changeName: user.changeName })
     )(Input);
 
     class App extends React.Component<any, any> {
