@@ -15,7 +15,7 @@
   "author": "ysstech",
   "scripts": {
     "build": "lugia-complie build",
-    "dist": " npm run build && npm publish ./target --registry=http://192.168.102.79:5001/",
+    "dist": " npm run build && npm publish ./target --registry=http://219.141.235.71:18081/repository/lugia-group/",
     "dev": "./tasks/dev.sh",
     "test": "./tasks/test.sh",
     "cov": "lugia-complie cov",

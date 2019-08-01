@@ -4,7 +4,7 @@
 
 "@lugia/lugiax-core@^1.0.1-4":
   version "1.0.1-4"
-  resolved "http://192.168.102.79:5001/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.1-4.tgz#37210998ada7eb4dcf9726db82e4baa95eeaace6"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.1-4.tgz#37210998ada7eb4dcf9726db82e4baa95eeaace6"
   dependencies:
     immutable "^3.8.2"
     redux "^4.0.0"
@@ -13,7 +13,7 @@
 
 "@lugia/lugiax@^1.0.1-2.1":
   version "1.0.1-2.1"
-  resolved "http://192.168.102.79:5001/@lugia/lugiax/download/@lugia/lugiax-1.0.1-2.1.tgz#b400a548e71acae6e559aa800608095576074ed9"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/lugiax/download/@lugia/lugiax-1.0.1-2.1.tgz#b400a548e71acae6e559aa800608095576074ed9"
   dependencies:
     "@lugia/lugiax-core" "^1.0.1-4"
 

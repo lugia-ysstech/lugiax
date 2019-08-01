@@ -4,7 +4,7 @@
 
 "@lugia/lugiax-core@^1.0.4":
   version "1.0.4"
-  resolved "http://192.168.102.79:5001/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.4.tgz#dee5ca3ca4e5343150448e781544504662a1070f"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.4.tgz#dee5ca3ca4e5343150448e781544504662a1070f"
   integrity sha1-3uXKPKTlNDFQRI54FURQRmKhBw8=
   dependencies:
     immutable "^3.8.2"
@@ -14,7 +14,7 @@
 
 "@lugia/lugiax@^1.0.5":
   version "1.0.5"
-  resolved "http://192.168.102.79:5001/@lugia/lugiax/download/@lugia/lugiax-1.0.5.tgz#2316536a421ca9611424bdc267884c7c2bcd6143"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/lugiax/download/@lugia/lugiax-1.0.5.tgz#2316536a421ca9611424bdc267884c7c2bcd6143"
   integrity sha1-IxZTakIcqWEUJL3CZ4hMfCvNYUM=
   dependencies:
     "@lugia/lugiax-core" "^1.0.4"
@@ -22,7 +22,7 @@
 
 "@lugia/react-test-utils@^1.0.0":
   version "1.0.0"
-  resolved "http://192.168.102.79:5001/@lugia/react-test-utils/download/@lugia/react-test-utils-1.0.0.tgz#019bc028615d3c8ae454ec9b98b4546d027a7497"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/react-test-utils/download/@lugia/react-test-utils-1.0.0.tgz#019bc028615d3c8ae454ec9b98b4546d027a7497"
   integrity sha1-AZvAKGFdPIrkVOybmLRUbQJ6dJc=
   dependencies:
     react "^16.4.0"
@@ -30,7 +30,7 @@
 
 "@types/node@*":
   version "10.1.2"
-  resolved "http://192.168.102.79:5001/@types/node/download/@types/node-10.1.2.tgz#1b928a0baa408fc8ae3ac012cc81375addc147c6"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@types/node/download/@types/node-10.1.2.tgz#1b928a0baa408fc8ae3ac012cc81375addc147c6"
   integrity sha1-G5KKC6pAj8iuOsASzIE3Wt3BR8Y=
 
 address@1.0.3, address@^1.0.1:

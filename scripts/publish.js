@@ -5,7 +5,7 @@ const { join } = require('path');
 const { fork } = require('child_process');
 const { packagesDirName, scope, igronPkgs } = require('./config.json');
 
-const registry = 'http://192.168.102.79:5001/';
+const registry = 'http://219.141.235.71:18081/repository/lugia-group/';
 
 if (
   shell.exec('npm config get @lugia:registry').stdout.indexOf(registry) === -1

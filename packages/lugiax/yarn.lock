@@ -4,7 +4,7 @@
 
 "@lugia/lugiax-core@^1.0.3":
   version "1.0.3"
-  resolved "http://192.168.102.79:5001/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.3.tgz#4580a5bf7314d3dcfc5dfa7c9cf259e771f894df"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.3.tgz#4580a5bf7314d3dcfc5dfa7c9cf259e771f894df"
   integrity sha1-RYClv3MU09z8Xfp8nPJZ53H4lN8=
   dependencies:
     immutable "^3.8.2"
@@ -14,7 +14,7 @@
 
 "@types/node@*":
   version "10.1.2"
-  resolved "http://192.168.102.79:5001/@types/node/download/@types/node-10.1.2.tgz#1b928a0baa408fc8ae3ac012cc81375addc147c6"
+  resolved "http://219.141.235.71:18081/repository/lugia-group/@types/node/download/@types/node-10.1.2.tgz#1b928a0baa408fc8ae3ac012cc81375addc147c6"
   integrity sha1-G5KKC6pAj8iuOsASzIE3Wt3BR8Y=
 
 address@1.0.3, address@^1.0.1:
