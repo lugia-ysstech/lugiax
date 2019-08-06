@@ -12,7 +12,7 @@
   "author": "ysstech",
   "scripts": {
     "build": "lugia-complie lint && lugia-complie build",
-    "dist": " npm run build && npm publish ./target --registry=http://219.141.235.71:18081/repository/lugia-group/",
+    "dist": " npm run build && npm publish",
     "dev": "./tasks/dev.sh",
     "test": "./tasks/test.sh",
     "cov": "lugia-complie cov",
@@ -21,8 +21,7 @@
   },
   "files": [
     "lib",
-    "interface",
-    "yarn.lock"
+    "interface"
   ],
   "babel": {
     "presets": [
