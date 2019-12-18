@@ -83,7 +83,7 @@ class LugiaxImpl implements LugiaxType {
     const { existModel } = this;
     const isExist = existModel[model];
     if (!force && isExist) {
-      throw new Error("重复注册模块");
+      console.error("重复注册模块");
     }
     this.warnParam(param);
 
