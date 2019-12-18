@@ -18,9 +18,9 @@
     "flow": "flow"
   },
   "devDependencies": {
-    "@lugia/jverify": "1.0.1",
+    "@lugia/jverify": "^1.0.1",
     "@lugia/react-test-utils": "^1.0.0",
-    "@lugia/type-utils": "1.0.3",
+    "@lugia/type-utils": "^1.0.6",
     "debug": "2.6.8",
     "dotenv": "4.0.0",
     "enzyme": "3.2.0",

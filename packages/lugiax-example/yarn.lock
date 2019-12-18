@@ -2,21 +2,6 @@
 # yarn lockfile v1
 
 
-"@lugia/lugiax-core@^1.0.1-4":
-  version "1.0.1-4"
-  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.1-4.tgz#37210998ada7eb4dcf9726db82e4baa95eeaace6"
-  dependencies:
-    immutable "^3.8.2"
-    redux "^4.0.0"
-    redux-immutable "^4.0.0"
-    redux-saga "^0.16.0"
-
-"@lugia/lugiax@^1.0.1-2.1":
-  version "1.0.1-2.1"
-  resolved "http://219.141.235.71:18081/repository/lugia-group/@lugia/lugiax/download/@lugia/lugiax-1.0.1-2.1.tgz#b400a548e71acae6e559aa800608095576074ed9"
-  dependencies:
-    "@lugia/lugiax-core" "^1.0.1-4"
-
 abab@^1.0.3:
   version "1.0.4"
   resolved "http://registry.npm.taobao.org/abab/download/abab-1.0.4.tgz#5faad9c2c07f60dd76770f71cf025b62a63cfd4e"
@@ -3321,10 +3306,6 @@ ignore@^3.3.3:
   version "3.3.10"
   resolved "http://registry.npm.taobao.org/ignore/download/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"
 
-immutable@^3.8.2:
-  version "3.8.2"
-  resolved "http://registry.npm.taobao.org/immutable/download/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
-
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "http://registry.npm.taobao.org/import-lazy/download/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
@@ -5743,21 +5724,6 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "^0.4.2"
 
-redux-immutable@^4.0.0:
-  version "4.0.0"
-  resolved "http://registry.npm.taobao.org/redux-immutable/download/redux-immutable-4.0.0.tgz#3a1a32df66366462b63691f0e1dc35e472bbc9f3"
-
-redux-saga@^0.16.0:
-  version "0.16.0"
-  resolved "http://registry.npm.taobao.org/redux-saga/download/redux-saga-0.16.0.tgz#0a231db0a1489301dd980f6f2f88d8ced418f724"
-
-redux@^4.0.0:
-  version "4.0.0"
-  resolved "http://registry.npm.taobao.org/redux/download/redux-4.0.0.tgz#aa698a92b729315d22b34a0553d7e6533555cc03"
-  dependencies:
-    loose-envify "^1.1.0"
-    symbol-observable "^1.2.0"
-
 regenerate@^1.2.1:
   version "1.4.0"
   resolved "http://registry.npm.taobao.org/regenerate/download/regenerate-1.4.0.tgz#4a856ec4b56e4077c557589cae85e7a4c8869a11"
@@ -6536,10 +6502,6 @@ sw-toolbox@^3.4.0:
   dependencies:
     path-to-regexp "^1.0.1"
     serviceworker-cache-polyfill "^4.0.0"
-
-symbol-observable@^1.2.0:
-  version "1.2.0"
-  resolved "http://registry.npm.taobao.org/symbol-observable/download/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
 
 symbol-tree@^3.2.1:
   version "3.2.2"

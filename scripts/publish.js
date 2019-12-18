@@ -5,17 +5,6 @@ const { join } = require('path');
 const { fork } = require('child_process');
 const { packagesDirName, scope, igronPkgs } = require('./config.json');
 
-const registry = 'http://219.141.235.71:18081/repository/lugia-group/';
-
-if (
-  shell.exec('npm config get @lugia:registry').stdout.indexOf(registry) === -1
-) {
-  console.error(
-    'Failed: ',
-    `set npm / yarn registry to ${registry} first. You can use [nrm](https://github.com/Pana/nrm).`,
-  );
-  process.exit(1);
-}
 
 const cwd = process.cwd();
 const updatedRepos = shell
