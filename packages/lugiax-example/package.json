@@ -1,10 +1,10 @@
 {
   "name": "lugiax-example",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "dependencies": {
-    "@lugia/lugiax": "^1.0.14",
-    "@lugia/lugiax-router": "^1.0.17",
+    "@lugia/lugiax": "^1.0.15",
+    "@lugia/lugiax-router": "^1.0.18",
     "history": "^4.7.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",

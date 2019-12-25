@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax-core",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "dependencies": {
     "@lugia/type-utils": "^1.0.6",
     "immutable": "^3.8.2",
