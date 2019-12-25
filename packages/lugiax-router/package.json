@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@lugia/lugiax": "^1.0.7",
-    "@lugia/react-test-utils": "^1.0.0",
+    "@lugia/react-test-utils": "^1.0.1",
     "flow-bin": "^0.77.0",
     "history": "^4.7.2",
     "ramda": "0.22.0",
