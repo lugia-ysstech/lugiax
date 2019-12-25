@@ -197,12 +197,7 @@ describe('lugiax', () => {
         },
       },
     });
-    expect(() =>
-      lugiax.register({
-        model,
-        state,
-      })
-    ).toThrow('重复注册模块');
+
     expect(lugiax.getState().toJS()).toEqual({
       [model]: state,
       lugia: {

@@ -5,7 +5,6 @@
  * @flow
  */
 import type {
-  AsyncMutationFunction,
   LugiaxType,
   Mutation,
   MutationFunction,
@@ -236,8 +235,7 @@ class LugiaxImpl implements LugiaxType {
     const { name } = action;
 
     const { body, model, mutationId } = this.mutationId2MutationInfo[name];
-    const state = this._getState_();
-    const modelData = state.get(model);
+    const modelData = this.getModelData(model);
     if (body) {
       this.store.dispatch({ type: Loading, model });
 
@@ -245,7 +243,8 @@ class LugiaxImpl implements LugiaxType {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
           return this.wait(mutation);
-        }
+        },
+        getState: () => this.getModelData(model)
       });
 
       return this.updateModel(model, newState, mutationId, param, "async");
@@ -267,13 +266,13 @@ class LugiaxImpl implements LugiaxType {
     const { name } = action;
 
     const { body, model, mutationId } = this.mutationId2MutationInfo[name];
-    const state = this._getState_();
-    const modelData = state.get(model);
+    const modelData = this.getModelData(model);
     if (body) {
       this.store.dispatch({ type: Loading, model });
 
       const newState = body(modelData, param, {
-        mutations: this.modelName2Mutations[model]
+        mutations: this.modelName2Mutations[model],
+        getState: () => this.getModelData(model)
       });
       if (ObjectUtils.isPromise(newState)) {
         throw new Error("state can not be a Promise Object ! ");
@@ -282,6 +281,11 @@ class LugiaxImpl implements LugiaxType {
       return this.updateModel(model, newState, mutationId, param, "sync");
     }
     return modelData;
+  }
+
+  getModelData(model: string): Object {
+    const state = this._getState_();
+    return state.get(model);
   }
 
   updateModel(
