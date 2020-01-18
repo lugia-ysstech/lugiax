@@ -443,15 +443,22 @@ class LugiaxImpl implements LugiaxType {
         }
       }
     };
-    this.takeEveryAction(worker(this));
+    return this.takeEveryAction(worker(this));
   }
 
   takeEveryAction(cb: (action: Object) => Promise<any>) {
+    let removeListener;
     this.sagaMiddleware.run(function*() {
-      yield takeEvery("*", function*(action: Object): any {
+      const handle = yield takeEvery("*", function* (action: Object): any {
         yield cb(action);
       });
+      removeListener = () => handle.cancel();
     });
+    return {
+      removeListener() {
+        removeListener && removeListener();
+      }
+    };
   }
 
   getStore() {
