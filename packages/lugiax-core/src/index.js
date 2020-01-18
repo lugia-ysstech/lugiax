@@ -103,6 +103,7 @@ class LugiaxImpl implements LugiaxType {
     const getState = () => {
       return this._getState_().get(model);
     };
+    this.lugiaxEvent.trigger(RegisterTopic, { model, isExist, state:initState });
     if (!mutations) {
       return {
         mutations: {},
