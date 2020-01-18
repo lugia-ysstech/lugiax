@@ -26,13 +26,13 @@ import { combineReducers } from "redux-immutable";
 import createSagaMiddleware from "redux-saga";
 
 import { ObjectUtils } from "@lugia/type-utils";
-
+import Subscribe from "./subscribe";
 const ReloadAction = "@lugiax/reload";
 const All = "@lugia/msg/All";
 const ChangeModel = "@lugiax/changeModel";
 const Loading = "@lugiax/Loading";
 const LoadFinished = "@lugiax/LoadFinished";
-
+const RegisterTopic = "register";
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
   mutationId2Mutaions: {
@@ -46,47 +46,41 @@ class LugiaxImpl implements LugiaxType {
   listeners: { [key: string]: { [id: string]: Function } };
   store: Object;
   sagaMiddleware: Object;
+  storeEvent: Subscribe;
+  lugiaxEvent: Subscribe;
 
   constructor() {
     this.clear();
+    this.lugiaxEvent = new Subscribe();
   }
 
   trigger(topic: string, newState: Object, oldState: Object) {
-    const call = (cb: Function) => {
-      cb(newState, oldState);
-    };
-    const { listeners } = this;
-    const listener = listeners[topic];
-    if (listener) {
-      Object.keys(listener).forEach((key: string) => {
-        const handle = listener[key];
-        handle && call(handle);
-      });
-    }
-
-    const allListener = listeners[All];
-    if (allListener) {
-      Object.keys(allListener).forEach((key: string) => {
-        const handle = allListener[key];
-        handle && call(handle);
-      });
-    }
+    this.storeEvent.trigger(topic, newState, oldState);
+    this.storeEvent.trigger(All, newState, oldState);
   }
 
   register(
     param: RegisterParam,
     option: Option = { force: false }
   ): RegisterResult {
+    if (!param) {
+      console.error("lugiax.register param must be not undefined!");
+      return;
+    }
     const { model } = param;
     const { force } = option;
     const { existModel } = this;
-    const isExist = existModel[model];
+    const isExist = !!existModel[model];
     if (!force && isExist) {
-      console.error("重复注册模块");
+      console.error(`${model} is exist!`);
     }
     this.warnParam(param);
 
+    if (!param.state) {
+      param = { ...param, state: {} };
+    }
     const { state: initState } = param;
+    this.lugiaxEvent.trigger(RegisterTopic, { model, isExist, state:initState });
 
     if (isExist) {
       const oldState = this._getState_().get(model);
@@ -185,6 +179,9 @@ class LugiaxImpl implements LugiaxType {
   warnParam(param: RegisterParam) {
     if ("mutation" in param || "mutatons" in param) {
       console.warn("You may be set mutaions and not muation!");
+    }
+    if (!param.state) {
+      console.warn("You may be set state!");
     }
   }
 
@@ -327,6 +324,7 @@ class LugiaxImpl implements LugiaxType {
     }
     return this._getState_();
   }
+
   _getState_(): Object {
     return this.store.getState();
   }
@@ -334,17 +332,7 @@ class LugiaxImpl implements LugiaxType {
   subscribeId: number;
 
   subscribe(topic: string, cb: Function): SubscribeResult {
-    const { listeners } = this;
-    if (!listeners[topic]) {
-      listeners[topic] = {};
-    }
-    const topicId = this.subscribeId++ + "";
-    listeners[topic][topicId] = cb;
-    return {
-      unSubscribe() {
-        delete listeners[topic][topicId];
-      }
-    };
+    return this.storeEvent.subscribe(topic, cb);
   }
 
   reducerMap: ?Function;
@@ -391,9 +379,8 @@ class LugiaxImpl implements LugiaxType {
   }
 
   clear(): void {
+    this.storeEvent = new Subscribe();
     this.existModel = {};
-    this.listeners = {};
-    this.subscribeId = 0;
     this.modelName2Mutations = {};
     this.mutationId2Mutaions = { async: {}, sync: {} };
     this.mutationId2MutationInfo = {};
@@ -424,7 +411,7 @@ class LugiaxImpl implements LugiaxType {
   }
 
   subscribeAll(cb: () => any): SubscribeResult {
-    return this.subscribe(All, cb);
+    return this.storeEvent.subscribe(All, cb);
   }
 
   on(cb: WaitHandler): void {
@@ -447,18 +434,44 @@ class LugiaxImpl implements LugiaxType {
   }
 
   takeEveryAction(cb: (action: Object) => Promise<any>) {
-    let removeListener;
+    let unSubscribe;
     this.sagaMiddleware.run(function*() {
-      const handle = yield takeEvery("*", function* (action: Object): any {
+      const handle = yield takeEvery("*", function*(action: Object): any {
         yield cb(action);
       });
-      removeListener = () => handle.cancel();
+      unSubscribe = () => handle.cancel();
     });
     return {
-      removeListener() {
-        removeListener && removeListener();
+      unSubscribe() {
+        unSubscribe && unSubscribe();
       }
     };
+  }
+
+  onEvent(topic: "register", cb: Function) {
+    if (!this.isSupportEvent(topic)) {
+      return { unSubscribe() {} };
+    }
+    return this.lugiaxEvent.subscribe(topic, cb);
+  }
+
+  onceEvent(topic: "register", cb: Function) {
+    let unSubscribe;
+    const event = this.onEvent(topic, (...param: any)=>{
+      if(unSubscribe){
+        unSubscribe();
+      }
+      cb && cb(...param);
+    });
+    unSubscribe = event.unSubscribe;
+    return event;
+  }
+
+  removeAllEvent(){
+    this.lugiaxEvent.clear();
+  }
+  isSupportEvent(event: string): boolean {
+    return event === RegisterTopic;
   }
 
   getStore() {

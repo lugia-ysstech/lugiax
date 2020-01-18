@@ -78,7 +78,7 @@ declare module "@lugia/lugiax-core" {
   };
 
   declare type EventResult = {
-    removeListener: Function
+    unSubscribe: Function
   }
   declare export interface LugiaxType {
     register(param: RegisterParam, option?: Option): RegisterResult;
@@ -105,6 +105,9 @@ declare module "@lugia/lugiax-core" {
 
     on(cb: WaitHandler): EventResult;
 
+    onEvent(event: 'register', cb : Function): EventResult;
+    onceEvent(event: 'register', cb : Function): EventResult;
+    removeAllEvent(): boolean;
   }
 
   declare module.exports: LugiaxType;
