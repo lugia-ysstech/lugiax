@@ -1,8 +1,8 @@
 {
   "name": "@lugia/lugiax-router",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "dependencies": {
-    "@lugia/lugiax": "^1.0.18",
+    "@lugia/lugiax": "^1.0.19",
     "connected-react-router": "^4.4.1",
     "react-loadable": "^5.5.0",
     "react-redux": "^5.0.7",
