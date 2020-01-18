@@ -27,6 +27,7 @@ import createSagaMiddleware from "redux-saga";
 
 import { ObjectUtils } from "@lugia/type-utils";
 import Subscribe from "./subscribe";
+
 const ReloadAction = "@lugiax/reload";
 const All = "@lugia/msg/All";
 const ChangeModel = "@lugiax/changeModel";
@@ -117,7 +118,6 @@ class LugiaxImpl implements LugiaxType {
     const async = this.generateMutation(mutations, model, "async");
 
     const result = Object.assign({}, sync, async);
-    this.lugiaxEvent.trigger(RegisterTopic, { model, isExist, state:initState });
     return {
       mutations: (this.modelName2Mutations[model] = result),
       model,
