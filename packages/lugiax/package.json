@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "dependencies": {
     "@lugia/lugiax-core": "^1.0.15",
     "hoist-non-react-statics": "^3.3.2",
