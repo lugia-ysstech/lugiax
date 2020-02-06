@@ -14,22 +14,29 @@ export default function(
   modelData: RegisterResult | Array<RegisterResult>,
   mapProps: (state: Object) => Object = () => ({}),
   map2Mutations: (mutations: any) => Object = () => ({}),
-  opt?: { props?: Object, withRef?: boolean } = {}
+  opt: ?{ props?: Object, withRef?: boolean } = {}
 ) {
   if (!Array.isArray(modelData)) {
     modelData = [modelData];
   }
 
-  const models = [];
+  const modelNames = [];
   const modelMutations = [];
-  const model2handle = {};
+  const name2Model = {};
   modelData.forEach((item: Object) => {
     const { model, mutations } = item;
-    models.push(model);
-    model2handle[model] = item;
+    modelNames.push(model);
+    name2Model[model] = item;
     modelMutations.push(mutations);
   });
 
+  function isValidModel(modelName: string, modelObject: Object): boolean{
+    if(!modelObject.getState){
+      console.error(`mode(modelName = ${modelName}) is error, mode value is (${modelObject}).`);
+      return false;
+    }
+    return true;
+  }
   return (Target: React.ComponentType<any>) => {
     const widgetName = getDisplayName(Target);
 
@@ -42,9 +49,13 @@ export default function(
 
         const modelData = [];
         const model2Index = {};
-        models.forEach((model: string, index: number) => {
-          model2Index[model] = index;
-          modelData.push(model2handle[model].getState());
+        modelNames.forEach((modelName: string, index: number) => {
+          model2Index[modelName] = index;
+          const model = name2Model[modelName];
+          if(!isValidModel(modelName, model)){
+            return;
+          }
+          modelData.push(model.getState());
         });
 
         this.state = {
@@ -55,10 +66,14 @@ export default function(
         };
 
         this.unSubscribe = [];
-        models.forEach(model => {
-          const { unSubscribe } = lugiax.subscribe(model, () => {
+        modelNames.forEach((modelName: string) => {
+          const { unSubscribe } = lugiax.subscribe(modelName, () => {
             const modelData = this.state.modelData;
-            modelData[model2Index[model]] = model2handle[model].getState();
+            const model = name2Model[modelName];
+            if(!isValidModel(modelName, model)){
+              return;
+            }
+            modelData[model2Index[modelName]] = model.getState();
             this.setState({ modelData });
           });
           this.unSubscribe.push(unSubscribe);

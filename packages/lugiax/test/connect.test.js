@@ -205,6 +205,34 @@ describe("lugiax.connect", () => {
     expect(getInputValue(target.find("input").at(1))).toBe(pwd);
     expect(getInputValue(target.find("input").at(2))).toBe(info);
   });
+  it("connect to [] ", () => {
+    const MyInput = connect(
+      [[], []],
+      (state: Object) => {
+        const [user, info] = state;
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd"),
+          info: info.get("info")
+        };
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    // expect(getInputValue(target.find("input").at(0))).toBe(name);
+    // expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    // expect(getInputValue(target.find("input").at(2))).toBe(info);
+  });
   it("connect only one model for state change by click", () => {
     const { target } = oneModelCase();
 
