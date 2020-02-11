@@ -105,8 +105,9 @@ declare module "@lugia/lugiax-core" {
 
     on(cb: WaitHandler): EventResult;
 
-    onEvent(event: 'register', cb : Function): EventResult;
-    onceEvent(event: 'register', cb : Function): EventResult;
+    emitEvent(event: string, param: Object): void;
+    onEvent(event: string, cb : Function): EventResult;
+    onceEvent(event: string, cb : Function): EventResult;
     removeAllEvent(): boolean;
   }
 

@@ -1175,11 +1175,6 @@ describe("lugiax", () => {
     });
   });
 
-  it("isSupportEvent", () => {
-    expect(lugiax.isSupportEvent("clear")).toBeFalsy();
-    expect(lugiax.isSupportEvent("register")).toBeTruthy();
-    expect(lugiax.isSupportEvent("a")).toBeFalsy();
-  });
 
   it("register state is undefined", async () => {
     lugiax.register({
@@ -1311,5 +1306,24 @@ describe("lugiax", () => {
       model: "lgx",
       state
     });
+  });
+
+  it("emitEvent hello", async () => {
+    let registerEventCount = 0;
+    let unSubscribe;
+    const paramObj = { id: 1, title: "11" };
+    const topic = "hello";
+    const clearPromise = new Promise(res => {
+      console.info('topic', topic);
+      unSubscribe = lugiax.onEvent(topic, param => {
+        registerEventCount++;
+        if (registerEventCount > 1) {
+          throw new Error("register 触发次数错误");
+        }
+        res(param);
+      }).unSubscribe;
+    });
+    lugiax.emitEvent(topic, paramObj);
+    expect(await clearPromise).toEqual(paramObj);
   });
 });

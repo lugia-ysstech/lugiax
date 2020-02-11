@@ -104,7 +104,11 @@ class LugiaxImpl implements LugiaxType {
     const getState = () => {
       return this._getState_().get(model);
     };
-    this.lugiaxEvent.trigger(RegisterTopic, { model, isExist, state:initState });
+    this.emitEvent(RegisterTopic, {
+      model,
+      isExist,
+      state: initState
+    });
     if (!mutations) {
       return {
         mutations: {},
@@ -449,17 +453,17 @@ class LugiaxImpl implements LugiaxType {
     };
   }
 
-  onEvent(topic: "register", cb: Function) {
-    if (!this.isSupportEvent(topic)) {
-      return { unSubscribe() {} };
-    }
+  emitEvent(event: string, ...param: Object[]): void {
+    this.lugiaxEvent.trigger(event, ...param);
+  }
+  onEvent(topic: string, cb: Function) {
     return this.lugiaxEvent.subscribe(topic, cb);
   }
 
-  onceEvent(topic: "register", cb: Function) {
+  onceEvent(topic: string, cb: Function) {
     let unSubscribe;
-    const event = this.onEvent(topic, (...param: any)=>{
-      if(unSubscribe){
+    const event = this.onEvent(topic, (...param: any) => {
+      if (unSubscribe) {
         unSubscribe();
       }
       cb && cb(...param);
@@ -468,11 +472,8 @@ class LugiaxImpl implements LugiaxType {
     return event;
   }
 
-  removeAllEvent(){
+  removeAllEvent() {
     this.lugiaxEvent.clear();
-  }
-  isSupportEvent(event: string): boolean {
-    return event === RegisterTopic;
   }
 
   getStore() {
