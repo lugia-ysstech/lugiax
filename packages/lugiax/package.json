@@ -1,8 +1,8 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "dependencies": {
-    "@lugia/lugiax-core": "^1.0.15",
+    "@lugia/lugiax-core": "^1.0.16",
     "hoist-non-react-statics": "^3.3.2",
     "immutable": "^3.8.2"
   },
