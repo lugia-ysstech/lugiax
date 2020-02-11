@@ -68,11 +68,10 @@
   },
   "devDependencies": {
     "@lugia/lugiax": "^1.0.7",
-    "@lugia/react-test-utils": "^1.0.1",
+    "@lugia/react-test-utils": "^1.0.2",
     "flow-bin": "^0.77.0",
     "history": "^4.7.2",
     "ramda": "0.22.0",
-    "react": "^16.7.0",
     "react-dev-utils": "4.2.2",
     "react-test-renderer": "16.4.1",
     "styled-components": "^3.4.5"

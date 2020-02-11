@@ -6,8 +6,6 @@
     "@lugia/lugiax": "^1.0.20",
     "@lugia/lugiax-router": "^1.0.23",
     "history": "^4.7.2",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
     "react-scripts": "1.1.5",
     "styled-components": "^3.4.5"
   },

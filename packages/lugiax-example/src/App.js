@@ -1,28 +1,34 @@
-import React, { Component, } from 'react';
-import { createRoute, } from '@lugia/lugiax-router';
-import './App.css';
-import Header from './header';
-import Todo from './todo';
-import Tomato from './tomato';
-import NotAccess from './access/NotAccess';
+import React, { Component } from "react";
+import { createRoute } from "@lugia/lugiax-router";
+import "./App.css";
+import Header from "./header";
+import Todo from "./todo";
+import Count from "./count";
+import Tomato from "./tomato";
+import NotAccess from "./access/NotAccess";
 
 export default () => {
-  console.info('init main');
+  console.info("init main");
+  console.info("Count", Count);
 
   return [
     <Header />,
     createRoute({
-      '/todo': {
+      "/todo": {
         exact: true,
-        component: Todo,
+        component: Todo
       },
-      '/tomato': {
-        component: Tomato,
+      "/count": {
+        exact: true,
+        component: Count
       },
-      '/403': {
+      "/tomato": {
+        component: Tomato
+      },
+      "/403": {
         component: NotAccess,
-        exact: true,
-      },
-    }),
+        exact: true
+      }
+    })
   ];
 };
