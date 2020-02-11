@@ -3,6 +3,7 @@
   "version": "1.0.13",
   "private": true,
   "dependencies": {
+    "@lugia/lugia-web": "^1.1.9",
     "@lugia/lugiax": "^1.0.20",
     "@lugia/lugiax-router": "^1.0.23",
     "history": "^4.7.2",
@@ -10,9 +11,14 @@
     "styled-components": "^3.4.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired start build",
+    "test": "react-app-rewired start test --env=jsdom",
+    "eject": "react-app-rewired start eject"
+  },
+  "devDependencies": {
+    "babel-plugin-import": "^1.13.0",
+    "customize-cra": "^0.9.1",
+    "react-app-rewired": "^2.1.5"
   }
 }

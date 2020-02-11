@@ -6,12 +6,13 @@
  */
 
 import React, { useState } from "react";
+import { Button } from "@lugia/lugia-web";
 
 export default () => {
   const [count, updateCount] = useState(0);
   return [
     <div>计数值：{count}</div>,
-    <button onClick={() => updateCount(count + 1)}> 增加</button>,
-    <button onClick={() => updateCount(count - 1)}> 减少</button>
+    <Button onClick={() => updateCount(count + 1)}> 增加</Button>,
+    <Button onClick={() => updateCount(count - 1)}> 减少</Button>
   ];
 };
