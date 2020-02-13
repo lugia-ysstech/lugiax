@@ -4,18 +4,23 @@
  *
  * @flow
  */
+import type { ConnectOptionType } from "@lugia/lugiax";
 import type { RegisterResult } from "@lugia/lugiax-core";
 import lugiax from "@lugia/lugiax-core";
 import hoistStatics from "hoist-non-react-statics";
 import * as React from "react";
 import { getDisplayName } from "./utils";
 
+const Noop = () => ({});
 export default function(
   modelData: RegisterResult | Array<RegisterResult>,
-  mapProps: (state: Object) => Object = () => ({}),
-  map2Mutations: (mutations: any) => Object = () => ({}),
-  opt: ?{ props?: Object, withRef?: boolean } = {}
+  mapProps: (state: Object) => Object = Noop,
+  map2Mutations: (mutations: any) => Object = Noop,
+  opt: ?ConnectOptionType = {}
 ) {
+  if (!map2Mutations) {
+    map2Mutations = Noop;
+  }
   if (!Array.isArray(modelData)) {
     modelData = [modelData];
   }
@@ -30,13 +35,17 @@ export default function(
     modelMutations.push(mutations);
   });
 
-  function isValidModel(modelName: string, modelObject: Object): boolean{
-    if(!modelObject.getState){
-      console.error(`mode(modelName = ${modelName}) is error, mode value is (${modelObject}).`);
+  function isValidModel(modelName: string, modelObject: Object): boolean {
+    if (!modelObject.getState) {
+      console.error(
+        `mode(modelName = ${modelName}) is error, mode value is (${modelObject}).`
+      );
       return false;
     }
     return true;
   }
+
+  const { areStateEqual } = opt;
   return (Target: React.ComponentType<any>) => {
     const widgetName = getDisplayName(Target);
 
@@ -52,7 +61,7 @@ export default function(
         modelNames.forEach((modelName: string, index: number) => {
           model2Index[modelName] = index;
           const model = name2Model[modelName];
-          if(!isValidModel(modelName, model)){
+          if (!isValidModel(modelName, model)) {
             return;
           }
           modelData.push(model.getState());
@@ -70,10 +79,16 @@ export default function(
           const { unSubscribe } = lugiax.subscribe(modelName, () => {
             const modelData = this.state.modelData;
             const model = name2Model[modelName];
-            if(!isValidModel(modelName, model)){
+            if (!isValidModel(modelName, model)) {
               return;
             }
-            modelData[model2Index[modelName]] = model.getState();
+            const modelIndex = model2Index[modelName];
+            const oldState = modelData[modelIndex];
+            const newState = model.getState();
+            modelData[modelIndex] = newState;
+            if(areStateEqual && !areStateEqual(oldState, newState)){
+              return;
+            }
             this.setState({ modelData });
           });
           this.unSubscribe.push(unSubscribe);

@@ -2,7 +2,7 @@
  * Created by liguoxin on 2017/3/14.
  * @flow
  */
-import type { RegisterResult, LugiaxType } from "@lugia/lugiax-core";
+import type { LugiaxType, RegisterResult } from "@lugia/lugiax-core";
 
 declare module "@lugia/lugiax" {
   declare export type EventMuationConfig = {
@@ -17,11 +17,22 @@ declare module "@lugia/lugiax" {
     | { [fieldName: string]: string | string[] };
   declare export type Field2Props = { [key: string]: string | string[] };
 
+  declare type ConnectOptionType = {
+    props?: Object,
+    withRef?: boolean,
+    areStateEqual?: (preModel: Object[], nextModel: Object[]) => boolean,
+    araStatePropsEqual?: (
+      preStateProps: Object,
+      nextStateProps: Object
+    ) => boolean,
+    areaOwnPropsEqual?: (preOwnProps: Object, nextOwnProps: Object) => boolean
+  };
+
   declare export function connect(
     model: RegisterResult | Array<RegisterResult>,
     mapProps: (state: Object) => Object,
     map2Mutations: (mutations: Object) => Object,
-    opt?: { props?: Object, withRef?: boolean }
+    opt?: ConnectOptionType
   ): (target: Object) => any;
 
   declare export function bind(
