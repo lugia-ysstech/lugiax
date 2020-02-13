@@ -385,4 +385,113 @@ describe("lugiax.connect", () => {
     expect(getInputValue(target.find("input").at(2))).toEqual(info);
     expect(callCount).toBe(1);
   });
+
+  it("connect twoModel areStatePropsEqual true", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const infoModel = createInfoModel(info);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      [userModel, infoModel],
+      (state: Object) => {
+        const [user, info] = state;
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd"),
+          info: info.get("info")
+        };
+      },
+      null,
+      {
+        areStatePropsEqual(oldStateProps, newStateProps) {
+          callCount++;
+          return (
+            oldStateProps.info === "ligx" && newStateProps.info === "world"
+          );
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(info);
+
+    const {
+      mutations: { changeInfo }
+    } = infoModel;
+    let newInfo = "world";
+    changeInfo({ value: newInfo });
+
+    expect(getInputValue(target.find("input").at(2))).toEqual(newInfo);
+    expect(callCount).toBe(1);
+  });
+  it("connect twoModel areStatePropsEqual false", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const infoModel = createInfoModel(info);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      [userModel, infoModel],
+      (state: Object) => {
+        const [user, info] = state;
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd"),
+          info: info.get("info")
+        };
+      },
+      null,
+      {
+        areStatePropsEqual(oldStateProps, newStateProps) {
+          callCount++;
+          return !(
+            oldStateProps.info === "ligx" && newStateProps.info === "world"
+          );
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(info);
+
+    const {
+      mutations: { changeInfo }
+    } = infoModel;
+    let newInfo = "world";
+    changeInfo({ value: newInfo });
+
+    expect(getInputValue(target.find("input").at(2))).toEqual(info);
+    expect(callCount).toBe(1);
+  });
 });

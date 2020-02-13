@@ -21,7 +21,7 @@ declare module "@lugia/lugiax" {
     props?: Object,
     withRef?: boolean,
     areStateEqual?: (preModel: Object[], nextModel: Object[]) => boolean,
-    araStatePropsEqual?: (
+    areStatePropsEqual?: (
       preStateProps: Object,
       nextStateProps: Object
     ) => boolean,

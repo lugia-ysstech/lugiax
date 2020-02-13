@@ -45,7 +45,7 @@ export default function(
     return true;
   }
 
-  const { areStateEqual } = opt;
+  const { areStateEqual, areStatePropsEqual } = opt;
   return (Target: React.ComponentType<any>) => {
     const widgetName = getDisplayName(Target);
 
@@ -86,7 +86,7 @@ export default function(
             const oldState = modelData[modelIndex];
             const newState = model.getState();
             modelData[modelIndex] = newState;
-            if(areStateEqual && !areStateEqual(oldState, newState)){
+            if (areStateEqual && !areStateEqual(oldState, newState)) {
               return;
             }
             this.setState({ modelData });
@@ -101,6 +101,16 @@ export default function(
           props: mapProps(models.length === 1 ? models[0] : models)
         };
       }
+
+      shouldComponentUpdate(nextProps: Object, nextState: Object) {
+        const { props: preStateProps } = this.state;
+        const { props: nextStateProps } = nextState;
+        if (areStatePropsEqual) {
+          return areStatePropsEqual(preStateProps, nextStateProps);
+        }
+        return true;
+      }
+
       target: any;
       render() {
         const { props, mutations } = this.state;
