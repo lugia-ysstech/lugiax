@@ -45,7 +45,7 @@ export default function(
     return true;
   }
 
-  const { areStateEqual, areStatePropsEqual } = opt;
+  const { areStateEqual, areStatePropsEqual, areOwnPropsEqual } = opt;
   return (Target: React.ComponentType<any>) => {
     const widgetName = getDisplayName(Target);
 
@@ -105,10 +105,13 @@ export default function(
       shouldComponentUpdate(nextProps: Object, nextState: Object) {
         const { props: preStateProps } = this.state;
         const { props: nextStateProps } = nextState;
-        if (areStatePropsEqual) {
-          return areStatePropsEqual(preStateProps, nextStateProps);
-        }
-        return true;
+        let areStatePropsEqualVal =
+          !areStatePropsEqual ||
+          areStatePropsEqual(preStateProps, nextStateProps);
+
+        let areOwnPropsEqualVal =
+          !areOwnPropsEqual || areOwnPropsEqual(this.props, nextProps);
+        return areStatePropsEqualVal && areOwnPropsEqualVal;
       }
 
       target: any;

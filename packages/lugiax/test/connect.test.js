@@ -494,4 +494,243 @@ describe("lugiax.connect", () => {
     expect(getInputValue(target.find("input").at(2))).toEqual(info);
     expect(callCount).toBe(1);
   });
+
+  it("connect twoModel areOwnPropsEqual true", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const infoModel = createInfoModel(info);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      infoModel,
+      (state: Object) => {
+        return {
+          info: state.get("info")
+        };
+      },
+      null,
+      {
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          console.info(oldProps, newProps);
+          return oldProps.hello === "ligx" && newProps.hello === "world";
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [<input value={this.props.hello} />];
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toEqual(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    let newName = "world";
+    changeName({ name: newName });
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(newName);
+    expect(callCount).toBe(1);
+  });
+
+  it("connect twoModel areOwnPropsEqual false", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const infoModel = createInfoModel(info);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      infoModel,
+      (state: Object) => {
+        return {
+          info: state.get("info")
+        };
+      },
+      null,
+      {
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          console.info(oldProps, newProps);
+          return !(oldProps.hello === "ligx" && newProps.hello === "world");
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [<input value={this.props.hello} />];
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toEqual(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    let newName = "world";
+    changeName({ name: newName });
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(name);
+    expect(callCount).toBe(1);
+  });
+
+  it("connect twoModel areOwnPropsEqual false areStatePropsEqual true", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const infoModel = createInfoModel(info);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      infoModel,
+      (state: Object) => {
+        return {
+          info: state.get("info")
+        };
+      },
+      null,
+      {
+        areStatePropsEqual() {
+          callCount++;
+          return true;
+        },
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          console.info(oldProps, newProps);
+          return !(oldProps.hello === "ligx" && newProps.hello === "world");
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [<input value={this.props.hello} />];
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toEqual(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    let newName = "world";
+    changeName({ name: newName });
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(name);
+    expect(callCount).toBe(2);
+  });
+  it("connect twoModel areOwnPropsEqual true areStatePropsEqual false", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const infoModel = createInfoModel(info);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      infoModel,
+      (state: Object) => {
+        return {
+          info: state.get("info")
+        };
+      },
+      null,
+      {
+        areStatePropsEqual() {
+          callCount++;
+          return false;
+        },
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          console.info(oldProps, newProps);
+          return oldProps.hello === "ligx" && newProps.hello === "world";
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [<input value={this.props.hello} />];
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toEqual(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    let newName = "world";
+    changeName({ name: newName });
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(name);
+    expect(callCount).toBe(2);
+  });
 });
