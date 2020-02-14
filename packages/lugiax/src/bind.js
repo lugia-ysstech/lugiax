@@ -20,7 +20,7 @@ export default function(
   } = {},
   opt: ?ConnectOptionType = {}
 ) {
-  const {eventHandle} = opt;
+  const { eventHandle, props: optionProps = {} } = opt;
   const { model } = modelData;
   trigger = trigger ? trigger : {};
 
@@ -54,7 +54,14 @@ export default function(
           this.eventHandler,
           eventHandle
         );
-        return <Target {...this.state} {...this.props} {...eventMethod} />;
+        return (
+          <Target
+            {...this.state}
+            {...this.props}
+            {...eventMethod}
+            {...optionProps}
+          />
+        );
       }
 
       componentWillUnmount() {

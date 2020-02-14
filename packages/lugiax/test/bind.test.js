@@ -297,6 +297,7 @@ describe("lugiax.bind", () => {
     expect(await changePromise).toBe(name);
     expect(await theChangeEvent).toBe(name);
   });
+
   it("EventHandle onChange and MyInput has onChange and has ChangeMutation", async () => {
     const name = "ligx";
     const pwd = "123456";
@@ -341,5 +342,233 @@ describe("lugiax.bind", () => {
     expect(getInputValue(target.find("input").at(0))).toBe(newName);
     expect(await changePromise).toBe(newName);
     expect(await theChangeEvent).toBe(newName);
+  });
+
+  it("EventHandle onChange and MyInput has onChange and has ChangeMutation", async () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+
+    let isCall = false;
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        props: {
+          onChange() {
+            isCall = true;
+          }
+        },
+        eventHandle: {
+          onChange(e) {
+            throw new Error("不改调用事件");
+          }
+        }
+      }
+    )(Input);
+
+    let onChange = e => {
+      throw new Error("不改调用事件");
+    };
+
+    const newName = "无可奈何而安之若命";
+    const target = mount(<MyInput onChange={onChange} />);
+
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    target.find(Input).simulate("change", { target: { value: newName } });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(isCall).toBeTruthy();
+  });
+
+  it("option props", async () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    const optionName = "newName";
+    const optionTitle = "newTitle";
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        props: {
+          value: optionName,
+          title: optionTitle
+        }
+      }
+    )(
+      class Input extends React.Component<any, any> {
+        static displayName = DisplayName;
+
+        render() {
+          return [
+            <input {...this.props} />,
+            <input value={this.props.title} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput title={optionTitle + 1} />);
+    expect(getInputValue(target.find("input").at(0))).toBe(optionName);
+    expect(getInputValue(target.find("input").at(1))).toBe(optionTitle);
+  });
+
+  it("option props null ", async () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        props: null
+      }
+    )(
+      class Input extends React.Component<any, any> {
+        static displayName = DisplayName;
+
+        render() {
+          return [
+            <input {...this.props} />,
+            <input value={this.props.title} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+  });
+  it("option props undefined ", async () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        props: undefined
+      }
+    )(
+      class Input extends React.Component<any, any> {
+        static displayName = DisplayName;
+
+        render() {
+          return [
+            <input {...this.props} />,
+            <input value={this.props.title} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+  });
+  it("option props {} ", async () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        props: {}
+      }
+    )(
+      class Input extends React.Component<any, any> {
+        static displayName = DisplayName;
+
+        render() {
+          return [
+            <input {...this.props} />,
+            <input value={this.props.title} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+  });
+  it("option props number ", async () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        props: 1
+      }
+    )(
+      class Input extends React.Component<any, any> {
+        static displayName = DisplayName;
+
+        render() {
+          return [
+            <input {...this.props} />,
+            <input value={this.props.title} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
   });
 });
