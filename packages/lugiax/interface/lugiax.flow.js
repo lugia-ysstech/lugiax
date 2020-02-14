@@ -19,6 +19,7 @@ declare module "@lugia/lugiax" {
 
   declare type ConnectOptionType = {
     props?: Object,
+    eventHandle?: EventHandle,
     withRef?: boolean,
     areStateEqual?: (preModel: Object[], nextModel: Object[]) => boolean,
     areStatePropsEqual?: (
@@ -40,7 +41,8 @@ declare module "@lugia/lugiax" {
     mapValue: (state: Object) => { [valueName: string]: any },
     trigger: {
       [eventName: string]: (mutations: Object, ...args: any) => any
-    }
+    },
+    opt: ?ConnectOptionType
   ): any;
 
   declare export function bindTo(

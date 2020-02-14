@@ -251,8 +251,10 @@ describe("lugiax.bind", () => {
         },
         {},
         {
-          onClick(e) {
-            res(e.target.value);
+          eventHandle: {
+            onClick(e) {
+              res(e.target.value);
+            }
           }
         }
       )(Input);
@@ -276,8 +278,10 @@ describe("lugiax.bind", () => {
         },
         {},
         {
-          onChange(e) {
-            res(e.target.value);
+          eventHandle: {
+            onChange(e) {
+              res(e.target.value);
+            }
           }
         }
       )(Input);
@@ -313,8 +317,10 @@ describe("lugiax.bind", () => {
           }
         },
         {
-          onChange(e) {
-            res(e.target.value);
+          eventHandle: {
+            onChange(e) {
+              res(e.target.value);
+            }
           }
         }
       )(Input);

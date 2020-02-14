@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import type { EventHandle } from "@lugia/lugiax";
+import type { ConnectOptionType } from "@lugia/lugiax";
 import type { RegisterResult } from "@lugia/lugiax-core";
 import lugiax from "@lugia/lugiax-core";
 
@@ -18,9 +18,10 @@ export default function(
   trigger: {
     [eventName: string]: (mutations: Object, ...args: any) => any
   } = {},
-  eventHandleConfig?: EventHandle = {}
+  opt: ?ConnectOptionType = {}
 ) {
-  const { model, mutations } = modelData;
+  const {eventHandle} = opt;
+  const { model } = modelData;
   trigger = trigger ? trigger : {};
 
   return (Target: React.ComponentType<any>) => {
@@ -51,7 +52,7 @@ export default function(
         const eventMethod = combineFunction(
           this.props,
           this.eventHandler,
-          eventHandleConfig
+          eventHandle
         );
         return <Target {...this.state} {...this.props} {...eventMethod} />;
       }

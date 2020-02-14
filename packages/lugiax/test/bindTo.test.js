@@ -160,9 +160,9 @@ describe("lugiax.bindTo", () => {
 
     const BindInput = bindTo(
       userModel,
-      { pwd: "value", name: "theName" },
+      { pwd: "value", name: "theName" },  // 模型绑定
       {
-        onChange: {
+        onChange: {  // 事件响应处理模型更新
           name: e => {
             return e.target.value + "is name";
           }
