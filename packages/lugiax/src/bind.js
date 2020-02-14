@@ -20,7 +20,12 @@ export default function(
   } = {},
   opt: ?ConnectOptionType = {}
 ) {
-  const { eventHandle, props: optionProps = {}, withRef: withRefEnable = false } = opt;
+  const {
+    eventHandle,
+    props: optionProps = {},
+    withRef: withRefEnable = false,
+    areStateEqual
+  } = opt;
   const { model } = modelData;
   trigger = trigger ? trigger : {};
 
@@ -31,12 +36,21 @@ export default function(
       static displayName = `lugiax-bind-${widgetName}`;
       unSubscribe: Function;
       eventHandler: Object;
+      oldModel: Object;
 
       constructor(props: any) {
         super(props);
-        this.state = mapValue(modelData.getState());
+        this.oldModel = modelData.getState();
+        this.state = mapValue(this.oldModel);
         const { unSubscribe } = lugiax.subscribe(model, () => {
-          this.setState(mapValue(modelData.getState()));
+          const newModel = modelData.getState();
+          const {oldModel} = this;
+          this.oldModel = newModel;
+          if (areStateEqual && !areStateEqual(oldModel, newModel)) {
+            return;
+          }
+
+          this.setState(mapValue(newModel));
         });
         this.unSubscribe = unSubscribe;
         this.eventHandler = {};

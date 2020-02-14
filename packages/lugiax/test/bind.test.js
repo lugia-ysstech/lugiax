@@ -619,4 +619,208 @@ describe("lugiax.bind", () => {
     const target = mount(<Form />);
     expect(target.instance().myInput.target.getName()).toEqual(result);
   });
+
+  it("option areStateEqual false", async () => {
+    const name = "ligx";
+    const newName = "fsasadklf";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    let callCount = 0;
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        areStateEqual(oldModel, newModel) {
+          callCount++;
+
+          return (
+            oldModel.getIn(["form", "name"]) === newModel.get(["form", "name"])
+          );
+        }
+      }
+    )(Input);
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(callCount).toBe(1);
+  });
+
+  it("option areStateEqual true", async () => {
+    const name = "ligx";
+    const newName = "fsasadklf";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    let callCount = 0;
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        areStateEqual(oldModel, newModel) {
+          callCount++;
+
+          return (
+            oldModel.getIn(["form", "name"]) === name && newModel.getIn(["form", "name"])  === newName
+          );
+        }
+      }
+    )(Input);
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    expect(callCount).toBe(1);
+  });
+
+  it("option areStateEqual true  render twice", async () => {
+    const initName = "ligx";
+    const firstChangeName = "fsasadklf";
+    const secondChangeName = "lkfjlasdfsaf";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(initName, pwd);
+    let callCount = 0;
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        areStateEqual(oldModel, newModel) {
+          callCount++;
+
+          if (callCount === 1) {
+            const check =
+              oldModel.getIn(["form", "name"]) === initName &&
+              newModel.getIn(["form", "name"]) === firstChangeName;
+
+            if (!check) {
+              throw new Error("第1次更新的模型入参的值错误");
+            }
+          }
+          if (callCount === 2) {
+            const check =
+              oldModel.getIn(["form", "name"]) === firstChangeName &&
+              newModel.getIn(["form", "name"]) === secondChangeName;
+
+            if (!check) {
+              throw new Error("第2次更新的模型入参的值错误");
+            }
+          }
+
+          return true;
+        }
+      }
+    )(Input);
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: firstChangeName });
+    expect(getInputValue(target.find("input").at(0))).toBe(firstChangeName);
+
+    changeName({ name: secondChangeName });
+    expect(getInputValue(target.find("input").at(0))).toBe(secondChangeName);
+
+    expect(callCount).toBe(2);
+  });
+
+  it("option areStateEqual false  render twice", async () => {
+    const initName = "ligx";
+    const firstChangeName = "fsasadklf";
+    const secondChangeName = "lkfjlasdfsaf";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(initName, pwd);
+    let callCount = 0;
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        areStateEqual(oldModel, newModel) {
+          callCount++;
+
+          if (callCount === 1) {
+            const check =
+              oldModel.getIn(["form", "name"]) === initName &&
+              newModel.getIn(["form", "name"]) === firstChangeName;
+
+            if (!check) {
+              throw new Error("第1次更新的模型入参的值错误");
+            }
+          }
+          if (callCount === 2) {
+            const check =
+              oldModel.getIn(["form", "name"]) === firstChangeName &&
+              newModel.getIn(["form", "name"]) === secondChangeName;
+
+            if (!check) {
+              throw new Error("第2次更新的模型入参的值错误");
+            }
+          }
+
+          return false;
+        }
+      }
+    )(Input);
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: firstChangeName });
+    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+
+    changeName({ name: secondChangeName });
+    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+
+    expect(callCount).toBe(2);
+  });
 });
