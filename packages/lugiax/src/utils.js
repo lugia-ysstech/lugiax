@@ -5,7 +5,7 @@
  * @flow
  */
 export function getDisplayName(Target: Object): string {
-  return Target.displayName || Target.name || 'Component';
+  return Target.displayName || Target.name || "Component";
 }
 
 export function tillMethodAttribute(
@@ -14,7 +14,7 @@ export function tillMethodAttribute(
   const events = {};
   paramA &&
     Object.keys(paramA).reduce((pre, current) => {
-      if (typeof paramA[current] === 'function') {
+      if (typeof paramA[current] === "function") {
         let config = pre[current];
         if (!config) {
           pre[current] = config = [];
@@ -63,4 +63,15 @@ export function combineFunction(...rest: Object[]): Object {
     };
   });
   return res;
+}
+
+export function withRef(enable: boolean, self: Object): Object {
+  const refConfig: Object = {};
+
+  if (enable === true) {
+    refConfig.ref = (cmp: any) => {
+      self.target = cmp;
+    };
+  }
+  return refConfig;
 }

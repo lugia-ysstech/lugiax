@@ -571,4 +571,52 @@ describe("lugiax.bind", () => {
     const target = mount(<MyInput />);
     expect(getInputValue(target.find("input").at(0))).toBe(name);
   });
+
+  it("option withRef true ", async () => {
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    const result = "hello world";
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        withRef: true,
+        props: undefined
+      }
+    )(
+      class Input extends React.Component<any, any> {
+        static displayName = DisplayName;
+
+        getName() {
+          return result;
+        }
+
+        render() {
+          return [
+            <input {...this.props} />,
+            <input value={this.props.title} />
+          ];
+        }
+      }
+    );
+
+    class Form extends React.Component {
+      render() {
+        return <MyInput ref={cmp => (this.myInput = cmp)} />;
+      }
+    }
+
+    const target = mount(<Form />);
+    expect(target.instance().myInput.target.getName()).toEqual(result);
+  });
 });

@@ -9,7 +9,7 @@ import type { RegisterResult } from "@lugia/lugiax-core";
 import lugiax from "@lugia/lugiax-core";
 
 import * as React from "react";
-import { getDisplayName, combineFunction } from "./utils";
+import { getDisplayName, combineFunction, withRef } from "./utils";
 import hoistStatics from "hoist-non-react-statics";
 
 export default function(
@@ -20,7 +20,7 @@ export default function(
   } = {},
   opt: ?ConnectOptionType = {}
 ) {
-  const { eventHandle, props: optionProps = {} } = opt;
+  const { eventHandle, props: optionProps = {}, withRef: withRefEnable = false } = opt;
   const { model } = modelData;
   trigger = trigger ? trigger : {};
 
@@ -60,6 +60,7 @@ export default function(
             {...this.props}
             {...eventMethod}
             {...optionProps}
+            {...withRef(withRefEnable, this)}
           />
         );
       }
