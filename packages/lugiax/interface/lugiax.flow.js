@@ -49,7 +49,7 @@ declare module "@lugia/lugiax" {
     modelData: RegisterResult,
     bindConfig: BindConfig,
     eventConfig: EventMuationConfig,
-    eventHandle: EventHandle
+    opt?: ConnectOptionType
   ): any;
 
   declare export default LugiaxType;
