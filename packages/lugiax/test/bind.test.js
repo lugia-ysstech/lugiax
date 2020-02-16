@@ -8,7 +8,7 @@ import lugiax from "@lugia/lugiax-core";
 import React from "react";
 import Enzyme, { mount } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
-import { bind } from "../src/";
+import { bind, connect } from "../src/";
 import { createDeepUserModel, createUserModel, getInputValue } from "./utils";
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -660,6 +660,68 @@ describe("lugiax.bind", () => {
     expect(callCount).toBe(1);
   });
 
+  it("option areStateEqual false  render twice", async () => {
+    const initName = "ligx";
+    const firstChangeName = "fsasadklf";
+    const secondChangeName = "lkfjlasdfsaf";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(initName, pwd);
+    let callCount = 0;
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          value: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        areStateEqual(oldModel, newModel) {
+          callCount++;
+
+          if (callCount === 1) {
+            const check =
+              oldModel.getIn(["form", "name"]) === initName &&
+              newModel.getIn(["form", "name"]) === firstChangeName;
+
+            if (!check) {
+              throw new Error("第1次更新的模型入参的值错误");
+            }
+          }
+          if (callCount === 2) {
+            const check =
+              oldModel.getIn(["form", "name"]) === firstChangeName &&
+              newModel.getIn(["form", "name"]) === secondChangeName;
+
+            if (!check) {
+              throw new Error("第2次更新的模型入参的值错误");
+            }
+          }
+
+          return false;
+        }
+      }
+    )(Input);
+
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: firstChangeName });
+    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+
+    changeName({ name: secondChangeName });
+    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+
+    expect(callCount).toBe(2);
+  });
+
   it("option areStateEqual true", async () => {
     const name = "ligx";
     const newName = "fsasadklf";
@@ -683,7 +745,8 @@ describe("lugiax.bind", () => {
           callCount++;
 
           return (
-            oldModel.getIn(["form", "name"]) === name && newModel.getIn(["form", "name"])  === newName
+            oldModel.getIn(["form", "name"]) === name &&
+            newModel.getIn(["form", "name"]) === newName
           );
         }
       }
@@ -762,18 +825,17 @@ describe("lugiax.bind", () => {
     expect(callCount).toBe(2);
   });
 
-  it("option areStateEqual false  render twice", async () => {
-    const initName = "ligx";
-    const firstChangeName = "fsasadklf";
-    const secondChangeName = "lkfjlasdfsaf";
+  it("option areStatePropsEqual true", async () => {
+    const name = "ligx";
+    const newName = "wwww";
     const pwd = "123456";
-    const userModel = createDeepUserModel(initName, pwd);
+    const userModel = createDeepUserModel(name, pwd);
     let callCount = 0;
     let MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          name: model.get("form").get("name")
         };
       },
       {
@@ -782,45 +844,336 @@ describe("lugiax.bind", () => {
         }
       },
       {
-        areStateEqual(oldModel, newModel) {
+        areStatePropsEqual(oldStateProps, newStateProps) {
           callCount++;
-
-          if (callCount === 1) {
-            const check =
-              oldModel.getIn(["form", "name"]) === initName &&
-              newModel.getIn(["form", "name"]) === firstChangeName;
-
-            if (!check) {
-              throw new Error("第1次更新的模型入参的值错误");
-            }
-          }
-          if (callCount === 2) {
-            const check =
-              oldModel.getIn(["form", "name"]) === firstChangeName &&
-              newModel.getIn(["form", "name"]) === secondChangeName;
-
-            if (!check) {
-              throw new Error("第2次更新的模型入参的值错误");
-            }
-          }
-
-          return false;
+          return oldStateProps.name === name && newStateProps.name === newName;
         }
       }
-    )(Input);
+    )(
+      class extends React.Component<any> {
+        render() {
+          return <input value={this.props.name} />;
+        }
+      }
+    );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
 
     const {
       mutations: { changeName }
     } = userModel;
-    changeName({ name: firstChangeName });
-    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    expect(callCount).toBe(1);
+  });
 
-    changeName({ name: secondChangeName });
-    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+  it("option areStatePropsEqual false", async () => {
+    const name = "ligx";
+    const newName = "wwww";
+    const pwd = "123456";
+    const userModel = createDeepUserModel(name, pwd);
+    let callCount = 0;
+    let MyInput = bind(
+      userModel,
+      model => {
+        return {
+          name: model.get("form").get("name")
+        };
+      },
+      {
+        onChange: (mutations, e) => {
+          return mutations.changeName({ name: e.target.value });
+        }
+      },
+      {
+        areStatePropsEqual(oldStateProps, newStateProps) {
+          console.log("======", oldStateProps, newStateProps);
+          callCount++;
+          return oldStateProps.name === newStateProps.name;
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return <input value={this.props.name} />;
+        }
+      }
+    );
 
+    const target = mount(<MyInput />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(callCount).toBe(1);
+  });
+
+  it("option areOwnPropsEqual true", async () => {
+    const name = "ligx";
+    const newName = "wwww";
+    const pwd = "123456";
+    const hello = "hello";
+
+    const userModel = createDeepUserModel(name, pwd);
+    const hellModule = lugiax.register({
+      model: "hello",
+      state: { hello },
+      mutations: {
+        sync: {
+          changeInfo(data: Object, inParam: Object) {
+            return data.set("hello", inParam.value);
+          }
+        }
+      }
+    });
+    let callCount = 0;
+    let MyInput = bind(
+      hellModule,
+      model => {
+        return {
+          hello: model.get("hello")
+        };
+      },
+      null,
+      {
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          return oldProps.hello === name && newProps.hello === newName;
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return <input value={this.props.hello} />;
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("form").get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    expect(callCount).toBe(1);
+  });
+
+  it("option areOwnPropsEqual false", async () => {
+    const name = "ligx";
+    const newName = "wwww";
+    const pwd = "123456";
+    const hello = "hello";
+
+    const userModel = createDeepUserModel(name, pwd);
+    const hellModule = lugiax.register({
+      model: "hello",
+      state: { hello },
+      mutations: {
+        sync: {
+          changeInfo(data: Object, inParam: Object) {
+            return data.set("hello", inParam.value);
+          }
+        }
+      }
+    });
+    let callCount = 0;
+    let MyInput = bind(
+      hellModule,
+      model => {
+        return {
+          hello: model.get("hello")
+        };
+      },
+      null,
+      {
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          return !(oldProps.hello === name && newProps.hello === newName);
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return <input value={this.props.hello} />;
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("form").get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(callCount).toBe(1);
+  });
+
+  it("option areOwnPropsEqual false and areStatePropsEqual true", async () => {
+    const name = "ligx";
+    const newName = "world";
+    const pwd = "123456";
+    const hello = "hello";
+
+    const userModel = createDeepUserModel(name, pwd);
+    const hellModule = lugiax.register({
+      model: "hello",
+      state: { hello },
+      mutations: {
+        sync: {
+          changeInfo(data: Object, inParam: Object) {
+            return data.set("hello", inParam.value);
+          }
+        }
+      }
+    });
+    let callCount = 0;
+    let MyInput = bind(
+      hellModule,
+      model => {
+        return {
+          hello: model.get("hello")
+        };
+      },
+      null,
+      {
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          return !(oldProps.hello === "ligx" && newProps.hello === "world");
+        },
+        areStatePropsEqual() {
+          callCount++;
+          return true;
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return <input value={this.props.hello} />;
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("form").get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(callCount).toBe(2);
+  });
+
+  it("option areOwnPropsEqual true and areStatePropsEqual false", async () => {
+    const name = "ligx";
+    const newName = "wwww";
+    const pwd = "123456";
+    const hello = "hello";
+
+    const userModel = createDeepUserModel(name, pwd);
+    const hellModule = lugiax.register({
+      model: "hello",
+      state: { hello },
+      mutations: {
+        sync: {
+          changeInfo(data: Object, inParam: Object) {
+            return data.set("hello", inParam.value);
+          }
+        }
+      }
+    });
+    let callCount = 0;
+    let MyInput = bind(
+      hellModule,
+      model => {
+        return {
+          hello: model.get("hello")
+        };
+      },
+      null,
+      {
+        areOwnPropsEqual(oldProps, newProps) {
+          callCount++;
+          return true;
+        },
+        areStatePropsEqual(oldStateProps, newStateProps) {
+          console.log("=================", oldStateProps, newStateProps);
+          callCount++;
+          return false;
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return <input value={this.props.hello} />;
+        }
+      }
+    );
+
+    const From = connect(userModel, state => {
+      return {
+        hello: state.get("form").get("name")
+      };
+    })(
+      class PropsInput extends React.Component {
+        render() {
+          return <MyInput {...this.props} />;
+        }
+      }
+    );
+
+    const target = mount(<From />);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
     expect(callCount).toBe(2);
   });
 });
