@@ -333,6 +333,65 @@ describe("lugiax.connect", () => {
     expect(callCount).toBe(1);
   });
 
+  it("connect twoModel areStateEqual true render twice", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const initInfo = "ligx";
+
+    const infoModel = createInfoModel(initInfo);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      [userModel, infoModel],
+      (state: Object) => {
+        const [user, info] = state;
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd"),
+          info: info.get("info")
+        };
+      },
+      null,
+      {
+        areStateEqual(oldState, newState) {
+          callCount++;
+          return oldState.get("info").length < newState.get("info").length;
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(initInfo);
+
+    const {
+      mutations: { changeInfo }
+    } = infoModel;
+
+    const firstInfo = "ligx1";
+    changeInfo({ value: firstInfo });
+    expect(getInputValue(target.find("input").at(2))).toEqual(firstInfo);
+    expect(callCount).toBe(1);
+
+    const secondInfo = "ligx11";
+    changeInfo({ value: secondInfo });
+    expect(getInputValue(target.find("input").at(2))).toEqual(secondInfo);
+    expect(callCount).toBe(2);
+  });
+
   it("connect twoModel areStateEqual false", () => {
     const name = "ligx";
     const pwd = "helol";
@@ -384,6 +443,64 @@ describe("lugiax.connect", () => {
 
     expect(getInputValue(target.find("input").at(2))).toEqual(info);
     expect(callCount).toBe(1);
+  });
+
+  it("connect twoModel areStateEqual false render twice", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const initInfo = "ligx";
+    const infoModel = createInfoModel(initInfo);
+    const userModel = createUserModel(name, pwd);
+
+    let callCount = 0;
+    const MyInput = connect(
+      [userModel, infoModel],
+      (state: Object) => {
+        const [user, info] = state;
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd"),
+          info: info.get("info")
+        };
+      },
+      null,
+      {
+        areStateEqual(oldState, newState) {
+          callCount++;
+          return oldState.get("info") === newState.get("info");
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(initInfo);
+
+    const {
+      mutations: { changeInfo }
+    } = infoModel;
+    const firstInfo = "ligx1";
+
+    changeInfo({ value: firstInfo });
+    expect(getInputValue(target.find("input").at(2))).toEqual(initInfo);
+    expect(callCount).toBe(1);
+
+    const secondInfo = "ligx2";
+    changeInfo({ value: secondInfo });
+    expect(getInputValue(target.find("input").at(2))).toEqual(initInfo);
+    expect(callCount).toBe(2);
   });
 
   it("connect twoModel areStatePropsEqual true", () => {
