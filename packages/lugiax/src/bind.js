@@ -24,8 +24,11 @@ export default function(
     eventHandle,
     props: optionProps = {},
     withRef: withRefEnable = false,
-    areStateEqual
+    areStateEqual,
+    areStatePropsEqual,
+    areOwnPropsEqual
   } = opt;
+
   const { model } = modelData;
   trigger = trigger ? trigger : {};
 
@@ -44,7 +47,7 @@ export default function(
         this.state = mapValue(this.oldModel);
         const { unSubscribe } = lugiax.subscribe(model, () => {
           const newModel = modelData.getState();
-          const {oldModel} = this;
+          const { oldModel } = this;
           this.oldModel = newModel;
           if (areStateEqual && !areStateEqual(oldModel, newModel)) {
             return;
@@ -60,6 +63,15 @@ export default function(
             func.call(null, modelData.mutations, ...rest);
           };
         });
+      }
+
+      shouldComponentUpdate(nextProps: Object, nextState: Object) {
+        let areStatePropsEqualVal =
+          !areStatePropsEqual || areStatePropsEqual(this.state, nextState);
+
+        let areOwnPropsEqualVal =
+          !areOwnPropsEqual || areOwnPropsEqual(this.props, nextProps);
+        return areStatePropsEqualVal && areOwnPropsEqualVal;
       }
 
       render() {
