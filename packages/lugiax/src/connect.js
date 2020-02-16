@@ -9,7 +9,7 @@ import type { RegisterResult } from "@lugia/lugiax-core";
 import lugiax from "@lugia/lugiax-core";
 import hoistStatics from "hoist-non-react-statics";
 import * as React from "react";
-import { getDisplayName, withRef } from "./utils";
+import { getDisplayName, withRef, combineFunction } from "./utils";
 
 const Noop = () => ({});
 export default function(
@@ -117,12 +117,18 @@ export default function(
       target: any;
       render() {
         const { props, mutations } = this.state;
-        const { withRef: withRefEnable = false, props: topProps = {} } = opt;
+        const {
+          withRef: withRefEnable = false,
+          props: topProps = {},
+          eventHandle = {}
+        } = opt;
+        const eventMethod = combineFunction(this.props, eventHandle);
         return (
           <Target
             {...props}
             {...mutations}
             {...this.props}
+            {...eventMethod}
             {...topProps}
             {...withRef(withRefEnable, this)}
           />

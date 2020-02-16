@@ -850,4 +850,121 @@ describe("lugiax.connect", () => {
     expect(getInputValue(target.find("input").at(0))).toEqual(name);
     expect(callCount).toBe(2);
   });
+  it("connect opt eventHandle exist handleFn and props exist handleFn to merge", () => {
+    let callCount = 0;
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createUserModel(name, pwd);
+    class Input extends React.Component<any, any> {
+      static displayName = "MyInput";
+      onClick = () => {
+        this.props.update();
+      };
+
+      render() {
+        return [<button onClick={this.onClick} />];
+      }
+    }
+    const MyInput = connect(
+      userModel,
+      (user: Object) => {
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd")
+        };
+      },
+      user => ({ changeName: user.changeName }),
+      {
+        eventHandle: {
+          update() {
+            callCount++;
+          }
+        }
+      }
+    )(Input);
+
+    const target: Object = mount(
+      <MyInput
+        update={() => {
+          callCount++;
+        }}
+      />
+    );
+    target.find("button").simulate("click");
+    expect(callCount).toBe(2);
+  });
+  it("connect opt eventHandle exist handleFn by call", () => {
+    let callCount = 0;
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createUserModel(name, pwd);
+    class Input extends React.Component<any, any> {
+      static displayName = "MyInput";
+      onClick = () => {
+        this.props.update();
+      };
+
+      render() {
+        return [<button onClick={this.onClick} />];
+      }
+    }
+    const MyInput = connect(
+      userModel,
+      (user: Object) => {
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd")
+        };
+      },
+      user => ({ changeName: user.changeName }),
+      {
+        eventHandle: {
+          update() {
+            callCount++;
+          }
+        }
+      }
+    )(Input);
+
+    const target: Object = mount(<MyInput />);
+    target.find("button").simulate("click");
+    expect(callCount).toBe(1);
+  });
+
+  it("connect target exist handleFn by call", () => {
+    let callCount = 0;
+    const name = "ligx";
+    const pwd = "123456";
+    const userModel = createUserModel(name, pwd);
+    class Input extends React.Component<any, any> {
+      static displayName = "MyInput";
+      onClick = () => {
+        this.props.update();
+      };
+
+      render() {
+        return [<button onClick={this.onClick} />];
+      }
+    }
+    const MyInput = connect(
+      userModel,
+      (user: Object) => {
+        return {
+          name: user.get("name"),
+          pwd: user.get("pwd")
+        };
+      },
+      user => ({ changeName: user.changeName })
+    )(Input);
+
+    const target: Object = mount(
+      <MyInput
+        update={() => {
+          callCount++;
+        }}
+      />
+    );
+    target.find("button").simulate("click");
+    expect(callCount).toBe(1);
+  });
 });
