@@ -55,7 +55,7 @@ export default function(
   modelData: RegisterResult,
   bindConfig: BindConfig,
   eventConfig: EventMuationConfig = {},
-  eventHandleConfig: EventHandle = {}
+  opt: ?ConnectOptionType = {}
 ) {
   const field2Props = getFieldProps(bindConfig);
   const fieldNames = getFieldNames(field2Props);
@@ -87,13 +87,25 @@ export default function(
       };
     }
   );
+  const areStateEqual = autoCreateAreStateEqual(fieldNames);
+  opt = Object.assign({ areStateEqual }, opt);
   return (Target: React.ComponentType<any>) => {
     return bind(
       modelData,
       generateMode2Props(fieldNames, field2Props),
       eventHandle,
-      { eventHandle: eventHandleConfig }
+      opt
     )(Target);
+  };
+}
+
+function autoCreateAreStateEqual(fieldNames: string[]) {
+  return (oldModel, newModel) => {
+    return fieldNames.some(fieldName => {
+      const oldGetValue = gettor(oldModel, fieldName)();
+      const newGetValue = gettor(newModel, fieldName)();
+      return oldGetValue != newGetValue;
+    });
   };
 }
 
