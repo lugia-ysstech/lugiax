@@ -22,6 +22,11 @@ class Input extends React.Component<any, any> {
   }
 }
 
+function statisticsRenderCountFn(statistics, name) {
+  statistics[name] = statistics[name] ? ++statistics[name] : 1;
+  return statistics;
+}
+
 describe("lugiax.bindTo", () => {
   beforeEach(() => {
     lugiax.clear();
@@ -138,7 +143,7 @@ describe("lugiax.bindTo", () => {
 
     class App extends React.Component<any, any> {
       render() {
-        return <BindInputA value={'hello'}/>;
+        return <BindInputA value={"hello"} />;
       }
     }
 
@@ -150,7 +155,7 @@ describe("lugiax.bindTo", () => {
         .get(model)
         .get("pwd")
     ).toBe(pwd);
-    expect(getInputValue(target.find("input").at(0))).toBe('hello');
+    expect(getInputValue(target.find("input").at(0))).toBe("hello");
   });
 
   it("bindTo pwd: value & name: theName ", () => {
@@ -160,9 +165,10 @@ describe("lugiax.bindTo", () => {
 
     const BindInput = bindTo(
       userModel,
-      { pwd: "value", name: "theName" },  // 模型绑定
+      { pwd: "value", name: "theName" }, // 模型绑定
       {
-        onChange: {  // 事件响应处理模型更新
+        onChange: {
+          // 事件响应处理模型更新
           name: e => {
             return e.target.value + "is name";
           }
@@ -715,8 +721,10 @@ describe("lugiax.bindTo", () => {
         {},
         {},
         {
-          onClick(e) {
-            res(e.target.value);
+          eventHandle: {
+            onClick(e) {
+              res(e.target.value);
+            }
           }
         }
       )(Input);
@@ -738,8 +746,10 @@ describe("lugiax.bindTo", () => {
         {},
         {},
         {
-          onChange(e) {
-            res(e.target.value);
+          eventHandle: {
+            onChange(e) {
+              res(e.target.value);
+            }
           }
         }
       )(Input);
@@ -755,6 +765,7 @@ describe("lugiax.bindTo", () => {
     expect(await changePromise).toBe(name);
     expect(await theChangeEvent).toBe(name);
   });
+
   it("EventHandle onChange and MyInput has onChange and has ChangeMutation", async () => {
     const name = "ligx";
     const pwd = "123456";
@@ -769,8 +780,10 @@ describe("lugiax.bindTo", () => {
         },
         {},
         {
-          onChange(e) {
-            res(e.target.value);
+          eventHandle: {
+            onChange(e) {
+              res(e.target.value);
+            }
           }
         }
       )(Input);
@@ -795,5 +808,668 @@ describe("lugiax.bindTo", () => {
     ).toBe(newName);
     expect(await changePromise).toBe(newName);
     expect(await theChangeEvent).toBe(newName);
+  });
+
+  it("bindTo add default AreStateEqual function to prevent component render && bindConfig is string && simpleModel", () => {
+    const model = "user";
+    const name1 = "name";
+    const name2 = "name";
+    const name3 = "name";
+    const name4 = "name";
+    const statistics = {};
+    const state = {
+      name1,
+      name2,
+      name3,
+      name4
+    };
+    let userModel = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName1(data: Object, inParam: Object) {
+            return data.set("name1", inParam.name1);
+          },
+          changeName2(data: Object, inParam: Object) {
+            return data.set("name2", inParam.name2);
+          },
+          changeName3(data: Object, inParam: Object) {
+            return data.set("name3", inParam.name3);
+          },
+          changeName4(data: Object, inParam: Object) {
+            return data.set("name4", inParam.name4);
+          }
+        }
+      }
+    });
+
+    class Input1 extends React.Component<any, any> {
+      displayName = "name1";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input2 extends React.Component<any, any> {
+      displayName = "name2";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input3 extends React.Component<any, any> {
+      displayName = "name3";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input4 extends React.Component<any, any> {
+      displayName = "name4";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+
+    const BindInput1 = bindTo(userModel, "name1")(Input1);
+    const BindInput2 = bindTo(userModel, "name2")(Input2);
+    const BindInput3 = bindTo(userModel, "name3")(Input3);
+    const BindInput4 = bindTo(userModel, "name4")(Input4);
+    const {
+      mutations: { changeName1, changeName2, changeName3, changeName4 }
+    } = userModel;
+
+    class App extends React.Component<any, any> {
+      render() {
+        return [<BindInput1 />, <BindInput2 />, <BindInput3 />, <BindInput4 />];
+      }
+    }
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find("input").at(0))).toBe(name1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(1);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+    const newName1 = "2222";
+    changeName1({ name1: newName1 });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(2);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+  });
+
+  it("bindTo add default AreStateEqual function to prevent component render  && bindConfig is object && simpleModel ", () => {
+    const model = "user";
+    const name1 = "name";
+    const name2 = "name";
+    const name3 = "name";
+    const name4 = "name";
+    const statistics = {};
+    const state = {
+      name1,
+      name2,
+      name3,
+      name4
+    };
+    let userModel = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName1(data: Object, inParam: Object) {
+            return data.set("name1", inParam.name1);
+          },
+          changeName2(data: Object, inParam: Object) {
+            return data.set("name2", inParam.name2);
+          },
+          changeName3(data: Object, inParam: Object) {
+            return data.set("name3", inParam.name3);
+          },
+          changeName4(data: Object, inParam: Object) {
+            return data.set("name4", inParam.name4);
+          }
+        }
+      }
+    });
+
+    class Input1 extends React.Component<any, any> {
+      displayName = "name1";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input2 extends React.Component<any, any> {
+      displayName = "name2";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input3 extends React.Component<any, any> {
+      displayName = "name3";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input4 extends React.Component<any, any> {
+      displayName = "name4";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+
+    const BindInput1 = bindTo(userModel, {
+      name1: "value"
+    })(Input1);
+    const BindInput2 = bindTo(userModel, {
+      name2: "value"
+    })(Input2);
+    const BindInput3 = bindTo(userModel, {
+      name3: "value"
+    })(Input3);
+    const BindInput4 = bindTo(userModel, {
+      name4: "value"
+    })(Input4);
+    const {
+      mutations: { changeName1, changeName2, changeName3, changeName4 }
+    } = userModel;
+
+    class App extends React.Component<any, any> {
+      render() {
+        return [<BindInput1 />, <BindInput2 />, <BindInput3 />, <BindInput4 />];
+      }
+    }
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find("input").at(0))).toBe(name1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(1);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+    const newName1 = "2222";
+    changeName1({ name1: newName1 });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(2);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+  });
+
+  it("bindTo add default AreStateEqual function to prevent component render && bindConfig is string && deepModel", () => {
+    const model = "user";
+    const name1 = "name";
+    const name2 = "name";
+    const name3 = "name";
+    const name4 = "name";
+    const statistics = {};
+    const state = {
+      form: {
+        name1,
+        name2,
+        name3,
+        name4
+      }
+    };
+    let userModel = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName1(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name1", inParam.name1));
+          },
+          changeName2(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name2", inParam.name2));
+          },
+          changeName3(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name3", inParam.name3));
+          },
+          changeName4(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name4", inParam.name4));
+          }
+        }
+      }
+    });
+
+    class Input1 extends React.Component<any, any> {
+      displayName = "name1";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input2 extends React.Component<any, any> {
+      displayName = "name2";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input3 extends React.Component<any, any> {
+      displayName = "name3";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input4 extends React.Component<any, any> {
+      displayName = "name4";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+
+    const BindInput1 = bindTo(userModel, "form.name1")(Input1);
+    const BindInput2 = bindTo(userModel, "form.name2")(Input2);
+    const BindInput3 = bindTo(userModel, "form.name3")(Input3);
+    const BindInput4 = bindTo(userModel, "form.name4")(Input4);
+    const {
+      mutations: { changeName1, changeName2, changeName3, changeName4 }
+    } = userModel;
+
+    class App extends React.Component<any, any> {
+      render() {
+        return [<BindInput1 />, <BindInput2 />, <BindInput3 />, <BindInput4 />];
+      }
+    }
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find("input").at(0))).toBe(name1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(1);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+    const newName1 = "2222";
+    changeName1({ name1: newName1 });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(2);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+  });
+
+  it("bindTo add default AreStateEqual function to prevent component render && bindConfig is Object && deepModel", () => {
+    const model = "user";
+    const name1 = "name";
+    const name2 = "name";
+    const name3 = "name";
+    const name4 = "name";
+    const statistics = {};
+    const state = {
+      form: {
+        name1,
+        name2,
+        name3,
+        name4
+      }
+    };
+    let userModel = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName1(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name1", inParam.name1));
+          },
+          changeName2(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name2", inParam.name2));
+          },
+          changeName3(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name3", inParam.name3));
+          },
+          changeName4(data: Object, inParam: Object) {
+            const form = data.get("form");
+            return data.set("form", form.set("name4", inParam.name4));
+          }
+        }
+      }
+    });
+
+    class Input1 extends React.Component<any, any> {
+      displayName = "name1";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input2 extends React.Component<any, any> {
+      displayName = "name2";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input3 extends React.Component<any, any> {
+      displayName = "name3";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input4 extends React.Component<any, any> {
+      displayName = "name4";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+
+    const BindInput1 = bindTo(userModel, { "form.name1": "value" })(Input1);
+    const BindInput2 = bindTo(userModel, { "form.name2": "value" })(Input2);
+    const BindInput3 = bindTo(userModel, { "form.name3": "value" })(Input3);
+    const BindInput4 = bindTo(userModel, { "form.name4": "value" })(Input4);
+    const {
+      mutations: { changeName1, changeName2, changeName3, changeName4 }
+    } = userModel;
+
+    class App extends React.Component<any, any> {
+      render() {
+        return [<BindInput1 />, <BindInput2 />, <BindInput3 />, <BindInput4 />];
+      }
+    }
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find("input").at(0))).toBe(name1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(1);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+    const newName1 = "2222";
+    changeName1({ name1: newName1 });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(2);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+  });
+
+  it("bindTo add default AreStateEqual function to prevent component render, mutations call twice", () => {
+    const model = "user";
+    const name1 = "name";
+    const name2 = "name";
+    const name3 = "name";
+    const name4 = "name";
+    const statistics = {};
+    const state = {
+      name1,
+      name2,
+      name3,
+      name4
+    };
+    let userModel = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName1(data: Object, inParam: Object) {
+            return data.set("name1", inParam.name1);
+          },
+          changeName2(data: Object, inParam: Object) {
+            return data.set("name2", inParam.name2);
+          },
+          changeName3(data: Object, inParam: Object) {
+            return data.set("name3", inParam.name3);
+          },
+          changeName4(data: Object, inParam: Object) {
+            return data.set("name4", inParam.name4);
+          }
+        }
+      }
+    });
+
+    class Input1 extends React.Component<any, any> {
+      displayName = "name1";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input2 extends React.Component<any, any> {
+      displayName = "name2";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input3 extends React.Component<any, any> {
+      displayName = "name3";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input4 extends React.Component<any, any> {
+      displayName = "name4";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+
+    const BindInput1 = bindTo(userModel, {
+      name1: "value"
+    })(Input1);
+    const BindInput2 = bindTo(userModel, {
+      name2: "value"
+    })(Input2);
+    const BindInput3 = bindTo(userModel, {
+      name3: "value"
+    })(Input3);
+    const BindInput4 = bindTo(userModel, {
+      name4: "value"
+    })(Input4);
+    const {
+      mutations: { changeName1, changeName2, changeName3, changeName4 }
+    } = userModel;
+
+    class App extends React.Component<any, any> {
+      render() {
+        return [<BindInput1 />, <BindInput2 />, <BindInput3 />, <BindInput4 />];
+      }
+    }
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find("input").at(0))).toBe(name1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(1);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+    const newName1 = "2222";
+    changeName1({ name1: newName1 });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(2);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+    const newName = "3333";
+    changeName2({ name2: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(1))).toBe(newName);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(2);
+    expect(statistics["name2"]).toBe(2);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+  });
+
+  it("bindTo add default AreStateEqual function to prevent component render, component Components share a model source", () => {
+    const model = "user";
+    const name1 = "name";
+    const name2 = "name";
+    const name3 = "name";
+    const name4 = "name";
+    const statistics = {};
+    const state = {
+      name1,
+      name2,
+      name3,
+      name4
+    };
+    let userModel = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName1(data: Object, inParam: Object) {
+            return data.set("name1", inParam.name1);
+          },
+          changeName2(data: Object, inParam: Object) {
+            return data.set("name2", inParam.name2);
+          },
+          changeName3(data: Object, inParam: Object) {
+            return data.set("name3", inParam.name3);
+          },
+          changeName4(data: Object, inParam: Object) {
+            return data.set("name4", inParam.name4);
+          }
+        }
+      }
+    });
+
+    class Input1 extends React.Component<any, any> {
+      displayName = "name1";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input2 extends React.Component<any, any> {
+      displayName = "name2";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "", hell = "" } = this.props;
+        return [
+          <input {...this.props} value={value === null ? "" : value} />,
+          <input value={hell === null ? "" : hell} />
+        ];
+      }
+    }
+    class Input3 extends React.Component<any, any> {
+      displayName = "name3";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+    class Input4 extends React.Component<any, any> {
+      displayName = "name4";
+      render() {
+        statisticsRenderCountFn(statistics, this.displayName);
+        const { value = "" } = this.props;
+        return <input {...this.props} value={value === null ? "" : value} />;
+      }
+    }
+
+    const BindInput1 = bindTo(userModel, {
+      name1: "value"
+    })(Input1);
+    const BindInput2 = bindTo(userModel, {
+      name2: "value",
+      name1: "hell"
+    })(Input2);
+    const BindInput3 = bindTo(userModel, {
+      name3: "value"
+    })(Input3);
+    const BindInput4 = bindTo(userModel, {
+      name4: "value"
+    })(Input4);
+    const {
+      mutations: { changeName1, changeName2, changeName3, changeName4 }
+    } = userModel;
+
+    class App extends React.Component<any, any> {
+      render() {
+        return [<BindInput1 />, <BindInput2 />, <BindInput3 />, <BindInput4 />];
+      }
+    }
+    const target = mount(<App />);
+
+    expect(getInputValue(target.find("input").at(0))).toBe(name1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(name3);
+    expect(getInputValue(target.find("input").at(3))).toBe(name4);
+    expect(statistics["name1"]).toBe(1);
+    expect(statistics["name2"]).toBe(1);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
+    const newName1 = "2222";
+    changeName1({ name1: newName1 });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(1))).toBe(name2);
+    expect(getInputValue(target.find("input").at(2))).toBe(newName1);
+    expect(getInputValue(target.find("input").at(3))).toBe(name3);
+    expect(getInputValue(target.find("input").at(4))).toBe(name4);
+    expect(statistics["name1"]).toBe(2);
+    expect(statistics["name2"]).toBe(2);
+    expect(statistics["name3"]).toBe(1);
+    expect(statistics["name4"]).toBe(1);
   });
 });
