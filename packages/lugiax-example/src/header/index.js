@@ -17,6 +17,7 @@ export default class Header extends React.Component<any> {
           <Link to="/tomato">番茄钟</Link>
           &nbsp;
           <Link to="/todo">todo</Link>
+          <Link to="/from">from</Link>
           <Link to="/nowPower">nowPower</Link>
           <Link to="/count">count</Link>
         </div>
@@ -25,6 +26,6 @@ export default class Header extends React.Component<any> {
   }
 
   onClick = () => {
-    go({ url: '/todo', });
+    go({ url: "/todo" });
   };
 }
