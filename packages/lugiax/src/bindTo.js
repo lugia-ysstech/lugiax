@@ -88,23 +88,22 @@ export default function(
     }
   );
   const areStateEqual = autoCreateAreStateEqual(fieldNames);
-  opt = Object.assign({ areStateEqual }, opt);
   return (Target: React.ComponentType<any>) => {
     return bind(
       modelData,
       generateMode2Props(fieldNames, field2Props),
       eventHandle,
-      opt
+      { areStateEqual, ...opt }
     )(Target);
   };
 }
 
 function autoCreateAreStateEqual(fieldNames: string[]) {
   return (oldModel, newModel) => {
-    return fieldNames.some(fieldName => {
+    return !fieldNames.every(fieldName => {
       const oldGetValue = gettor(oldModel, fieldName)();
       const newGetValue = gettor(newModel, fieldName)();
-      return oldGetValue != newGetValue;
+      return oldGetValue == newGetValue;
     });
   };
 }

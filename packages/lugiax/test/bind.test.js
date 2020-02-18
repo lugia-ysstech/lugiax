@@ -660,7 +660,7 @@ describe("lugiax.bind", () => {
     expect(callCount).toBe(1);
   });
 
-  it("option areStateEqual false  render twice", async () => {
+  it("option areStateEqual false  render zero", async () => {
     const initName = "ligx";
     const firstChangeName = "fsasadklf";
     const secondChangeName = "lkfjlasdfsaf";
@@ -701,7 +701,6 @@ describe("lugiax.bind", () => {
               throw new Error("第2次更新的模型入参的值错误");
             }
           }
-
           return false;
         }
       }
@@ -888,7 +887,6 @@ describe("lugiax.bind", () => {
       },
       {
         areStatePropsEqual(oldStateProps, newStateProps) {
-          console.log("======", oldStateProps, newStateProps);
           callCount++;
           return oldStateProps.name === newStateProps.name;
         }
@@ -1141,7 +1139,6 @@ describe("lugiax.bind", () => {
           return true;
         },
         areStatePropsEqual(oldStateProps, newStateProps) {
-          console.log("=================", oldStateProps, newStateProps);
           callCount++;
           return false;
         }

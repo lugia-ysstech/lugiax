@@ -7,7 +7,8 @@ import {
   combineFunction,
   combineMethodObject,
   tillMethodAttribute,
-  withRef
+  withRef,
+  isShouldRender
 } from "../src/utils";
 
 describe("lugiax.bind", () => {
@@ -217,5 +218,134 @@ describe("lugiax.bind", () => {
     const res = withRef(false, self);
     expect(res.ref).toBeUndefined();
     expect(Object.keys(self)).toEqual([]);
+  });
+
+  it("checking isShouldRender function  a function return true  b function return true", () => {
+    function a(old, next) {
+      return old === next;
+    }
+    function b(old, next) {
+      return old === next;
+    }
+    expect(
+      isShouldRender(a, b, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(true);
+  });
+
+  it("checking isShouldRender function  a function return false  b function return true", () => {
+    function a(old, next) {
+      return old !== next;
+    }
+    function b(old, next) {
+      return old === next;
+    }
+    expect(
+      isShouldRender(a, b, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(false);
+  });
+
+  it("checking isShouldRender function  a function return false  b function return false", () => {
+    function a(old, next) {
+      return old !== next;
+    }
+    function b(old, next) {
+      return old !== next;
+    }
+    expect(
+      isShouldRender(a, b, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(false);
+  });
+
+  it("checking isShouldRender function  a function is undefined  b function return true", () => {
+    function b(old, next) {
+      return old === next;
+    }
+    expect(
+      isShouldRender(undefined, b, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(true);
+  });
+
+  it("checking isShouldRender function  a function is undefined  b function return false", () => {
+    function b(old, next) {
+      return old !== next;
+    }
+    expect(
+      isShouldRender(undefined, b, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(false);
+  });
+
+  it("checking isShouldRender function  a function return true  b function is undefined ", () => {
+    function b(old, next) {
+      return old === next;
+    }
+    expect(
+      isShouldRender(undefined, b, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(true);
+  });
+
+  it("checking isShouldRender function  a function return false  b function is undefined ", () => {
+    function b(old, next) {
+      return old !== next;
+    }
+    expect(
+      isShouldRender(undefined, b, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(false);
+  });
+
+  it("checking isShouldRender function  a function is undefined b function is undefined ", () => {
+    expect(
+      isShouldRender(undefined, undefined, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(true);
+  });
+
+  it("checking isShouldRender function  a function is null b function is null ", () => {
+    expect(
+      isShouldRender(undefined, undefined, {
+        preState: 1,
+        nextState: 1,
+        preProps: 1,
+        nextProps: 1
+      })
+    ).toBe(true);
   });
 });
