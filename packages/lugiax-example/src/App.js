@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { createRoute } from "@lugia/lugiax-router";
 import "./App.css";
+import Form from "./form";
 import Header from "./header";
 import Todo from "./todo";
 import Count from "./count";
@@ -22,6 +23,9 @@ export default () => {
       "/count": {
         exact: true,
         component: Count
+      },
+      "/from": {
+        component: Form
       },
       "/tomato": {
         component: Tomato
