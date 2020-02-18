@@ -9,7 +9,12 @@ import type { RegisterResult } from "@lugia/lugiax-core";
 import lugiax from "@lugia/lugiax-core";
 import hoistStatics from "hoist-non-react-statics";
 import * as React from "react";
-import { getDisplayName, withRef, combineFunction } from "./utils";
+import {
+  getDisplayName,
+  withRef,
+  combineFunction,
+  isShouldRender
+} from "./utils";
 
 const Noop = () => ({});
 export default function(
@@ -105,13 +110,12 @@ export default function(
       shouldComponentUpdate(nextProps: Object, nextState: Object) {
         const { props: preStateProps } = this.state;
         const { props: nextStateProps } = nextState;
-        let areStatePropsEqualVal =
-          !areStatePropsEqual ||
-          areStatePropsEqual(preStateProps, nextStateProps);
-
-        let areOwnPropsEqualVal =
-          !areOwnPropsEqual || areOwnPropsEqual(this.props, nextProps);
-        return areStatePropsEqualVal && areOwnPropsEqualVal;
+        return isShouldRender(areStatePropsEqual, areOwnPropsEqual, {
+          preState: preStateProps,
+          nextState: nextStateProps,
+          preProps: this.props,
+          nextProps
+        });
       }
 
       target: any;

@@ -75,3 +75,17 @@ export function withRef(enable: boolean, self: Object): Object {
   }
   return refConfig;
 }
+
+export function isShouldRender(
+  areStatePropsEqual: function,
+  areOwnPropsEqual: function,
+  comparativeData: Object
+): boolean {
+  let areStatePropsEqualVal =
+    !areStatePropsEqual ||
+    areStatePropsEqual(comparativeData.preState, comparativeData.nextState);
+  let areOwnPropsEqualVal =
+    !areOwnPropsEqual ||
+    areOwnPropsEqual(comparativeData.preProps, comparativeData.nextProps);
+  return areStatePropsEqualVal && areOwnPropsEqualVal;
+}
