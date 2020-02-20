@@ -22,6 +22,11 @@ declare module "@lugia/lugiax-core" {
     [key: string]: SyncMutationFunction
   };
 
+  declare type StackConstructorOption = {
+    popExecuteFn: function,
+    pushExecuteFn: function
+  };
+
   declare type AsyncMutationFunction = (
     modelData: Object,
     param: Object,
@@ -79,7 +84,7 @@ declare module "@lugia/lugiax-core" {
 
   declare type EventResult = {
     unSubscribe: Function
-  }
+  };
   declare export interface LugiaxType {
     register(param: RegisterParam, option?: Option): RegisterResult;
 
@@ -106,8 +111,8 @@ declare module "@lugia/lugiax-core" {
     on(cb: WaitHandler): EventResult;
 
     emitEvent(event: string, param: Object): void;
-    onEvent(event: string, cb : Function): EventResult;
-    onceEvent(event: string, cb : Function): EventResult;
+    onEvent(event: string, cb: Function): EventResult;
+    onceEvent(event: string, cb: Function): EventResult;
     removeAllEvent(): boolean;
   }
 
