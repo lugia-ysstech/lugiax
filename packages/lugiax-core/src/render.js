@@ -5,71 +5,62 @@
  * @flow
  */
 import Subscribe from "./subscribe";
+import Stack from "./stack";
 
-
-// stack
-
-//
-
-// 数学  逻辑是对的   结构化编程
-// 二分排序    O(logN)
-// 科学  证伪 命题 需求点
-//  doTask   test1 test2 test3 test4 .... testN
-
-class Stack {}
+const All = "@lugia/msg/All";
 
 class Render {
-  event: Subscribe;
-  stack: Stack;
+  renderEvent: Subscribe;
+  RenderCollector: Stack;
+  willRenderModules: Object;
+  preRenderModules: Object;
   constructor() {
-    this.event = new Subscribe();
-    this.stack = new Stack();
+    this.clear();
   }
 
   beginCall = (needRenderId: string) => {
-    this.stack.push();
+    this.RenderCollector.push(needRenderId);
   };
 
-  endCall = (needRenderId: string): void => {};
+  endCall = (): void => {
+    this.RenderCollector.pop();
+  };
 
-  onRender = (cb: (needRenderIds: string[]) => void) => {};
+  onRender(topic: string, cb: function) {
+    return this.renderEvent.subscribe(topic, cb);
+  }
+
+  clear(): void {
+    this.renderEvent = new Subscribe();
+    this.RenderCollector = new Stack({
+      pushExecuteFn: this.pushExecuteFn,
+      popExecuteFn: this.popZeroExecuteFn
+    });
+    this.preRenderModules = {};
+    this.willRenderModules = {};
+  }
+  pushExecuteFn = key => {
+    this.willRenderModules[key] = key;
+  };
+  popZeroExecuteFn = () => {
+    this.autoRender();
+    this.clearRenderModules();
+  };
+  clearRenderModules() {
+    this.preRenderModules = this.willRenderModules;
+    this.willRenderModules = {};
+  }
+  autoRender(): void {
+    const nodeRednerModel = Object.keys(this.willRenderModules);
+    for (let model of nodeRednerModel) {
+      this.renderEvent.trigger(model);
+    }
+    this.renderEvent.trigger(All);
+  }
+  trigger(model): void {
+    this.renderEvent.trigger(model);
+    this.renderEvent.trigger(All);
+  }
 }
 
 export default new Render();
-
-// single   multiple
-
-/*
-  lugiax.register({
-
-    mutations: {
-      async: {
-          async function f1(){
-           lugiax.beginCall(modelName);
-              xxx
-              x
-              x
-              x
-              xx
-              return ...
-           lugiax.endCall(modelName);
-
-          }
-      }
-    }
-  })
-
-
- */
-
-/*
-
- connect  bind
-lugiax.onRender(( modelNames: string[])=>{
-  for model in modelNames
-    if(need model){
-      render
-    }
-})
- */
-
