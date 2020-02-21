@@ -27,6 +27,7 @@ import createSagaMiddleware from "redux-saga";
 
 import { ObjectUtils } from "@lugia/type-utils";
 import Subscribe from "./subscribe";
+import render from "./render";
 
 const ReloadAction = "@lugiax/reload";
 const All = "@lugia/msg/All";
@@ -90,6 +91,7 @@ class LugiaxImpl implements LugiaxType {
         newState: newStateJS,
         model
       });
+      render.trigger(model);
       this.trigger(model, newStateJS, oldState);
     }
     existModel[model] = param;
@@ -237,6 +239,7 @@ class LugiaxImpl implements LugiaxType {
     const { name } = action;
 
     const { body, model, mutationId } = this.mutationId2MutationInfo[name];
+    render.beginCall(model);
     const modelData = this.getModelData(model);
     if (body) {
       this.store.dispatch({ type: Loading, model });
@@ -251,6 +254,7 @@ class LugiaxImpl implements LugiaxType {
 
       return this.updateModel(model, newState, mutationId, param, "async");
     }
+    render.endCall();
     return modelData;
   }
 
@@ -268,6 +272,7 @@ class LugiaxImpl implements LugiaxType {
     const { name } = action;
 
     const { body, model, mutationId } = this.mutationId2MutationInfo[name];
+    render.beginCall(model);
     const modelData = this.getModelData(model);
     if (body) {
       this.store.dispatch({ type: Loading, model });
@@ -282,6 +287,7 @@ class LugiaxImpl implements LugiaxType {
 
       return this.updateModel(model, newState, mutationId, param, "sync");
     }
+    render.endCall();
     return modelData;
   }
 
@@ -318,6 +324,7 @@ class LugiaxImpl implements LugiaxType {
       mutationType,
       param
     });
+    render.endCall();
     return state;
   }
 
@@ -338,6 +345,10 @@ class LugiaxImpl implements LugiaxType {
 
   subscribe(topic: string, cb: Function): SubscribeResult {
     return this.storeEvent.subscribe(topic, cb);
+  }
+
+  onRender(eventName: string, cb: (needRenderIds: string[]) => void) {
+    return render.onRender(eventName, cb);
   }
 
   reducerMap: ?Function;
@@ -390,6 +401,7 @@ class LugiaxImpl implements LugiaxType {
     this.mutationId2Mutaions = { async: {}, sync: {} };
     this.mutationId2MutationInfo = {};
     this.createStore();
+    render.clear();
   }
 
   combineReducers(target: Object) {

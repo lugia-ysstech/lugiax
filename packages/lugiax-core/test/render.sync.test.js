@@ -6,6 +6,7 @@
  */
 
 import render from "../src/render";
+const eventName = "batchModels";
 
 describe("render.sync test", () => {
   beforeEach(() => {
@@ -13,7 +14,7 @@ describe("render.sync test", () => {
   });
   it("simple function use beginEnd", () => {
     let count = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++count;
     });
     function a() {
@@ -28,7 +29,7 @@ describe("render.sync test", () => {
 
   it("simple function use beginEnd and endCall", () => {
     let count = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++count;
     });
     function a() {
@@ -44,7 +45,7 @@ describe("render.sync test", () => {
 
   it("simple function  use frist beginEnd and then endCall", () => {
     let count = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++count;
     });
     function a() {
@@ -64,7 +65,7 @@ describe("render.sync test", () => {
 
   it("nesting function use beginEnd and endCall && Share one onRender", () => {
     let count = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++count;
     });
     function a() {
@@ -90,13 +91,13 @@ describe("render.sync test", () => {
 
   it("nesting function use beginEnd and endCall && Share more onRender", () => {
     let count = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++count;
     });
-    render.onRender("b", () => {
+    render.onRender(eventName, () => {
       ++count;
     });
-    render.onRender("c", () => {
+    render.onRender(eventName, () => {
       ++count;
     });
     function a() {

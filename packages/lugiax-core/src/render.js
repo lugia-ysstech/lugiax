@@ -7,7 +7,7 @@
 import Subscribe from "./subscribe";
 import Stack from "./stack";
 
-const All = "@lugia/msg/All";
+const BatchModels = "batchModels";
 
 class Render {
   renderEvent: Subscribe;
@@ -26,8 +26,8 @@ class Render {
     this.RenderCollector.pop();
   };
 
-  onRender(topic: string, cb: function) {
-    return this.renderEvent.subscribe(topic, cb);
+  onRender(eventName: string, cb: (needRenderIds: string[]) => void) {
+    return this.renderEvent.subscribe(eventName, cb);
   }
 
   clear(): void {
@@ -52,14 +52,11 @@ class Render {
   }
   autoRender(): void {
     const nodeRednerModel = Object.keys(this.willRenderModules);
-    for (let model of nodeRednerModel) {
-      this.renderEvent.trigger(model);
-    }
-    this.renderEvent.trigger(All);
+    if (nodeRednerModel.length <= 0) return;
+    this.renderEvent.trigger(BatchModels, nodeRednerModel);
   }
   trigger(model): void {
-    this.renderEvent.trigger(model);
-    this.renderEvent.trigger(All);
+    this.renderEvent.trigger(BatchModels);
   }
 }
 

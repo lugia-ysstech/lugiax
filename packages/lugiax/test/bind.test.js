@@ -1173,4 +1173,309 @@ describe("lugiax.bind", () => {
     expect(getInputValue(target.find("input").at(0))).toBe(name);
     expect(callCount).toBe(2);
   });
+
+  function createMoreMutationModel(model, state, target, newData) {
+    const userModel = lugiax.register({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName(data: Object, inParam: Object, { mutations }) {
+            data = mutations.changePwd({ pwd: newData.newPwd });
+            return data.set("name", newData.newName);
+          },
+          timerChangeName(data: Object, inParam: Object, { mutations }) {
+            setTimeout(() => {
+              mutations.changePwd({ pwd: newData.newPwd });
+            });
+            return data.set("name", newData.newName);
+          },
+          changeNameCallAsync(data: Object, inParam: Object, { mutations }) {
+            mutations.asyncChangePwd({ pwd: newData.newPwd });
+            data = data.set("name", newData.newName);
+            return data;
+          },
+          changePwd(data: Object, inParam: Object, { mutations }) {
+            data = mutations.changeAge({ age: newData.newAge });
+            return data.set("pwd", inParam.pwd);
+          },
+          changeAge(data: Object, inParam: Object) {
+            return data.set("age", inParam.age);
+          }
+        },
+        async: {
+          async changeName(data: Object, inParam: Object, { mutations }) {
+            data = await mutations.asyncChangePwd({
+              pwd: newData.newPwd
+            });
+            return data.set("name", newData.newName);
+          },
+          async NameCallSyncFn(data: Object, inParam: Object, { mutations }) {
+            data = await mutations.changePwd({ pwd: newData.newPwd });
+            return data.set("name", newData.newName);
+          },
+          async changePwd(data: Object, inParam: Object, { mutations }) {
+            data = await mutations.asyncChangeAge({ age: newData.newAge });
+            return data.set("pwd", inParam.pwd);
+          },
+          async changeAge(data: Object, inParam: Object) {
+            return data.set("age", inParam.age);
+          }
+        }
+      }
+    });
+    const BindComponent = connect(userModel, (user: Object) => {
+      return {
+        name: user.get("name"),
+        pwd: user.get("pwd"),
+        age: user.get("age")
+      };
+    })(target);
+    return {
+      model: userModel,
+      BindComponent
+    };
+  }
+
+  it("component bind Single model syncMutation deep  invoking syncMutation && render 2", () => {
+    const model = "user";
+    const state = {
+      name: "lugiax",
+      pwd: "admin",
+      age: "1"
+    };
+    let renderCount = 0;
+    class Input extends React.Component<any, any> {
+      static displayName = "MyInput";
+      render() {
+        renderCount++;
+        const { name, pwd, age } = this.props;
+        return [
+          <input value={name} />,
+          <input value={pwd} />,
+          <input value={age} />
+        ];
+      }
+    }
+    const newState = {
+      newName: "he",
+      newPwd: "admin11",
+      newAge: "2"
+    };
+    const { model: userModel, BindComponent } = createMoreMutationModel(
+      model,
+      state,
+      Input,
+      newState
+    );
+    const target = mount(<BindComponent />);
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
+    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    const {
+      mutations: { changeName }
+    } = userModel;
+    expect(renderCount).toEqual(1);
+    changeName();
+    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(renderCount).toEqual(2);
+  });
+
+  it("component bind Single model syncMutation setTimeout deep  invoking syncMutation && render 3", () => {
+    jest.useFakeTimers();
+    const model = "user";
+    const state = {
+      name: "lugiax",
+      pwd: "admin",
+      age: "1"
+    };
+    let renderCount = 0;
+    class Input extends React.Component<any, any> {
+      static displayName = "MyInput";
+      render() {
+        renderCount++;
+        const { name, pwd, age } = this.props;
+        return [
+          <input value={name} />,
+          <input value={pwd} />,
+          <input value={age} />
+        ];
+      }
+    }
+    const newState = {
+      newName: "he",
+      newPwd: "admin11",
+      newAge: "2"
+    };
+    const { model: userModel, BindComponent } = createMoreMutationModel(
+      model,
+      state,
+      Input,
+      newState
+    );
+    const target = mount(<BindComponent />);
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
+    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    const {
+      mutations: { timerChangeName }
+    } = userModel;
+    expect(renderCount).toEqual(1);
+    timerChangeName();
+    jest.runAllTimers();
+    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(renderCount).toEqual(3);
+  });
+
+  // it("component bind Single model && syncMutation deep invoking asyncMutation && render 2", async () => {
+  //   const model = "user";
+  //   const state = {
+  //     name: "lugiax",
+  //     pwd: "admin",
+  //     age: "1"
+  //   };
+  //   let renderCount = 0;
+  //   class Input extends React.Component<any, any> {
+  //     static displayName = "MyInput";
+  //     render() {
+  //       renderCount++;
+  //       const { name, pwd, age } = this.props;
+  //       return [
+  //         <input value={name} />,
+  //         <input value={pwd} />,
+  //         <input value={age} />
+  //       ];
+  //     }
+  //   }
+  //   const newState = {
+  //     newName: "he",
+  //     newPwd: "admin11",
+  //     newAge: "2"
+  //   };
+  //   const {
+  //     model: userModel,
+  //     BindComponent,
+  //     promise
+  //   } = createMoreMutationModel(model, state, Input, newState);
+  //   const target = mount(<BindComponent />);
+
+  //   expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
+  //   expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
+  //   expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+  //   const {
+  //     mutations: { changeNameCallAsync }
+  //   } = userModel;
+  //   expect(renderCount).toEqual(1);
+  //   changeNameCallAsync();
+  //   // await new Promise(res => {
+  //   //   setTimeout(() => {
+  //   //     res();
+  //   //   }, 50);
+  //   // });
+  //   // 其实已经更新过了// 但是第二次更新的时候。更给后的值丢掉了还还原成旧值。
+  //   expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
+  //   expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
+  //   expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+  //   expect(renderCount).toEqual(2);
+  // });
+
+  it("component bind Single model && asyncMutation deep invoking asyncMutation && render 2", async () => {
+    const model = "user";
+    const state = {
+      name: "lugiax",
+      pwd: "admin",
+      age: "1"
+    };
+    let renderCount = 0;
+    class Input extends React.Component<any, any> {
+      static displayName = "MyInput";
+      render() {
+        renderCount++;
+        const { name, pwd, age } = this.props;
+        return [
+          <input value={name} />,
+          <input value={pwd} />,
+          <input value={age} />
+        ];
+      }
+    }
+    const newState = {
+      newName: "he",
+      newPwd: "admin11",
+      newAge: "2"
+    };
+    const { model: userModel, BindComponent } = createMoreMutationModel(
+      model,
+      state,
+      Input,
+      newState
+    );
+    const target = mount(<BindComponent />);
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
+    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    const {
+      mutations: { asyncChangeName }
+    } = userModel;
+    expect(renderCount).toEqual(1);
+    await asyncChangeName();
+    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(renderCount).toEqual(2);
+  });
+
+  it("component bind Single model && asyncMutation deep invoking syncMutation && render 2", async () => {
+    const model = "user";
+    const state = {
+      name: "lugiax",
+      pwd: "admin",
+      age: "1"
+    };
+    let renderCount = 0;
+    class Input extends React.Component<any, any> {
+      static displayName = "MyInput";
+      render() {
+        renderCount++;
+        const { name, pwd, age } = this.props;
+        return [
+          <input value={name} />,
+          <input value={pwd} />,
+          <input value={age} />
+        ];
+      }
+    }
+    const newState = {
+      newName: "he",
+      newPwd: "admin11",
+      newAge: "2"
+    };
+    const { model: userModel, BindComponent } = createMoreMutationModel(
+      model,
+      state,
+      Input,
+      newState
+    );
+    const target = mount(<BindComponent />);
+
+    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
+    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    const {
+      mutations: { asyncNameCallSyncFn }
+    } = userModel;
+    expect(renderCount).toEqual(1);
+    await asyncNameCallSyncFn();
+    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(renderCount).toEqual(2);
+  });
 });
