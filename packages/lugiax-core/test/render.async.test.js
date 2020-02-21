@@ -6,7 +6,6 @@
  */
 
 import render from "../src/render";
-import { delay } from "@lugia/react-test-utils";
 
 async function delayFn(time) {
   await new Promise(res => {
@@ -21,9 +20,10 @@ describe("render.async test", () => {
   beforeEach(() => {
     render.clear();
   });
+  const eventName = "batchModels";
   it("simple commonFunction nesting setTimeoutFunction use beginEnd", async () => {
     let renderCount = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
     function a() {
@@ -43,10 +43,10 @@ describe("render.async test", () => {
     expect(renderCount).toBe(1);
   });
 
-  it("nesting setTimeoutFunction use beginEnd and endCall && Share one onRender", () => {
+  it("nesting setTimeoutFunction use beginEnd and endCall && Share one ", () => {
     jest.useFakeTimers();
     let renderCount = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
     function a() {
@@ -83,7 +83,7 @@ describe("render.async test", () => {
 
   it("nesting AysncFunction use beginEnd and endCall && Share one onRender", async () => {
     let renderCount = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
     async function a() {
@@ -115,7 +115,7 @@ describe("render.async test", () => {
   it("nesting setTimeoutFunction and AysncFunction  use beginEnd and endCall && Share one onRender", async () => {
     jest.useFakeTimers();
     let renderCount = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
     function a() {
@@ -159,13 +159,13 @@ describe("render.async test", () => {
 
   it("nesting setTimeoutFunction use beginEnd and endCall && Share more onRender", () => {
     let renderCount = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
-    render.onRender("b", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
-    render.onRender("c", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
     function a() {
@@ -196,18 +196,18 @@ describe("render.async test", () => {
     expect(Object.keys(render.preRenderModules).length).toBe(1);
     expect(Object.keys(render.preRenderModules)).toEqual(["c"]);
     expect(Object.keys(render.willRenderModules).length).toBe(0);
-    expect(renderCount).toBe(3);
+    expect(renderCount).toBe(9);
   });
 
   it("nesting AysncFunction use beginEnd and endCall && Share one onRender", async () => {
     let renderCount = 0;
-    render.onRender("a", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
-    render.onRender("b", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
-    render.onRender("c", () => {
+    render.onRender(eventName, () => {
       ++renderCount;
     });
     async function a() {

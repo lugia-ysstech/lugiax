@@ -13,7 +13,8 @@ import {
   getDisplayName,
   withRef,
   combineFunction,
-  isShouldRender
+  isShouldRender,
+  BatchModels
 } from "./utils";
 
 const Noop = () => ({});
@@ -80,24 +81,36 @@ export default function(
         };
 
         this.unSubscribe = [];
-        modelNames.forEach((modelName: string) => {
-          const { unSubscribe } = lugiax.subscribe(modelName, () => {
-            const modelData = this.state.modelData;
+        const { unSubscribe } = lugiax.onRender(BatchModels, renderModels => {
+          const oldModelData = [];
+          const modelData = this.state.modelData;
+          modelData.forEach((itemModel: Object, index: number) => {
+            oldModelData[index] = itemModel;
+          });
+          if (!renderModels || renderModels.length <= 0) {
+            return;
+          }
+          let renderFlag = false;
+          for (var i = 0; i < renderModels.length; i++) {
+            const modelName = renderModels[i];
             const model = name2Model[modelName];
-            if (!isValidModel(modelName, model)) {
-              return;
+            if (!model || !isValidModel(modelName, model)) {
+              continue;
             }
+            renderFlag = true;
             const modelIndex = model2Index[modelName];
-            const oldState = modelData[modelIndex];
             const newState = model.getState();
             modelData[modelIndex] = newState;
-            if (areStateEqual && !areStateEqual(oldState, newState)) {
-              return;
-            }
-            this.setState({ modelData });
-          });
-          this.unSubscribe.push(unSubscribe);
+          }
+          if (
+            !renderFlag ||
+            (areStateEqual && !areStateEqual(oldModelData, modelData))
+          ) {
+            return;
+          }
+          this.setState({ modelData });
         });
+        this.unSubscribe.push(unSubscribe);
       }
 
       static getDerivedStateFromProps(nextProps: Object, state: Object) {

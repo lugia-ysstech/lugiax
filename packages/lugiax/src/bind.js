@@ -13,7 +13,8 @@ import {
   getDisplayName,
   combineFunction,
   withRef,
-  isShouldRender
+  isShouldRender,
+  BatchModels
 } from "./utils";
 import hoistStatics from "hoist-non-react-statics";
 
@@ -50,7 +51,10 @@ export default function(
         super(props);
         this.oldModel = modelData.getState();
         this.state = mapValue(this.oldModel);
-        const { unSubscribe } = lugiax.subscribe(model, () => {
+        const { unSubscribe } = lugiax.onRender(BatchModels, renderModels => {
+          if (!renderModels.includes(model)) {
+            return;
+          }
           const newModel = modelData.getState();
           const { oldModel } = this;
           this.oldModel = newModel;

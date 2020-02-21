@@ -89,3 +89,5 @@ export function isShouldRender(
     areOwnPropsEqual(comparativeData.preProps, comparativeData.nextProps);
   return areStatePropsEqualVal && areOwnPropsEqualVal;
 }
+
+export const BatchModels = "batchModels";
