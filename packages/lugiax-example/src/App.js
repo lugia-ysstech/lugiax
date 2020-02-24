@@ -6,6 +6,7 @@ import Todo from "./todo";
 import Count from "./count";
 import Tomato from "./tomato";
 import NotAccess from "./access/NotAccess";
+import ApiTest from "./apiTest";
 
 export default () => {
   console.info("init main");
