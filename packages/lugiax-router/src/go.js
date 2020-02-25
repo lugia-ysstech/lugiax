@@ -76,46 +76,14 @@ const model = lugiax.register({
         return state.set("history", history);
       },
 
-      async goBack(state: Object, inParam: Object) {
-        const current = state.get("current");
+      async goBack(state: Object, inParam: Object, mutations: Object) {
         const { count } = inParam;
-        const goIndex = Math.floor(count);
-
-        if (isNaN(goIndex)) {
-          return state;
-        }
-
-        const store = lugiax.getStore();
-
-        const { nextCurrent, url } = getUrlAndNextCurrent(
-          state.get("history").toJS(),
-          current - goIndex
-        );
-
-        store.dispatch(push(url));
-
-        return state.set("current", nextCurrent);
+        mutations.mutations.asyncGo({ count: -count });
       },
 
-      async goForward(state: Object, inParam: Object) {
-        const current = state.get("current");
+      async goForward(state: Object, inParam: Object, mutations: Object) {
         const { count } = inParam;
-        const goIndex = Math.floor(count);
-
-        if (isNaN(goIndex)) {
-          return state;
-        }
-
-        const store = lugiax.getStore();
-
-        const { nextCurrent, url } = getUrlAndNextCurrent(
-          state.get("history").toJS(),
-          current + goIndex
-        );
-
-        store.dispatch(push(url));
-
-        return state.set("current", nextCurrent);
+        mutations.mutations.asyncGo({ count });
       }
     }
   }
