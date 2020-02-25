@@ -13,10 +13,10 @@ import {
   getDisplayName,
   combineFunction,
   withRef,
-  isShouldRender,
-  BatchModels
+  isShouldRender
 } from "./utils";
 import hoistStatics from "hoist-non-react-statics";
+import { BatchModels } from "./connect";
 
 export default function(
   modelData: RegisterResult,
@@ -52,7 +52,7 @@ export default function(
         this.oldModel = modelData.getState();
         this.state = mapValue(this.oldModel);
         const { unSubscribe } = lugiax.onRender(BatchModels, renderModels => {
-          if (!renderModels.includes(model)) {
+          if (!renderModels[model]) {
             return;
           }
           const newModel = modelData.getState();

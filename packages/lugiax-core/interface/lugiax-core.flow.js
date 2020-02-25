@@ -114,6 +114,7 @@ declare module "@lugia/lugiax-core" {
     onEvent(event: string, cb: Function): EventResult;
     onceEvent(event: string, cb: Function): EventResult;
     removeAllEvent(): boolean;
+    onRender(event: string, cb: Function): SubscribeResult;
   }
 
   declare module.exports: LugiaxType;

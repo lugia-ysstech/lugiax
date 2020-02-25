@@ -11,19 +11,18 @@ const BatchModels = "batchModels";
 
 class Render {
   renderEvent: Subscribe;
-  RenderCollector: Stack;
+  renderCollector: Stack;
   willRenderModules: Object;
-  preRenderModules: Object;
   constructor() {
     this.clear();
   }
 
   beginCall = (needRenderId: string) => {
-    this.RenderCollector.push(needRenderId);
+    this.renderCollector.push(needRenderId);
   };
 
   endCall = (): void => {
-    this.RenderCollector.pop();
+    this.renderCollector.pop();
   };
 
   onRender(eventName: string, cb: (needRenderIds: string[]) => void) {
@@ -32,33 +31,27 @@ class Render {
 
   clear(): void {
     this.renderEvent = new Subscribe();
-    this.RenderCollector = new Stack({
-      pushExecuteFn: this.pushExecuteFn,
-      popExecuteFn: this.popZeroExecuteFn
+    this.renderCollector = new Stack({
+      onPushItem: this.onAfterPush,
+      onStackEmpty: this.onAfterPop
     });
-    this.preRenderModules = {};
     this.willRenderModules = {};
   }
-  pushExecuteFn = key => {
+  onAfterPush = key => {
     this.willRenderModules[key] = key;
   };
-  popZeroExecuteFn = () => {
+  onAfterPop = () => {
     this.autoRender();
     this.clearRenderModules();
   };
   clearRenderModules() {
-    this.preRenderModules = this.willRenderModules;
     this.willRenderModules = {};
   }
   autoRender(): void {
-    const nodeRednerModel = Object.keys(this.willRenderModules);
-    if (nodeRednerModel.length === 0) {
-      return;
-    }
-    this.renderEvent.trigger(BatchModels, nodeRednerModel);
+    this.trigger(this.willRenderModules);
   }
-  trigger(model): void {
-    this.renderEvent.trigger(BatchModels);
+  trigger(willRenderModules: object): void {
+    this.renderEvent.trigger(BatchModels, willRenderModules);
   }
 }
 

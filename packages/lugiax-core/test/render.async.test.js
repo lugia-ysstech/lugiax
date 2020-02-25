@@ -23,7 +23,9 @@ describe("render.async test", () => {
   const eventName = "batchModels";
   it("simple commonFunction nesting setTimeoutFunction use beginEnd", async () => {
     let renderCount = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, needModels => {
+      needRenderModel = needModels;
       ++renderCount;
     });
     function a() {
@@ -37,16 +39,17 @@ describe("render.async test", () => {
       }, 1000);
     });
     await promise;
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
     expect(Object.keys(render.willRenderModules).length).toBe(0);
+    expect(needRenderModel).toEqual({ a: "a" });
     expect(renderCount).toBe(1);
   });
 
   it("nesting setTimeoutFunction use beginEnd and endCall && Share one ", () => {
     jest.useFakeTimers();
     let renderCount = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, needModels => {
+      needRenderModel = needModels;
       ++renderCount;
     });
     function a() {
@@ -57,33 +60,33 @@ describe("render.async test", () => {
       render.endCall();
     }
     function b() {
-      render.beginCall("a");
+      render.beginCall("b");
       setTimeout(() => {
         c();
       });
       render.endCall();
     }
     function c() {
-      render.beginCall("a");
+      render.beginCall("c");
       render.endCall();
     }
     setTimeout(() => {
       a();
     });
-    expect(Object.keys(render.preRenderModules).length).toBe(0);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(false);
-    expect(Object.keys(render.willRenderModules).length).toBe(0);
+    expect(needRenderModel).toEqual({});
+    expect(render.willRenderModules).toEqual({});
     expect(renderCount).toBe(0);
     jest.runAllTimers();
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
-    expect(Object.keys(render.willRenderModules).length).toBe(0);
+    expect(needRenderModel).toEqual({ c: "c" });
+    expect(render.willRenderModules).toEqual({});
     expect(renderCount).toBe(3);
   });
 
   it("nesting AysncFunction use beginEnd and endCall && Share one onRender", async () => {
     let renderCount = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, needModels => {
+      needRenderModel = needModels;
       ++renderCount;
     });
     async function a() {
@@ -94,7 +97,7 @@ describe("render.async test", () => {
       render.endCall();
     }
     async function b() {
-      render.beginCall("a");
+      render.beginCall("b");
       await new Promise(res => {
         res();
       });
@@ -102,24 +105,26 @@ describe("render.async test", () => {
       render.endCall();
     }
     async function c() {
-      render.beginCall("a");
+      render.beginCall("c");
       render.endCall();
     }
     await a();
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
+    expect(needRenderModel).toEqual({ a: "a" });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(1);
+    await delayFn(100);
+    expect(needRenderModel).toEqual({ b: "b", c: "c" });
   });
 
   it("nesting setTimeoutFunction and AysncFunction  use beginEnd and endCall && Share one onRender", async () => {
     jest.useFakeTimers();
     let renderCount = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, needModels => {
+      needRenderModel = needModels;
       ++renderCount;
     });
     function a() {
-      console.log("timer1");
       render.beginCall("a");
       setTimeout(() => {
         b();
@@ -127,49 +132,36 @@ describe("render.async test", () => {
       render.endCall();
     }
     async function b() {
-      console.log("timer3");
       render.beginCall("a");
       await new Promise(res => {
         res();
       });
       c();
       render.endCall();
-      console.log("timer3end");
     }
     async function c() {
-      console.log("timer4");
       render.beginCall("a");
       render.endCall();
-      console.log("timer4end");
     }
     a();
-    console.log("timer2");
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
+    expect(needRenderModel).toEqual({ a: "a" });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(1);
-    console.log("timer2.1");
     jest.runAllTimers();
     await delayFn(100);
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
+    expect(needRenderModel).toEqual({ a: "a" });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(2);
   });
 
   it("nesting setTimeoutFunction use beginEnd and endCall && Share more onRender", () => {
     let renderCount = 0;
-    render.onRender(eventName, () => {
-      ++renderCount;
-    });
-    render.onRender(eventName, () => {
-      ++renderCount;
-    });
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, needModels => {
+      needRenderModel = needModels;
       ++renderCount;
     });
     function a() {
-      console.log("time-a");
       render.beginCall("a");
       setTimeout(() => {
         b();
@@ -177,7 +169,6 @@ describe("render.async test", () => {
       render.endCall();
     }
     function b() {
-      console.log("time-b");
       render.beginCall("b");
       setTimeout(() => {
         c();
@@ -185,7 +176,6 @@ describe("render.async test", () => {
       render.endCall();
     }
     function c() {
-      console.log("time-c");
       render.beginCall("c");
       render.endCall();
     }
@@ -193,31 +183,26 @@ describe("render.async test", () => {
       a();
     });
     jest.runAllTimers();
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules)).toEqual(["c"]);
+    expect(needRenderModel).toEqual({ c: "c" });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
-    expect(renderCount).toBe(9);
+    expect(renderCount).toBe(3);
   });
 
   it("nesting AysncFunction use beginEnd and endCall && Share one onRender", async () => {
     let renderCount = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, needModels => {
+      console.log("===========", needModels);
+      needRenderModel = needModels;
       ++renderCount;
     });
-    render.onRender(eventName, () => {
-      ++renderCount;
-    });
-    render.onRender(eventName, () => {
-      ++renderCount;
-    });
+
     async function a() {
-      console.log("a");
       render.beginCall("a");
       b();
       render.endCall();
     }
     async function b() {
-      console.log("b");
       render.beginCall("b");
       await new Promise(res => {
         res();
@@ -226,15 +211,13 @@ describe("render.async test", () => {
       render.endCall();
     }
     async function c() {
-      console.log("c");
       render.beginCall("c");
       render.endCall();
     }
     a();
     await delayFn(100);
-    expect(Object.keys(render.preRenderModules).length).toBe(3);
-    expect(Object.keys(render.preRenderModules)).toEqual(["a", "b", "c"]);
+    expect(needRenderModel).toEqual({ a: "a", b: "b", c: "c" });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
-    expect(renderCount).toBe(3);
+    expect(renderCount).toBe(1);
   });
 });

@@ -13,10 +13,9 @@ import {
   getDisplayName,
   withRef,
   combineFunction,
-  isShouldRender,
-  BatchModels
+  isShouldRender
 } from "./utils";
-
+export const BatchModels = "batchModels";
 const Noop = () => ({});
 export default function(
   modelData: RegisterResult | Array<RegisterResult>,
@@ -84,26 +83,27 @@ export default function(
         const { unSubscribe } = lugiax.onRender(BatchModels, renderModels => {
           const oldModelData = [];
           const modelData = this.state.modelData;
+          if (!renderModels || Object.keys(renderModels).length <= 0) {
+            return;
+          }
+          let isIgnoreRender = true;
           modelData.forEach((itemModel: Object, index: number) => {
             oldModelData[index] = itemModel;
           });
-          if (!renderModels || renderModels.length <= 0) {
-            return;
-          }
-          let renderFlag = false;
-          for (var i = 0; i < renderModels.length; i++) {
-            const modelName = renderModels[i];
+          for (var i = 0; i < modelNames.length; i++) {
+            const modelName = modelNames[i];
+            const isModelInRenderModel = renderModels[modelName];
             const model = name2Model[modelName];
-            if (!model || !isValidModel(modelName, model)) {
+            if (!isModelInRenderModel || !isValidModel(modelName, model)) {
               continue;
             }
-            renderFlag = true;
+            isIgnoreRender = false;
             const modelIndex = model2Index[modelName];
             const newState = model.getState();
             modelData[modelIndex] = newState;
           }
           if (
-            !renderFlag ||
+            isIgnoreRender === true ||
             (areStateEqual && !areStateEqual(oldModelData, modelData))
           ) {
             return;
