@@ -77,13 +77,11 @@ const model = lugiax.register({
       },
 
       async goBack(state: Object, inParam: Object, mutations: Object) {
-        const { count } = inParam;
-        mutations.mutations.asyncGo({ count: -count });
+        mutations.mutations.asyncGo({ count: -1 });
       },
 
       async goForward(state: Object, inParam: Object, mutations: Object) {
-        const { count } = inParam;
-        mutations.mutations.asyncGo({ count });
+        mutations.mutations.asyncGo({ count: 1 });
       }
     }
   }
