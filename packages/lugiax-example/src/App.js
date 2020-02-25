@@ -6,7 +6,10 @@ import Header from "./header";
 import Todo from "./todo";
 import Count from "./count";
 import Tomato from "./tomato";
+import LugiaxTest from "./lugiax-test/";
 import NotAccess from "./access/NotAccess";
+
+console.log("LugiaxTest", LugiaxTest);
 
 export default () => {
   console.info("init main");
@@ -25,6 +28,9 @@ export default () => {
       },
       "/from": {
         component: Form
+      },
+      "/lugiax-test": {
+        component: LugiaxTest
       },
       "/tomato": {
         component: Tomato
