@@ -14,22 +14,26 @@ describe("render.sync test", () => {
   });
   it("simple function use beginEnd", () => {
     let count = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, renderModels => {
+      needRenderModel = renderModels;
       ++count;
     });
     function a() {
       render.beginCall("a");
     }
     a();
-    expect(Object.keys(render.preRenderModules).length).toBe(0);
-    expect(Object.keys(render.willRenderModules).includes("a")).toBe(true);
+    expect(needRenderModel).toEqual({});
+    expect(render.willRenderModules).toEqual({ a: "a" });
     expect(Object.keys(render.willRenderModules).length).toBe(1);
     expect(count).toBe(0);
   });
 
   it("simple function use beginEnd and endCall", () => {
     let count = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, renderModels => {
+      needRenderModel = renderModels;
       ++count;
     });
     function a() {
@@ -37,67 +41,37 @@ describe("render.sync test", () => {
       render.endCall();
     }
     a();
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
+    expect(needRenderModel).toEqual({ a: "a" });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(count).toBe(1);
   });
 
   it("simple function  use frist beginEnd and then endCall", () => {
     let count = 0;
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, renderModels => {
+      needRenderModel = renderModels;
       ++count;
     });
     function a() {
       render.beginCall("a");
     }
     a();
-    expect(Object.keys(render.preRenderModules).length).toBe(0);
-    expect(Object.keys(render.willRenderModules).includes("a")).toBe(true);
+    expect(needRenderModel).toEqual({});
+    expect(render.willRenderModules).toEqual({ a: "a" });
     expect(Object.keys(render.willRenderModules).length).toBe(1);
     expect(count).toBe(0);
     render.endCall();
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
-    expect(Object.keys(render.willRenderModules).length).toBe(0);
+    expect(needRenderModel).toEqual({ a: "a" });
+    expect(render.willRenderModules).toEqual({});
     expect(count).toBe(1);
   });
 
-  it("nesting function use beginEnd and endCall && Share one onRender", () => {
+  it("nesting function use beginEnd and endCall ", () => {
     let count = 0;
-    render.onRender(eventName, () => {
-      ++count;
-    });
-    function a() {
-      render.beginCall("a");
-      b();
-      render.endCall();
-    }
-    function b() {
-      render.beginCall("a");
-      c();
-      render.endCall();
-    }
-    function c() {
-      render.beginCall("a");
-      render.endCall();
-    }
-    a();
-    expect(Object.keys(render.preRenderModules).length).toBe(1);
-    expect(Object.keys(render.preRenderModules).includes("a")).toBe(true);
-    expect(Object.keys(render.willRenderModules).length).toBe(0);
-    expect(count).toBe(1);
-  });
-
-  it("nesting function use beginEnd and endCall && Share more onRender", () => {
-    let count = 0;
-    render.onRender(eventName, () => {
-      ++count;
-    });
-    render.onRender(eventName, () => {
-      ++count;
-    });
-    render.onRender(eventName, () => {
+    let needRenderModel = {};
+    render.onRender(eventName, renderModels => {
+      needRenderModel = renderModels;
       ++count;
     });
     function a() {
@@ -115,9 +89,8 @@ describe("render.sync test", () => {
       render.endCall();
     }
     a();
-    expect(Object.keys(render.preRenderModules).length).toBe(3);
-    expect(Object.keys(render.preRenderModules)).toEqual(["a", "b", "c"]);
-    expect(Object.keys(render.willRenderModules).length).toBe(0);
-    expect(count).toBe(3);
+    expect(needRenderModel).toEqual({ a: "a", b: "b", c: "c" });
+    expect(render.willRenderModules).toEqual({});
+    expect(count).toBe(1);
   });
 });

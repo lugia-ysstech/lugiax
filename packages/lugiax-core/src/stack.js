@@ -8,30 +8,30 @@
 import type { StackConstructorOption } from "@lugia/lugiax-core";
 
 export default class Stack {
-  popExecuteFn: function;
-  pushExecuteFn: function;
+  onStackEmpty: function;
+  onPushItem: function;
   data: string[];
   emptyFn = () => {};
   constructor(opt: StackConstructorOption) {
     try {
-      const { popExecuteFn, pushExecuteFn } = opt || {};
+      const { onStackEmpty, onPushItem } = opt || {};
       this.data = [];
-      this.popExecuteFn =
-        typeof popExecuteFn === "function" ? popExecuteFn : this.emptyFn;
-      this.pushExecuteFn =
-        typeof pushExecuteFn === "function" ? pushExecuteFn : this.emptyFn;
+      this.onStackEmpty =
+        typeof onStackEmpty === "function" ? onStackEmpty : this.emptyFn;
+      this.onPushItem =
+        typeof onPushItem === "function" ? onPushItem : this.emptyFn;
     } catch (e) {
       throw new Error("Stack init error:" + e.message);
     }
   }
   push(item) {
     this.data.push(item);
-    this.pushExecuteFn(item);
+    this.onPushItem(item);
   }
   pop() {
     const v = this.data.pop();
     if (this.data.length === 0) {
-      this.popExecuteFn();
+      this.onStackEmpty();
     }
     return v;
   }

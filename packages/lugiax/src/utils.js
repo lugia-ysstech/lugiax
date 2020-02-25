@@ -90,4 +90,3 @@ export function isShouldRender(
   return areStatePropsEqualVal && areOwnPropsEqualVal;
 }
 
-export const BatchModels = "batchModels";

@@ -91,7 +91,7 @@ class LugiaxImpl implements LugiaxType {
         newState: newStateJS,
         model
       });
-      render.trigger(model);
+      render.trigger({ [model]: model });
       this.trigger(model, newStateJS, oldState);
     }
     existModel[model] = param;
@@ -347,7 +347,7 @@ class LugiaxImpl implements LugiaxType {
     return this.storeEvent.subscribe(topic, cb);
   }
 
-  onRender(eventName: string, cb: (needRenderIds: string[]) => void) {
+  onRender(eventName: string, cb: (needRenderIds: object) => void) {
     return render.onRender(eventName, cb);
   }
 
