@@ -52,7 +52,9 @@ class Render {
   }
   autoRender(): void {
     const nodeRednerModel = Object.keys(this.willRenderModules);
-    if (nodeRednerModel.length <= 0) return;
+    if (nodeRednerModel.length === 0) {
+      return;
+    }
     this.renderEvent.trigger(BatchModels, nodeRednerModel);
   }
   trigger(model): void {
