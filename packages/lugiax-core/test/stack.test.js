@@ -86,27 +86,34 @@ describe("Stack test", () => {
 
   it("Stack instantiation  parameter have onPushItem function && onPushItem by call", () => {
     let count = 0;
-    const onPushItem = () => {
+    let data = "";
+    const onPushItem = pushData => {
+      console.log("2222", pushData);
+      data = pushData;
       ++count;
     };
     let stack = new Stack({ onPushItem });
     stack.push("22");
     stack.pop();
     expect(count).toBe(1);
+    expect(data).toBe("22");
   });
 
   it("Stack instantiation  parameter have onStackEmpty and onPushItem  function && onPushItem and onStackEmpty  by call", () => {
     let count = 0;
+    let data = "";
     const onStackEmpty = () => {
       ++count;
     };
-    const onPushItem = () => {
+    const onPushItem = pushData => {
+      data = pushData;
       ++count;
     };
     let stack = new Stack({ onPushItem, onStackEmpty });
     stack.push("22");
     stack.pop();
     expect(count).toBe(2);
+    expect(data).toBe("22");
   });
 
   it("Stack instantiation  parameter have onStackEmpty and onPushItem  function && onPushItem and onStackEmpty  by call", () => {

@@ -23,8 +23,8 @@ declare module "@lugia/lugiax-core" {
   };
 
   declare type StackConstructorOption = {
-    popExecuteFn: function,
-    pushExecuteFn: function
+    onStackEmpty: function,
+    onPushItem: function
   };
 
   declare type AsyncMutationFunction = (

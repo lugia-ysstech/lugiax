@@ -24,7 +24,7 @@ describe("render.sync test", () => {
     }
     a();
     expect(needRenderModel).toEqual({});
-    expect(render.willRenderModules).toEqual({ a: "a" });
+    expect(render.willRenderModules).toEqual({ a: true });
     expect(Object.keys(render.willRenderModules).length).toBe(1);
     expect(count).toBe(0);
   });
@@ -41,7 +41,7 @@ describe("render.sync test", () => {
       render.endCall();
     }
     a();
-    expect(needRenderModel).toEqual({ a: "a" });
+    expect(needRenderModel).toEqual({ a: true });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(count).toBe(1);
   });
@@ -58,11 +58,11 @@ describe("render.sync test", () => {
     }
     a();
     expect(needRenderModel).toEqual({});
-    expect(render.willRenderModules).toEqual({ a: "a" });
+    expect(render.willRenderModules).toEqual({ a: true });
     expect(Object.keys(render.willRenderModules).length).toBe(1);
     expect(count).toBe(0);
     render.endCall();
-    expect(needRenderModel).toEqual({ a: "a" });
+    expect(needRenderModel).toEqual({ a: true });
     expect(render.willRenderModules).toEqual({});
     expect(count).toBe(1);
   });
@@ -89,7 +89,7 @@ describe("render.sync test", () => {
       render.endCall();
     }
     a();
-    expect(needRenderModel).toEqual({ a: "a", b: "b", c: "c" });
+    expect(needRenderModel).toEqual({ a: true, b: true, c: true });
     expect(render.willRenderModules).toEqual({});
     expect(count).toBe(1);
   });

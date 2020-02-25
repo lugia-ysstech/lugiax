@@ -38,7 +38,7 @@ class Render {
     this.willRenderModules = {};
   }
   onAfterPush = key => {
-    this.willRenderModules[key] = key;
+    this.willRenderModules[key] = true;
   };
   onAfterPop = () => {
     this.autoRender();
