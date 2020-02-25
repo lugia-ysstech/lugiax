@@ -40,7 +40,7 @@ describe("render.async test", () => {
     });
     await promise;
     expect(Object.keys(render.willRenderModules).length).toBe(0);
-    expect(needRenderModel).toEqual({ a: "a" });
+    expect(needRenderModel).toEqual({ a: true });
     expect(renderCount).toBe(1);
   });
 
@@ -48,8 +48,10 @@ describe("render.async test", () => {
     jest.useFakeTimers();
     let renderCount = 0;
     let needRenderModel = {};
+    let renderHistory = [];
     render.onRender(eventName, needModels => {
       needRenderModel = needModels;
+      renderHistory.push(needModels);
       ++renderCount;
     });
     function a() {
@@ -77,9 +79,10 @@ describe("render.async test", () => {
     expect(render.willRenderModules).toEqual({});
     expect(renderCount).toBe(0);
     jest.runAllTimers();
-    expect(needRenderModel).toEqual({ c: "c" });
+    expect(needRenderModel).toEqual({ c: true });
     expect(render.willRenderModules).toEqual({});
     expect(renderCount).toBe(3);
+    expect(renderHistory).toEqual([{ a: true }, { b: true }, { c: true }]);
   });
 
   it("nesting AysncFunction use beginEnd and endCall && Share one onRender", async () => {
@@ -109,19 +112,21 @@ describe("render.async test", () => {
       render.endCall();
     }
     await a();
-    expect(needRenderModel).toEqual({ a: "a" });
+    expect(needRenderModel).toEqual({ a: true });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(1);
     await delayFn(100);
-    expect(needRenderModel).toEqual({ b: "b", c: "c" });
+    expect(needRenderModel).toEqual({ b: true, c: true });
   });
 
   it("nesting setTimeoutFunction and AysncFunction  use beginEnd and endCall && Share one onRender", async () => {
     jest.useFakeTimers();
     let renderCount = 0;
     let needRenderModel = {};
+    let renderHistory = [];
     render.onRender(eventName, needModels => {
       needRenderModel = needModels;
+      renderHistory.push(needModels);
       ++renderCount;
     });
     function a() {
@@ -132,7 +137,7 @@ describe("render.async test", () => {
       render.endCall();
     }
     async function b() {
-      render.beginCall("a");
+      render.beginCall("b");
       await new Promise(res => {
         res();
       });
@@ -140,24 +145,27 @@ describe("render.async test", () => {
       render.endCall();
     }
     async function c() {
-      render.beginCall("a");
+      render.beginCall("c");
       render.endCall();
     }
     a();
-    expect(needRenderModel).toEqual({ a: "a" });
+    expect(needRenderModel).toEqual({ a: true });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(1);
     jest.runAllTimers();
     await delayFn(100);
-    expect(needRenderModel).toEqual({ a: "a" });
+    expect(needRenderModel).toEqual({ b: true, c: true });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(2);
+    expect(renderHistory).toEqual([{ a: true }, { b: true, c: true }]);
   });
 
   it("nesting setTimeoutFunction use beginEnd and endCall && Share more onRender", () => {
     let renderCount = 0;
     let needRenderModel = {};
+    let renderHistory = [];
     render.onRender(eventName, needModels => {
+      renderHistory.push(needModels);
       needRenderModel = needModels;
       ++renderCount;
     });
@@ -183,16 +191,18 @@ describe("render.async test", () => {
       a();
     });
     jest.runAllTimers();
-    expect(needRenderModel).toEqual({ c: "c" });
+    expect(needRenderModel).toEqual({ c: true });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(3);
+    expect(renderHistory).toEqual([{ a: true }, { b: true }, { c: true }]);
   });
 
   it("nesting AysncFunction use beginEnd and endCall && Share one onRender", async () => {
     let renderCount = 0;
     let needRenderModel = {};
+    let renderHistory = [];
     render.onRender(eventName, needModels => {
-      console.log("===========", needModels);
+      renderHistory.push(needModels);
       needRenderModel = needModels;
       ++renderCount;
     });
@@ -216,8 +226,43 @@ describe("render.async test", () => {
     }
     a();
     await delayFn(100);
-    expect(needRenderModel).toEqual({ a: "a", b: "b", c: "c" });
+    expect(needRenderModel).toEqual({ a: true, b: true, c: true });
     expect(Object.keys(render.willRenderModules).length).toBe(0);
     expect(renderCount).toBe(1);
+    expect(renderHistory).toEqual([{ a: true, b: true, c: true }]);
+  });
+
+  it(" syncfunction call asyncFunction  call syncfunction", async () => {
+    let renderCount = 0;
+    let needRenderModel = {};
+    let renderHistory = [];
+    render.onRender(eventName, needModels => {
+      renderHistory.push(needModels);
+      needRenderModel = needModels;
+      ++renderCount;
+    });
+
+    function a() {
+      render.beginCall("a");
+      setTimeout(() => {
+        b();
+      });
+      render.endCall();
+    }
+    async function b() {
+      render.beginCall("b");
+      await c();
+      render.endCall();
+    }
+    async function c() {
+      render.beginCall("c");
+      render.endCall();
+    }
+    a();
+    expect(needRenderModel).toEqual({ a: true });
+    expect(render.willRenderModules).toEqual({});
+    expect(renderCount).toBe(1);
+    await delayFn(100);
+    expect(renderHistory).toEqual([{ a: true }, { b: true, c: true }]);
   });
 });
