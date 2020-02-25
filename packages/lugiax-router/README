@@ -1,0 +1,20 @@
+# lugiax-router API说明
+
+go({url: string, count: number}) 
+路由跳转
+参数说明：
+    url: 跳转的路径地址, 优先级最高
+    count: 为正数时，页面前进步数，例 count: 1 ,页面前进 1 步
+           为负数时，页面后退步数，例 count: -1 , 页面后退 1 步
+
+
+goBack() 
+页面后退一步
+
+goForward()
+页面前进一步
+
+replace({url: string})
+路由替换，历史记录不会记录跳转前的页面地址
+参数说明：
+    url: 跳转的路径地址

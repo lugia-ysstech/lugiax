@@ -56,11 +56,11 @@ GoToBackCountTwoButton.displayName = "GoToBackCountTwoButton";
 const GoToForwardCountTwoButton = styled(CommonBotton)``;
 GoToForwardCountTwoButton.displayName = "GoToForwardCountTwoButton";
 
-const GoBackCountTwoButton = styled(CommonBotton)``;
-GoBackCountTwoButton.displayName = "GoBackCountTwoButton";
+const GoBackButton = styled(CommonBotton)``;
+GoBackButton.displayName = "GoBackButton";
 
-const GoForwardCountTwoButton = styled(CommonBotton)``;
-GoForwardCountTwoButton.displayName = "GoForwardCountTwoButton";
+const GoForwardButton = styled(CommonBotton)``;
+GoForwardButton.displayName = "GoForwardButton";
 
 const ReplaceButton = styled(CommonBotton)``;
 ReplaceButton.displayName = "ReplaceButton";
@@ -98,15 +98,15 @@ class Buttons extends React.Component {
 
         <h3>goBack 和 goForward 函数 传参 count</h3>
         <p>
-          测试步骤：先依次点击以下4个链接，点击“后退两次”button，再点击“前进两次”button，回到当前页
+          测试步骤：先依次点击以下4个链接，点击“后退一次”button数次，再点击“前进一次”button数次进行测试
         </p>
-        <GoBackCountTwoButton onClick={this.onGoBackCount2Click}>
-          goBack count：2 后退两次
-        </GoBackCountTwoButton>
+        <GoBackButton onClick={this.onGoBackClick}>
+          goBack 后退一次
+        </GoBackButton>
 
-        <GoForwardCountTwoButton onClick={this.onGoForwardCount2Click}>
-          goForward count: 2 前进两次
-        </GoForwardCountTwoButton>
+        <GoForwardButton onClick={this.onGoForwardClick}>
+          goForward 前进一次
+        </GoForwardButton>
 
         <h3>replace 函数 传参 url</h3>
         <p>
@@ -134,12 +134,12 @@ class Buttons extends React.Component {
     go({ count: 2 });
   };
 
-  onGoBackCount2Click = () => {
-    goBack({ count: 2 });
+  onGoBackClick = () => {
+    goBack();
   };
 
-  onGoForwardCount2Click = () => {
-    goForward({ count: 2 });
+  onGoForwardClick = () => {
+    goForward();
   };
 
   onReplaceClick = () => {
@@ -385,7 +385,7 @@ describe("go({count: -1}) 后退一次", () => {
     checkUrl("/games");
   });
 
-  it("goback({count: 2}),后退两步", async () => {
+  it("goback(),后退一步", async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -398,7 +398,17 @@ describe("go({count: -1}) 后退一次", () => {
     await delay(100);
 
     cmp
-      .find("GoBackCountTwoButton")
+      .find("GoBackButton")
+      .at(0)
+      .simulate("click", {});
+    cmp.update();
+    await delay(100);
+    cmp.update();
+
+    checkUrl("/car");
+
+    cmp
+      .find("GoBackButton")
       .at(0)
       .simulate("click", {});
     cmp.update();
@@ -408,7 +418,7 @@ describe("go({count: -1}) 后退一次", () => {
     checkUrl("/sport");
   });
 
-  it("goforward({count: 2}),后退两步,在前进两步", async () => {
+  it("goforward(),后退一步,再前进一步", async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -424,17 +434,27 @@ describe("go({count: -1}) 后退一次", () => {
     await delay(100);
 
     cmp
-      .find("GoBackCountTwoButton")
+      .find("GoBackButton")
       .at(0)
       .simulate("click", {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/car");
+    checkUrl("/news");
 
     cmp
-      .find("GoForwardCountTwoButton")
+      .find("GoForwardButton")
+      .at(0)
+      .simulate("click", {});
+    cmp.update();
+    await delay(100);
+    cmp.update();
+
+    checkUrl("/games");
+
+    cmp
+      .find("GoForwardButton")
       .at(0)
       .simulate("click", {});
     cmp.update();
