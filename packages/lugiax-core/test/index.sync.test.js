@@ -4,50 +4,50 @@
  *
  * @flow
  */
-import lugiax from "../src/index";
-import { delay } from "@lugia/react-test-utils";
+import lugiax from '../src/index';
+import { delay, } from '@lugia/react-test-utils';
 
-describe("lugiax.sync", () => {
+describe('lugiax.sync', () => {
   beforeEach(() => {
     lugiax.clear();
   });
 
 
-  it("async and sync mutation has getState", async () => {
-    const model = "user";
-    const name = "ligx";
-    const pwd = "123456";
+  it('async and sync mutation has getState', async () => {
+    const model = 'user';
+    const name = 'ligx';
+    const pwd = '123456';
     const state = {
       name,
-      pwd
+      pwd,
     };
     const {
-      mutations: { changePassword, asyncChangeUserName }
+      mutations: { changePassword, asyncChangeUserName, },
     } = lugiax.register({
       model,
       state,
       mutations: {
         sync: {
-          changePassword(data: Object, inParam: Object, { getState }) {
+          changePassword(data: Object, inParam: Object, { getState, }) {
             data = getState();
-            return data.set("pwd", inParam.pwd);
-          }
+            return data.set('pwd', inParam.pwd);
+          },
         },
         async: {
-          async changeUserName(data: Object, inParam: Object, {getState}) {
+          async changeUserName(data: Object, inParam: Object, {getState,}) {
             await delay(100);
             data = getState();
-            return data.set("name", inParam.name);
-          }
-        }
-      }
+            return data.set('name', inParam.name);
+          },
+        },
+      },
     });
-    const res = asyncChangeUserName({ name: "ligx" });
-    changePassword({ pwd: "654321" });
+    const res = asyncChangeUserName({ name: 'ligx', });
+    changePassword({ pwd: '654321', });
     await res;
     expect(lugiax.getState(model).toJS()).toEqual({
-      lugia: { loading: { user: false } },
-      user: { name: "ligx", pwd: "654321" }
+      lugia: { loading: { user: false, }, },
+      user: { name: 'ligx', pwd: '654321', },
     });
   });
 });

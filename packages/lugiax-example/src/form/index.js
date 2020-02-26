@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import styled from "styled-components";
-import { connect } from "@lugia/lugiax";
-import Widget from "@lugia/lugia-web/dist/consts";
+import React, { Component, } from 'react';
+import styled from 'styled-components';
+import { connect, } from '@lugia/lugiax';
+import Widget from '@lugia/lugia-web/dist/consts';
 import {
   Theme,
   Tabs,
@@ -18,15 +18,15 @@ import {
   Tooltip,
   AutoComplete,
   Table,
-  TimePicker
-} from "@lugia/lugia-web";
+  TimePicker,
+} from '@lugia/lugia-web';
 
-import Content from "./components/content";
-import PageContent from "./components/page-content";
-import advanced from "./models/advanced";
+import Content from './components/content';
+import PageContent from './components/page-content';
+import advanced from './models/advanced';
 
-const { Row, Col } = Grid;
-const { RangePicker } = DatePicker;
+const { Row, Col, } = Grid;
+const { RangePicker, } = DatePicker;
 
 const ItemContainer = styled.div`
   position: relative;
@@ -80,67 +80,67 @@ class TableList extends Component {
   };
 
   render() {
-    const { onNameChange, onIpAddressChange, onManageChange } = this.props;
+    const { onNameChange, onIpAddressChange, onManageChange, } = this.props;
 
     const nameData = [
       {
-        title: "成员名称:",
-        placeholder: "请输成员名称",
-        onChange: onNameChange
-      }
+        title: '成员名称:',
+        placeholder: '请输成员名称',
+        onChange: onNameChange,
+      },
     ];
 
     const ipData = [
       {
-        title: "工号:",
-        placeholder: "请输入工号",
+        title: '工号:',
+        placeholder: '请输入工号',
         isAuto: true,
-        onChange: onIpAddressChange
-      }
+        onChange: onIpAddressChange,
+      },
     ];
     const managerData = [
       {
-        title: "所属部门",
+        title: '所属部门',
         isSelect: true,
         selectData: [
-          { value: "部门1", label: "部门1" },
-          { value: "部门2", label: "部门2" },
-          { value: "部门3", label: "部门3" },
-          { value: "部门4", label: "部门4" }
+          { value: '部门1', label: '部门1', },
+          { value: '部门2', label: '部门2', },
+          { value: '部门3', label: '部门3', },
+          { value: '部门4', label: '部门4', },
         ],
         selectView: {
           [Widget.Select]: {
             Container: {
               normal: {
-                width: 200
-              }
-            }
-          }
+                width: 200,
+              },
+            },
+          },
         },
-        placeholder: "请选择所属部门",
-        onChange: onManageChange
-      }
+        placeholder: '请选择所属部门',
+        onChange: onManageChange,
+      },
     ];
 
     const inputView = {
       [Widget.Input]: {
         Container: {
           normal: {
-            width: 200
-          }
-        }
-      }
+            width: 200,
+          },
+        },
+      },
     };
 
     const getDataItem = (
       <ItemContainer>
         <ItemInnerContainer>
           <TitleContainer>
-            <TitleText>{"生效日期"}</TitleText>
+            <TitleText>{'生效日期'}</TitleText>
           </TitleContainer>
         </ItemInnerContainer>
         <ItemInputContainer>
-          <RangePicker format={"YYYY-MM-DD"} />
+          <RangePicker format={'YYYY-MM-DD'} />
         </ItemInputContainer>
       </ItemContainer>
     );
@@ -148,7 +148,7 @@ class TableList extends Component {
       <ItemContainer>
         <ItemInnerContainer>
           <TitleContainer>
-            <TitleText>{"生效日期"}</TitleText>
+            <TitleText>{'生效日期'}</TitleText>
           </TitleContainer>
         </ItemInnerContainer>
         <ItemInputContainer>
@@ -166,7 +166,7 @@ class TableList extends Component {
           selectData,
           selectView,
           isAuto,
-          onChange
+          onChange,
         } = item;
         return (
           <ItemContainer>
@@ -192,7 +192,7 @@ class TableList extends Component {
                     <Select
                       createPortal
                       data={selectData}
-                      displayField={"label"}
+                      displayField={'label'}
                       placeholder={placeholder}
                       onChange={onChange}
                     />
@@ -208,83 +208,83 @@ class TableList extends Component {
       [Widget.Card]: {
         Container: {
           normal: {
-            width: "100%",
+            width: '100%',
             height: 190,
             margin: {
-              bottom: 30
-            }
-          }
+              bottom: 30,
+            },
+          },
         },
         CardTitle: {
           normal: {
             height: 30,
             margin: {
               top: 20,
-              left: 10
-            }
-          }
+              left: 10,
+            },
+          },
         },
         CardContent: {
           normal: {
-            padding: 0
-          }
-        }
+            padding: 0,
+          },
+        },
       },
       [Widget.Select]: {
         Container: {
           normal: {
-            width: 200
-          }
-        }
-      }
+            width: 200,
+          },
+        },
+      },
     };
     const staffCardThemeConfig = {
       [Widget.Card]: {
         Container: {
           normal: {
-            width: "100%"
-          }
+            width: '100%',
+          },
         },
         CardTitle: {
           normal: {
             height: 30,
             margin: {
               top: 20,
-              left: 10
-            }
-          }
+              left: 10,
+            },
+          },
         },
         CardContent: {
           normal: {
-            padding: 0
-          }
-        }
-      }
+            padding: 0,
+          },
+        },
+      },
     };
 
     const tableTitle = [
       {
-        title: "成员名字",
-        dataIndex: "name",
-        key: "name",
-        width: 100
+        title: '成员名字',
+        dataIndex: 'name',
+        key: 'name',
+        width: 100,
       },
       {
-        title: "工号",
-        dataIndex: "id",
-        key: "id",
-        width: 100
+        title: '工号',
+        dataIndex: 'id',
+        key: 'id',
+        width: 100,
       },
       {
-        title: "所属部门",
-        dataIndex: "address",
-        key: "address",
-        width: 200
+        title: '所属部门',
+        dataIndex: 'address',
+        key: 'address',
+        width: 200,
       },
       {
-        title: "操作",
-        dataIndex: "operations",
-        key: "operations",
+        title: '操作',
+        dataIndex: 'operations',
+        key: 'operations',
         render: (data, data1, data2) => {
           return (
             <a
@@ -295,17 +295,17 @@ class TableList extends Component {
               删除{data}
             </a>
           );
-        }
-      }
+        },
+      },
     ];
 
-    const { personnelList, taskInfo } = this.props;
+    const { personnelList, taskInfo, } = this.props;
     return (
       <Content>
         <PageContent>
           <Theme config={cardThemeConfig}>
             <Card
-              title={"仓库管理"}
+              title={'仓库管理'}
               content={
                 <PageContent>
                   <Row>
@@ -330,7 +330,7 @@ class TableList extends Component {
           </Theme>
           <Theme config={staffCardThemeConfig}>
             <Card
-              title={"成员管理"}
+              title={'成员管理'}
               content={
                 <PageContent>
                   <Table columns={tableTitle} data={personnelList} />
@@ -348,15 +348,15 @@ const AdvancedFormPage = connect(
   advanced,
   state => {
     return {
-      tableTitle: state.get("tableTitle").toJS
-        ? state.get("tableTitle").toJS()
-        : state.get("tableTitle"),
-      personnelList: state.get("personnelList").toJS
-        ? state.get("personnelList").toJS()
-        : state.get("personnelList"),
-      saveInfo: state.get("saveInfo").toJS
-        ? state.get("saveInfo").toJS()
-        : state.get("saveInfo")
+      tableTitle: state.get('tableTitle').toJS
+        ? state.get('tableTitle').toJS()
+        : state.get('tableTitle'),
+      personnelList: state.get('personnelList').toJS
+        ? state.get('personnelList').toJS()
+        : state.get('personnelList'),
+      saveInfo: state.get('saveInfo').toJS
+        ? state.get('saveInfo').toJS()
+        : state.get('saveInfo'),
     };
   },
   mutations => {
@@ -366,7 +366,7 @@ const AdvancedFormPage = connect(
       onIpAddressChange: mutations.onIpAddressChange,
       onManageChange: mutations.onManageChange,
       addPersonnel: mutations.addPersonnel,
-      deletePersonnel: mutations.deletePersonnel
+      deletePersonnel: mutations.deletePersonnel,
     };
   }
 )(TableList);

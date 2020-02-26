@@ -7,13 +7,13 @@
     "new": "node ./scripts/new.js",
     "changelog": "lerna-changelog",
     "lerna": "lerna",
+    "lint-staged": "lint-staged",
     "test": "jest --config=jest.config.js --env=jsdom --watch",
     "coverage": "jest --config=jest.config.js --env=jsdom --coverage --all",
     "prettier": "prettier --trailing-comma all --single-quote --write",
     "postinstall": "yarn bootstrap",
     "stylelint": "stylelint",
-    "lint": "eslint --ext .js packages scripts",
-    "lint:fix": "eslint --fix --ext .js packages scripts",
+    "lint": "eslint --ext .js",
     "publish": "node ./scripts/publish.js"
   },
   "devDependencies": {
@@ -38,6 +38,7 @@
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-react-app": "^4.0.1",
+    "eslint-plugin-flowtype": "^4.6.0",
     "eslint-plugin-html": "^5.0.5",
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-jsx-a11y": "^6.2.1",
@@ -64,11 +65,16 @@
     "through2": "^3.0.1",
     "vinyl-fs": "^3.0.3"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged"
+    }
+  },
   "lint-staged": {
-    "*.js": [
+    "packages/**/src/**/*.js": [
       "prettier",
-      "lint:fix",
-      "lint",
+      "eslint --fix",
+      "npm run lint",
       "git add"
     ]
   },

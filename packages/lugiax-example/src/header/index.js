@@ -4,8 +4,8 @@
  *
  * @flow
  */
-import React from "react";
-import { go, Link } from "@lugia/lugiax-router";
+import React from 'react';
+import { go, Link, } from '@lugia/lugiax-router';
 
 export default class Header extends React.Component<any> {
   render() {
@@ -26,6 +26,6 @@ export default class Header extends React.Component<any> {
   }
 
   onClick = () => {
-    go({ url: "/todo" });
+    go({ url: '/todo', });
   };
 }

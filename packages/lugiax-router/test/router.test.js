@@ -4,62 +4,62 @@
  *
  * @flow
  */
-import React from "react";
-import Enzyme, { mount } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
-import Main from "./demo";
-import { createApp, go, Link } from "../src";
-import lugiax from "@lugia/lugiax";
-import { createMemoryHistory } from "history";
-import { push } from "connected-react-router";
-import { delay } from "@lugia/react-test-utils";
+import React from 'react';
+import Enzyme, { mount, } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import Main from './demo';
+import { createApp, go, Link, } from '../src';
+import lugiax from '@lugia/lugiax';
+import { createMemoryHistory, } from 'history';
+import { push, } from 'connected-react-router';
+import { delay, } from '@lugia/react-test-utils';
 
-Enzyme.configure({ adapter: new Adapter() });
+Enzyme.configure({ adapter: new Adapter(), });
 
-describe("router", () => {
+describe('router', () => {
   let cmp;
   beforeAll(() => {
     const history = createMemoryHistory();
     const App = createApp(
       {
-        "/": {
-          component: Main
-        }
+        '/': {
+          component: Main,
+        },
       },
       history,
       {
-        async onBeforeGo({ url }) {
-          if (url === "/nowPower") {
-            await go({ url: "/403" });
+        async onBeforeGo({ url, }) {
+          if (url === '/nowPower') {
+            await go({ url: '/403', });
             return false;
           }
-          return url !== "/not";
-        }
+          return url !== '/not';
+        },
       }
     );
     cmp = mount(<App />);
   });
 
-  it("createApp", () => {
+  it('createApp', () => {
     const state = lugiax.getState();
-    expect(state.get("todo").toJS()).toEqual({
+    expect(state.get('todo').toJS()).toEqual({
       formData: {
-        task: ""
+        task: '',
       },
-      tasks: ["hello"]
+      tasks: ['hello',],
     });
-    expect(state.get("tomato")).toBeUndefined();
-    checkUrl("/");
+    expect(state.get('tomato')).toBeUndefined();
+    checkUrl('/');
   });
 
-  it("url change", async () => {
-    const targetUrl = "/todo";
+  it('url change', async () => {
+    const targetUrl = '/todo';
     goUrl(targetUrl);
     checkUrl(targetUrl);
   });
 
-  it("async url change", async () => {
-    const targetUrl = "/tomato/history";
+  it('async url change', async () => {
+    const targetUrl = '/tomato/history';
     goAndCheckUrl(targetUrl);
 
     await new Promise(res => {
@@ -67,168 +67,168 @@ describe("router", () => {
         expect(
           lugiax
             .getState()
-            .get("tomato")
+            .get('tomato')
             .toJS()
         ).toEqual({
           tomotos: [],
           doing: false,
           time: 0,
-          beginAt: "",
-          taskName: ""
+          beginAt: '',
+          taskName: '',
         });
         res(true);
       }, 200);
     });
   });
 
-  it("todo", async () => {
-    const targetUrl = "/todo";
+  it('todo', async () => {
+    const targetUrl = '/todo';
     goAndCheckUrl(targetUrl);
-    const newTask = "new Task";
-    const input = cmp.find("input");
+    const newTask = 'new Task';
+    const input = cmp.find('input');
     expect(input.length).toBe(1);
-    input.simulate("change", { target: { value: newTask } });
+    input.simulate('change', { target: { value: newTask, }, });
     expect(
       lugiax
         .getState()
-        .get("todo")
-        .get("formData")
-        .get("task")
+        .get('todo')
+        .get('formData')
+        .get('task')
     ).toEqual(newTask);
-    input.simulate("keydown", { keyCode: 13 });
+    input.simulate('keydown', { keyCode: 13, });
 
     expect(
       lugiax
         .getState()
-        .get("todo")
-        .get("tasks")
+        .get('todo')
+        .get('tasks')
         .toJS()
-    ).toEqual(["hello", newTask]);
+    ).toEqual(['hello', newTask,]);
   });
 
-  it("link", async () => {
-    const targetUrl = "/tomato";
+  it('link', async () => {
+    const targetUrl = '/tomato';
     goAndCheckUrl(targetUrl);
 
-    const links = cmp.find(Link).find("a");
+    const links = cmp.find(Link).find('a');
     const todoLink = links.at(1);
-    todoLink.simulate("click", {});
+    todoLink.simulate('click', {});
     await delay(100);
     cmp.update();
-    checkUrl("/todo");
-    const input = cmp.find("input");
+    checkUrl('/todo');
+    const input = cmp.find('input');
     expect(input.length).toBe(1);
   });
 
-  it("go", async () => {
-    const targetUrl = "/tomato";
+  it('go', async () => {
+    const targetUrl = '/tomato';
     goAndCheckUrl(targetUrl);
-    const btn = cmp.find("button");
+    const btn = cmp.find('button');
     const todoLink = btn.at(0);
-    todoLink.simulate("click", {});
+    todoLink.simulate('click', {});
     await delay(100);
     cmp.update();
-    checkUrl("/todo");
+    checkUrl('/todo');
   });
 
-  it("add tomato", async () => {
-    const targetUrl = "/tomato/now";
+  it('add tomato', async () => {
+    const targetUrl = '/tomato/now';
     goAndCheckUrl(targetUrl);
 
     await new Promise(res => {
       setTimeout(() => {
         cmp.update();
-        const newTask = "newTask";
-        const theName = cmp.find("input").at(0);
-        theName.simulate("change", { target: { value: newTask } });
-        const addBtn = cmp.find("button").at(1);
-        addBtn.simulate("click", {});
+        const newTask = 'newTask';
+        const theName = cmp.find('input').at(0);
+        theName.simulate('change', { target: { value: newTask, }, });
+        const addBtn = cmp.find('button').at(1);
+        addBtn.simulate('click', {});
         console.info('a1', lugiax.getState().toJS());
-        const { doing, time, error, beginAt, taskName } = lugiax
+        const { doing, time, error, beginAt, taskName, } = lugiax
           .getState()
-          .get("tomato")
+          .get('tomato')
           .toJS();
-        const recive = { doing, time, error, taskName, beginAt };
+        const recive = { doing, time, error, taskName, beginAt, };
         expect(recive).toEqual({
           doing: true,
-          error: "",
+          error: '',
           time: 0,
           taskName: newTask,
-          beginAt: new Date().toString()
+          beginAt: new Date().toString(),
         });
-        addBtn.simulate("click", {});
+        addBtn.simulate('click', {});
         expect(
           lugiax
             .getState()
-            .get("tomato")
+            .get('tomato')
             .toJS().tomotos
         ).toEqual([
           {
             time: 0,
             taskName: newTask,
-            beginAt: new Date().toString()
-          }
+            beginAt: new Date().toString(),
+          },
         ]);
         res(true);
       }, 1500);
     });
   });
 
-  it("onBeforeGo", async () => {
-    const oldUrl = "/tomato/now";
+  it('onBeforeGo', async () => {
+    const oldUrl = '/tomato/now';
     goAndCheckUrl(oldUrl);
-    const targetUrl = "/not";
-    await go({ url: targetUrl });
+    const targetUrl = '/not';
+    await go({ url: targetUrl, });
     await delay(100);
     checkUrl(oldUrl);
   });
-  it("onBeforeGo go to 403", async () => {
-    const oldUrl = "/tomato/now";
+  it('onBeforeGo go to 403', async () => {
+    const oldUrl = '/tomato/now';
     goAndCheckUrl(oldUrl);
-    const targetUrl = "/nowPower";
-    await go({ url: targetUrl });
+    const targetUrl = '/nowPower';
+    await go({ url: targetUrl, });
     await delay(100);
     cmp.update();
     expect(
       cmp
-        .find("div")
+        .find('div')
         .at(2)
         .text()
-    ).toBe("403");
-    checkUrl("/403");
+    ).toBe('403');
+    checkUrl('/403');
   });
 
-  it("onPageLoad ", async () => {
+  it('onPageLoad ', async () => {
     expect(
       lugiax
         .getState()
-        .get("pageload")
-        .get("load")
+        .get('pageload')
+        .get('load')
     ).toBeFalsy();
-    const oldUrl = "/tomato/pageload";
+    const oldUrl = '/tomato/pageload';
     goAndCheckUrl(oldUrl);
     await delay(100);
     cmp.update();
     expect(
       cmp
-        .find("div")
+        .find('div')
         .at(3)
         .text()
-    ).toBe("PageLoad");
+    ).toBe('PageLoad');
     expect(
       lugiax
         .getState()
-        .get("pageload")
-        .get("load")
+        .get('pageload')
+        .get('load')
     ).toBeTruthy();
-    goAndCheckUrl("/tomato/now");
+    goAndCheckUrl('/tomato/now');
     cmp.update();
     await delay(100);
     expect(
       lugiax
         .getState()
-        .get("pageload")
-        .get("load")
+        .get('pageload')
+        .get('load')
     ).toBeFalsy();
   });
 
@@ -246,12 +246,12 @@ describe("router", () => {
     expect(
       lugiax
         .getState()
-        .get("router")
-        .get("location")
+        .get('router')
+        .get('location')
         .toJS().pathname
     ).toBe(url);
   }
 
-  it("exact", () => {});
-  it("strict", () => {});
+  it('exact', () => {});
+  it('strict', () => {});
 });

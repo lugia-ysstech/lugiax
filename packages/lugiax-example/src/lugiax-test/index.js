@@ -1,10 +1,10 @@
-import React from "react";
-import { render } from "react-dom";
+import React from 'react';
+import { render, } from 'react-dom';
 
-import InputA from "./components/inputA";
-import InputB from "./components/inputB";
-import InputC from "./components/inputC";
-import InputD from "./components/inputD";
+import InputA from './components/inputA';
+import InputB from './components/inputB';
+import InputC from './components/inputC';
+import InputD from './components/inputD';
 export default class Test extends React.Component {
   constructor() {
     super();

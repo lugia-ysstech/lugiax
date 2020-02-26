@@ -5,7 +5,7 @@
  * @flow
  */
 
-import type { StackConstructorOption } from "@lugia/lugiax-core";
+import type { StackConstructorOption, } from '@lugia/lugiax-core';
 
 export default class Stack {
   onStackEmpty: function;
@@ -14,14 +14,14 @@ export default class Stack {
   emptyFn = () => {};
   constructor(opt: StackConstructorOption) {
     try {
-      const { onStackEmpty, onPushItem } = opt || {};
+      const { onStackEmpty, onPushItem, } = opt || {};
       this.data = [];
       this.onStackEmpty =
-        typeof onStackEmpty === "function" ? onStackEmpty : this.emptyFn;
+        typeof onStackEmpty === 'function' ? onStackEmpty : this.emptyFn;
       this.onPushItem =
-        typeof onPushItem === "function" ? onPushItem : this.emptyFn;
+        typeof onPushItem === 'function' ? onPushItem : this.emptyFn;
     } catch (e) {
-      throw new Error("Stack init error:" + e.message);
+      throw new Error('Stack init error:' + e.message);
     }
   }
   push(item) {

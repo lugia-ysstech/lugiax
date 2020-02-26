@@ -4,8 +4,8 @@
  *
  *
  */
-import React, { Component } from "react";
-import styled from "styled-components";
+import React, { Component, } from 'react';
+import styled from 'styled-components';
 
 const Wrap = styled.div`
   width: 100%;
@@ -16,7 +16,7 @@ const Wrap = styled.div`
 
 export default class Content extends Component {
   render() {
-    const { children } = this.props;
+    const { children, } = this.props;
     return <Wrap>{children}</Wrap>;
   }
 }

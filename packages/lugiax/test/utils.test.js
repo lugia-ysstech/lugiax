@@ -8,219 +8,219 @@ import {
   combineMethodObject,
   tillMethodAttribute,
   withRef,
-  isShouldRender
-} from "../src/utils";
+  isShouldRender,
+} from '../src/utils';
 
-describe("lugiax.bind", () => {
-  it("combineMethodObject 1", () => {
+describe('lugiax.bind', () => {
+  it('combineMethodObject 1', () => {
     const res = [];
     const eventA = {
       onChange() {
-        res.push("changeA");
-      }
+        res.push('changeA');
+      },
     };
 
     const result = combineMethodObject(eventA);
-    expect(result).toEqual({ onChange: [eventA.onChange] });
+    expect(result).toEqual({ onChange: [eventA.onChange,], });
   });
 
-  it("combineMethodObject 2", () => {
+  it('combineMethodObject 2', () => {
     const res = [];
     const eventA = {
       onChange() {
-        res.push("changeA");
-      }
+        res.push('changeA');
+      },
     };
 
     const eventB = {
       onChange(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
 
     const result = combineMethodObject(eventA, eventB);
-    expect(result).toEqual({ onChange: [eventA.onChange, eventB.onChange] });
+    expect(result).toEqual({ onChange: [eventA.onChange, eventB.onChange,], });
   });
 
-  it("combineMethodObject 3", () => {
+  it('combineMethodObject 3', () => {
     const res = [];
     const eventA = {
       onChange() {
-        res.push("changeA");
+        res.push('changeA');
       },
-      number: 1
+      number: 1,
     };
 
     const eventB = {
       onChange(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
     const eventC = {
       onChange(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
 
     const result = combineMethodObject(eventA, eventB, eventC);
     expect(result).toEqual({
-      onChange: [eventA.onChange, eventB.onChange, eventC.onChange]
+      onChange: [eventA.onChange, eventB.onChange, eventC.onChange,],
     });
   });
 
-  it("combineMethodObject 3 one different ", () => {
+  it('combineMethodObject 3 one different ', () => {
     const res = [];
     const eventA = {
       onChange() {
-        res.push("changeA");
-      }
+        res.push('changeA');
+      },
     };
 
     const eventB = {
       onClick(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
     const eventC = {
       onChange(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
 
     const result = combineMethodObject(eventA, eventB, eventC);
     expect(result).toEqual({
-      onChange: [eventA.onChange, eventC.onChange],
-      onClick: [eventB.onClick]
+      onChange: [eventA.onChange, eventC.onChange,],
+      onClick: [eventB.onClick,],
     });
   });
 
-  it("combineMethodObject 3 all different ", () => {
+  it('combineMethodObject 3 all different ', () => {
     const res = [];
     const eventA = {
       onInput() {
-        res.push("changeA");
-      }
+        res.push('changeA');
+      },
     };
 
     const eventB = {
       onClick(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
     const eventC = {
       onChange(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
 
     const result = combineMethodObject(eventA, eventB, eventC);
     expect(result).toEqual({
-      onInput: [eventA.onInput],
-      onChange: [eventC.onChange],
-      onClick: [eventB.onClick]
+      onInput: [eventA.onInput,],
+      onChange: [eventC.onChange,],
+      onClick: [eventB.onClick,],
     });
   });
 
-  it("combineMethodObject empty ", () => {
+  it('combineMethodObject empty ', () => {
     const result = combineMethodObject();
     expect(result).toEqual({});
   });
-  it("combineMethodObject null or undefined ", () => {
+  it('combineMethodObject null or undefined ', () => {
     const result = combineMethodObject(null, undefined);
     expect(result).toEqual({});
   });
 
-  it("tillMethodAttribute", () => {
+  it('tillMethodAttribute', () => {
     const onChange = () => {
-      console.info("onChange");
+      console.info('onChange');
     };
     const onClick = () => {
-      console.info("click");
+      console.info('click');
     };
     const expRes = {
-      onChange: [onChange],
-      onClick: [onClick]
+      onChange: [onChange,],
+      onClick: [onClick,],
     };
     expect(
       tillMethodAttribute({
         onChange,
         onClick,
-        number: 1
+        number: 1,
       })
     ).toEqual(expRes);
   });
 
-  it("tillMethodAttribute empty", () => {
+  it('tillMethodAttribute empty', () => {
     expect(tillMethodAttribute(null)).toEqual({});
     expect(tillMethodAttribute(undefined)).toEqual({});
   });
 
-  it("combineFunction 3", () => {
+  it('combineFunction 3', () => {
     const res = [];
     const eventA = {
       onChange(v) {
-        res.push("changeA" + v);
-      }
+        res.push('changeA' + v);
+      },
     };
 
     const eventB = {
       onChange(v) {
-        res.push("changeB" + v);
-      }
+        res.push('changeB' + v);
+      },
     };
     const eventC = {
       onChange(v) {
-        res.push("changeC" + v);
-      }
+        res.push('changeC' + v);
+      },
     };
 
     const result = combineFunction(eventA, eventB, eventC);
-    result.onChange("hello");
-    expect(res).toEqual(["changeAhello", "changeBhello", "changeChello"]);
+    result.onChange('hello');
+    expect(res).toEqual(['changeAhello', 'changeBhello', 'changeChello',]);
   });
-  it("combineFunction 3", () => {
+  it('combineFunction 3', () => {
     const changeRes = [];
     const clickRes = [];
     const eventA = {
       onChange(v) {
-        changeRes.push("changeA" + v);
-      }
+        changeRes.push('changeA' + v);
+      },
     };
 
     const eventB = {
       onClick(v) {
-        clickRes.push("onClick" + v);
-      }
+        clickRes.push('onClick' + v);
+      },
     };
     const eventC = {
       onChange(v) {
-        changeRes.push("changeC" + v);
-      }
+        changeRes.push('changeC' + v);
+      },
     };
 
     const result = combineFunction(eventA, eventB, eventC);
-    result.onChange("hello");
-    expect(changeRes).toEqual(["changeAhello", "changeChello"]);
-    result.onClick("clk");
-    expect(clickRes).toEqual(["onClickclk"]);
+    result.onChange('hello');
+    expect(changeRes).toEqual(['changeAhello', 'changeChello',]);
+    result.onClick('clk');
+    expect(clickRes).toEqual(['onClickclk',]);
   });
 
-  it("withRef enable true", () => {
+  it('withRef enable true', () => {
     const self = {};
     const res = withRef(true, self);
-    const cmp = { a: 123131 };
+    const cmp = { a: 123131, };
     res.ref(cmp);
     expect(self.target).toBe(cmp);
   });
 
-  it("withRef enable false", () => {
+  it('withRef enable false', () => {
     const self = {};
     const res = withRef(false, self);
     expect(res.ref).toBeUndefined();
     expect(Object.keys(self)).toEqual([]);
   });
 
-  it("checking isShouldRender function  a function return true  b function return true", () => {
+  it('checking isShouldRender function  a function return true  b function return true', () => {
     function a(old, next) {
       return old === next;
     }
@@ -232,12 +232,12 @@ describe("lugiax.bind", () => {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(true);
   });
 
-  it("checking isShouldRender function  a function return false  b function return true", () => {
+  it('checking isShouldRender function  a function return false  b function return true', () => {
     function a(old, next) {
       return old !== next;
     }
@@ -249,12 +249,12 @@ describe("lugiax.bind", () => {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(false);
   });
 
-  it("checking isShouldRender function  a function return false  b function return false", () => {
+  it('checking isShouldRender function  a function return false  b function return false', () => {
     function a(old, next) {
       return old !== next;
     }
@@ -266,12 +266,12 @@ describe("lugiax.bind", () => {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(false);
   });
 
-  it("checking isShouldRender function  a function is undefined  b function return true", () => {
+  it('checking isShouldRender function  a function is undefined  b function return true', () => {
     function b(old, next) {
       return old === next;
     }
@@ -280,12 +280,12 @@ describe("lugiax.bind", () => {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(true);
   });
 
-  it("checking isShouldRender function  a function is undefined  b function return false", () => {
+  it('checking isShouldRender function  a function is undefined  b function return false', () => {
     function b(old, next) {
       return old !== next;
     }
@@ -294,12 +294,12 @@ describe("lugiax.bind", () => {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(false);
   });
 
-  it("checking isShouldRender function  a function return true  b function is undefined ", () => {
+  it('checking isShouldRender function  a function return true  b function is undefined ', () => {
     function b(old, next) {
       return old === next;
     }
@@ -308,12 +308,12 @@ describe("lugiax.bind", () => {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(true);
   });
 
-  it("checking isShouldRender function  a function return false  b function is undefined ", () => {
+  it('checking isShouldRender function  a function return false  b function is undefined ', () => {
     function b(old, next) {
       return old !== next;
     }
@@ -322,29 +322,29 @@ describe("lugiax.bind", () => {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(false);
   });
 
-  it("checking isShouldRender function  a function is undefined b function is undefined ", () => {
+  it('checking isShouldRender function  a function is undefined b function is undefined ', () => {
     expect(
       isShouldRender(undefined, undefined, {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(true);
   });
 
-  it("checking isShouldRender function  a function is null b function is null ", () => {
+  it('checking isShouldRender function  a function is null b function is null ', () => {
     expect(
       isShouldRender(undefined, undefined, {
         preState: 1,
         nextState: 1,
         preProps: 1,
-        nextProps: 1
+        nextProps: 1,
       })
     ).toBe(true);
   });

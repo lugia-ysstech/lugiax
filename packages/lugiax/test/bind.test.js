@@ -4,16 +4,16 @@
  *
  * @flow
  */
-import lugiax from "@lugia/lugiax-core";
-import React from "react";
-import Enzyme, { mount } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
-import { bind, connect } from "../src/";
-import { createDeepUserModel, createUserModel, getInputValue } from "./utils";
+import lugiax from '@lugia/lugiax-core';
+import React from 'react';
+import Enzyme, { mount, } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { bind, connect, } from '../src/';
+import { createDeepUserModel, createUserModel, getInputValue, } from './utils';
 
-Enzyme.configure({ adapter: new Adapter() });
+Enzyme.configure({ adapter: new Adapter(), });
 
-const DisplayName = "MyInput";
+const DisplayName = 'MyInput';
 
 class Input extends React.Component<any, any> {
   static displayName = DisplayName;
@@ -23,30 +23,30 @@ class Input extends React.Component<any, any> {
   }
 }
 
-describe("lugiax.bind", () => {
+describe('lugiax.bind', () => {
   beforeEach(() => {
     lugiax.clear();
   });
 
-  it("bind flow", () => {
-    const name = "ligx";
-    const pwd = "123456";
-    const newPwd = "我服";
+  it('bind flow', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const newPwd = '我服';
     const userModel = createUserModel(name, pwd);
 
     const BindInput = bind(
       userModel,
       model => {
-        const result = { value: model.get("name"), pwd: model.get("pwd") };
+        const result = { value: model.get('name'), pwd: model.get('pwd'), };
         return result;
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
+          return mutations.changeName({ name: e.target.value, });
         },
         onClick: (mutations, e) => {
-          return mutations.changePwd({ pwd: newPwd });
-        }
+          return mutations.changePwd({ pwd: newPwd, });
+        },
       }
     )(Input);
 
@@ -57,44 +57,44 @@ describe("lugiax.bind", () => {
     }
 
     const target = mount(<App />);
-    const { model } = userModel;
+    const { model, } = userModel;
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("name")
+        .get('name')
     ).toBe(name);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
-    const newName = "my name is ";
-    target.simulate("change", { target: { value: newName } });
+    const newName = 'my name is ';
+    target.simulate('change', { target: { value: newName, }, });
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("name")
+        .get('name')
     ).toBe(newName);
-    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    expect(getInputValue(target.find('input').at(0))).toBe(newName);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    const thirdName = "thirdName";
-    changeName({ name: thirdName });
+    const thirdName = 'thirdName';
+    changeName({ name: thirdName, });
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("name")
+        .get('name')
     ).toBe(thirdName);
-    expect(getInputValue(target.find("input").at(0))).toBe(thirdName);
+    expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
 
-    target.simulate("click");
+    target.simulate('click');
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("pwd")
+        .get('pwd')
     ).toBe(newPwd);
     expect(target.find(DisplayName).props().pwd).toBe(newPwd);
 
@@ -103,31 +103,31 @@ describe("lugiax.bind", () => {
       .at(0)
       .instance();
     instance.componentWillUnmount.call(instance);
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(thirdName);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(thirdName);
   });
-  it("bind flow has props pwd", () => {
-    const name = "ligx";
-    const pwd = "123456";
-    const newPwd = "我服";
+  it('bind flow has props pwd', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const newPwd = '我服';
     const userModel = createUserModel(name, pwd);
 
     const BindInput = bind(
       userModel,
       model => {
-        const result = { value: model.get("name"), pwd: model.get("pwd") };
+        const result = { value: model.get('name'), pwd: model.get('pwd'), };
         return result;
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
+          return mutations.changeName({ name: e.target.value, });
         },
         onClick: (mutations, e) => {
-          return mutations.changePwd({ pwd: newPwd });
-        }
+          return mutations.changePwd({ pwd: newPwd, });
+        },
       }
     )(Input);
-    const propsValue = "ligx";
+    const propsValue = 'ligx';
 
     class App extends React.Component<any, any> {
       render() {
@@ -136,44 +136,44 @@ describe("lugiax.bind", () => {
     }
 
     const target = mount(<App />);
-    const { model } = userModel;
+    const { model, } = userModel;
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("name")
+        .get('name')
     ).toBe(name);
-    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+    expect(getInputValue(target.find('input').at(0))).toBe(propsValue);
 
-    const newName = "my name is ";
-    target.simulate("change", { target: { value: newName } });
+    const newName = 'my name is ';
+    target.simulate('change', { target: { value: newName, }, });
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("name")
+        .get('name')
     ).toBe(newName);
-    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+    expect(getInputValue(target.find('input').at(0))).toBe(propsValue);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    const thirdName = "thirdName";
-    changeName({ name: thirdName });
+    const thirdName = 'thirdName';
+    changeName({ name: thirdName, });
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("name")
+        .get('name')
     ).toBe(thirdName);
-    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+    expect(getInputValue(target.find('input').at(0))).toBe(propsValue);
 
-    target.simulate("click");
+    target.simulate('click');
     expect(
       lugiax
         .getState()
         .get(model)
-        .get("pwd")
+        .get('pwd')
     ).toBe(newPwd);
     expect(target.find(DisplayName).props().pwd).toBe(newPwd);
 
@@ -182,19 +182,19 @@ describe("lugiax.bind", () => {
       .at(0)
       .instance();
     instance.componentWillUnmount.call(instance);
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(propsValue);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(propsValue);
   });
-  it("bind not exist eventhandler", () => {
-    const name = "ligx";
-    const pwd = "123456";
-    const newPwd = "我服";
+  it('bind not exist eventhandler', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const newPwd = '我服';
     const userModel = createUserModel(name, pwd);
 
     const BindInput = bind(
       userModel,
       model => {
-        const result = { value: model.get("name"), pwd: model.get("pwd") };
+        const result = { value: model.get('name'), pwd: model.get('pwd'), };
         return result;
       },
       {}
@@ -208,13 +208,13 @@ describe("lugiax.bind", () => {
 
     const target = mount(<App />);
 
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(target.find(DisplayName).props().pwd).toBe(pwd);
   });
-  it("bind not exist eventhandler", () => {
-    const name = "ligx";
-    const pwd = "123456";
-    const newPwd = "我服";
+  it('bind not exist eventhandler', () => {
+    const name = 'ligx';
+    const pwd = '123456';
+    const newPwd = '我服';
     const userModel = createUserModel(name, pwd);
 
     const BindInput = bind(
@@ -233,13 +233,13 @@ describe("lugiax.bind", () => {
 
     const target = mount(<App />);
 
-    expect(getInputValue(target.find("input").at(0))).toBe("");
+    expect(getInputValue(target.find('input').at(0))).toBe('');
     expect(target.find(DisplayName).props().pwd).toBeUndefined();
   });
 
-  it("EventHandle onClick", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('EventHandle onClick', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
 
     let MyInput = Input;
@@ -254,19 +254,19 @@ describe("lugiax.bind", () => {
           eventHandle: {
             onClick(e) {
               res(e.target.value);
-            }
-          }
+            },
+          },
         }
       )(Input);
     });
     const target = mount(<MyInput />);
-    target.find(Input).simulate("click", { target: { value: name } });
+    target.find(Input).simulate('click', { target: { value: name, }, });
     expect(await changePromise).toBe(name);
   });
 
-  it("EventHandle onChange and MyInput has onChange", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('EventHandle onChange and MyInput has onChange', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
 
     let MyInput = Input;
@@ -281,8 +281,8 @@ describe("lugiax.bind", () => {
           eventHandle: {
             onChange(e) {
               res(e.target.value);
-            }
-          }
+            },
+          },
         }
       )(Input);
     });
@@ -293,14 +293,14 @@ describe("lugiax.bind", () => {
       };
     });
     const target = mount(<MyInput onChange={onChange} />);
-    target.find(Input).simulate("change", { target: { value: name } });
+    target.find(Input).simulate('change', { target: { value: name, }, });
     expect(await changePromise).toBe(name);
     expect(await theChangeEvent).toBe(name);
   });
 
-  it("EventHandle onChange and MyInput has onChange and has ChangeMutation", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('EventHandle onChange and MyInput has onChange and has ChangeMutation', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
 
     let MyInput = Input;
@@ -309,20 +309,20 @@ describe("lugiax.bind", () => {
         userModel,
         model => {
           return {
-            value: model.get("form").get("name")
+            value: model.get('form').get('name'),
           };
         },
         {
           onChange: (mutations, e) => {
-            return mutations.changeName({ name: e.target.value });
-          }
+            return mutations.changeName({ name: e.target.value, });
+          },
         },
         {
           eventHandle: {
             onChange(e) {
               res(e.target.value);
-            }
-          }
+            },
+          },
         }
       )(Input);
     });
@@ -333,85 +333,85 @@ describe("lugiax.bind", () => {
         res(e.target.value);
       };
     });
-    const newName = "无可奈何而安之若命";
+    const newName = '无可奈何而安之若命';
     const target = mount(<MyInput onChange={onChange} />);
 
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
-    target.find(Input).simulate("change", { target: { value: newName } });
-    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    target.find(Input).simulate('change', { target: { value: newName, }, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newName);
     expect(await changePromise).toBe(newName);
     expect(await theChangeEvent).toBe(newName);
   });
 
-  it("EventHandle onChange and MyInput has onChange and has ChangeMutation", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('EventHandle onChange and MyInput has onChange and has ChangeMutation', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
 
     let isCall = false;
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         props: {
           onChange() {
             isCall = true;
-          }
+          },
         },
         eventHandle: {
           onChange(e) {
-            throw new Error("不改调用事件");
-          }
-        }
+            throw new Error('不改调用事件');
+          },
+        },
       }
     )(Input);
 
-    let onChange = e => {
-      throw new Error("不改调用事件");
+    const onChange = e => {
+      throw new Error('不改调用事件');
     };
 
-    const newName = "无可奈何而安之若命";
+    const newName = '无可奈何而安之若命';
     const target = mount(<MyInput onChange={onChange} />);
 
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
-    target.find(Input).simulate("change", { target: { value: newName } });
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
+    target.find(Input).simulate('change', { target: { value: newName, }, });
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(isCall).toBeTruthy();
   });
 
-  it("option props", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('option props', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
-    const optionName = "newName";
-    const optionTitle = "newTitle";
-    let MyInput = bind(
+    const optionName = 'newName';
+    const optionTitle = 'newTitle';
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         props: {
           value: optionName,
-          title: optionTitle
-        }
+          title: optionTitle,
+        },
       }
     )(
       class Input extends React.Component<any, any> {
@@ -420,35 +420,35 @@ describe("lugiax.bind", () => {
         render() {
           return [
             <input {...this.props} />,
-            <input value={this.props.title} />
+            <input value={this.props.title} />,
           ];
         }
       }
     );
 
     const target = mount(<MyInput title={optionTitle + 1} />);
-    expect(getInputValue(target.find("input").at(0))).toBe(optionName);
-    expect(getInputValue(target.find("input").at(1))).toBe(optionTitle);
+    expect(getInputValue(target.find('input').at(0))).toBe(optionName);
+    expect(getInputValue(target.find('input').at(1))).toBe(optionTitle);
   });
 
-  it("option props null ", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('option props null ', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
-        props: null
+        props: null,
       }
     )(
       class Input extends React.Component<any, any> {
@@ -457,33 +457,33 @@ describe("lugiax.bind", () => {
         render() {
           return [
             <input {...this.props} />,
-            <input value={this.props.title} />
+            <input value={this.props.title} />,
           ];
         }
       }
     );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
   });
-  it("option props undefined ", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('option props undefined ', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
-        props: undefined
+        props: undefined,
       }
     )(
       class Input extends React.Component<any, any> {
@@ -492,33 +492,33 @@ describe("lugiax.bind", () => {
         render() {
           return [
             <input {...this.props} />,
-            <input value={this.props.title} />
+            <input value={this.props.title} />,
           ];
         }
       }
     );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
   });
-  it("option props {} ", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('option props {} ', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
-        props: {}
+        props: {},
       }
     )(
       class Input extends React.Component<any, any> {
@@ -527,33 +527,33 @@ describe("lugiax.bind", () => {
         render() {
           return [
             <input {...this.props} />,
-            <input value={this.props.title} />
+            <input value={this.props.title} />,
           ];
         }
       }
     );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
   });
-  it("option props number ", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('option props number ', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
-        props: 1
+        props: 1,
       }
     )(
       class Input extends React.Component<any, any> {
@@ -562,36 +562,36 @@ describe("lugiax.bind", () => {
         render() {
           return [
             <input {...this.props} />,
-            <input value={this.props.title} />
+            <input value={this.props.title} />,
           ];
         }
       }
     );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
   });
 
-  it("option withRef true ", async () => {
-    const name = "ligx";
-    const pwd = "123456";
+  it('option withRef true ', async () => {
+    const name = 'ligx';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
-    const result = "hello world";
-    let MyInput = bind(
+    const result = 'hello world';
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         withRef: true,
-        props: undefined
+        props: undefined,
       }
     )(
       class Input extends React.Component<any, any> {
@@ -604,7 +604,7 @@ describe("lugiax.bind", () => {
         render() {
           return [
             <input {...this.props} />,
-            <input value={this.props.title} />
+            <input value={this.props.title} />,
           ];
         }
       }
@@ -620,64 +620,64 @@ describe("lugiax.bind", () => {
     expect(target.instance().myInput.target.getName()).toEqual(result);
   });
 
-  it("option areStateEqual false", async () => {
-    const name = "ligx";
-    const newName = "fsasadklf";
-    const pwd = "123456";
+  it('option areStateEqual false', async () => {
+    const name = 'ligx';
+    const newName = 'fsasadklf';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         areStateEqual(oldModel, newModel) {
           callCount++;
 
           return (
-            oldModel.getIn(["form", "name"]) === newModel.get(["form", "name"])
+            oldModel.getIn(['form', 'name',]) === newModel.get(['form', 'name',])
           );
-        }
+        },
       }
     )(Input);
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(callCount).toBe(1);
   });
 
-  it("option areStateEqual false  render zero", async () => {
-    const initName = "ligx";
-    const firstChangeName = "fsasadklf";
-    const secondChangeName = "lkfjlasdfsaf";
-    const pwd = "123456";
+  it('option areStateEqual false  render zero', async () => {
+    const initName = 'ligx';
+    const firstChangeName = 'fsasadklf';
+    const secondChangeName = 'lkfjlasdfsaf';
+    const pwd = '123456';
     const userModel = createDeepUserModel(initName, pwd);
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         areStateEqual(oldModel, newModel) {
@@ -685,101 +685,101 @@ describe("lugiax.bind", () => {
 
           if (callCount === 1) {
             const check =
-              oldModel.getIn(["form", "name"]) === initName &&
-              newModel.getIn(["form", "name"]) === firstChangeName;
+              oldModel.getIn(['form', 'name',]) === initName &&
+              newModel.getIn(['form', 'name',]) === firstChangeName;
 
             if (!check) {
-              throw new Error("第1次更新的模型入参的值错误");
+              throw new Error('第1次更新的模型入参的值错误');
             }
           }
           if (callCount === 2) {
             const check =
-              oldModel.getIn(["form", "name"]) === firstChangeName &&
-              newModel.getIn(["form", "name"]) === secondChangeName;
+              oldModel.getIn(['form', 'name',]) === firstChangeName &&
+              newModel.getIn(['form', 'name',]) === secondChangeName;
 
             if (!check) {
-              throw new Error("第2次更新的模型入参的值错误");
+              throw new Error('第2次更新的模型入参的值错误');
             }
           }
           return false;
-        }
+        },
       }
     )(Input);
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+    expect(getInputValue(target.find('input').at(0))).toBe(initName);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: firstChangeName });
-    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+    changeName({ name: firstChangeName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(initName);
 
-    changeName({ name: secondChangeName });
-    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+    changeName({ name: secondChangeName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(initName);
 
     expect(callCount).toBe(2);
   });
 
-  it("option areStateEqual true", async () => {
-    const name = "ligx";
-    const newName = "fsasadklf";
-    const pwd = "123456";
+  it('option areStateEqual true', async () => {
+    const name = 'ligx';
+    const newName = 'fsasadklf';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         areStateEqual(oldModel, newModel) {
           callCount++;
 
           return (
-            oldModel.getIn(["form", "name"]) === name &&
-            newModel.getIn(["form", "name"]) === newName
+            oldModel.getIn(['form', 'name',]) === name &&
+            newModel.getIn(['form', 'name',]) === newName
           );
-        }
+        },
       }
     )(Input);
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newName);
     expect(callCount).toBe(1);
   });
 
-  it("option areStateEqual true  render twice", async () => {
-    const initName = "ligx";
-    const firstChangeName = "fsasadklf";
-    const secondChangeName = "lkfjlasdfsaf";
-    const pwd = "123456";
+  it('option areStateEqual true  render twice', async () => {
+    const initName = 'ligx';
+    const firstChangeName = 'fsasadklf';
+    const secondChangeName = 'lkfjlasdfsaf';
+    const pwd = '123456';
     const userModel = createDeepUserModel(initName, pwd);
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          value: model.get("form").get("name")
+          value: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         areStateEqual(oldModel, newModel) {
@@ -787,66 +787,66 @@ describe("lugiax.bind", () => {
 
           if (callCount === 1) {
             const check =
-              oldModel.getIn(["form", "name"]) === initName &&
-              newModel.getIn(["form", "name"]) === firstChangeName;
+              oldModel.getIn(['form', 'name',]) === initName &&
+              newModel.getIn(['form', 'name',]) === firstChangeName;
 
             if (!check) {
-              throw new Error("第1次更新的模型入参的值错误");
+              throw new Error('第1次更新的模型入参的值错误');
             }
           }
           if (callCount === 2) {
             const check =
-              oldModel.getIn(["form", "name"]) === firstChangeName &&
-              newModel.getIn(["form", "name"]) === secondChangeName;
+              oldModel.getIn(['form', 'name',]) === firstChangeName &&
+              newModel.getIn(['form', 'name',]) === secondChangeName;
 
             if (!check) {
-              throw new Error("第2次更新的模型入参的值错误");
+              throw new Error('第2次更新的模型入参的值错误');
             }
           }
 
           return true;
-        }
+        },
       }
     )(Input);
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(initName);
+    expect(getInputValue(target.find('input').at(0))).toBe(initName);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: firstChangeName });
-    expect(getInputValue(target.find("input").at(0))).toBe(firstChangeName);
+    changeName({ name: firstChangeName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(firstChangeName);
 
-    changeName({ name: secondChangeName });
-    expect(getInputValue(target.find("input").at(0))).toBe(secondChangeName);
+    changeName({ name: secondChangeName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(secondChangeName);
 
     expect(callCount).toBe(2);
   });
 
-  it("option areStatePropsEqual true", async () => {
-    const name = "ligx";
-    const newName = "wwww";
-    const pwd = "123456";
+  it('option areStatePropsEqual true', async () => {
+    const name = 'ligx';
+    const newName = 'wwww';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          name: model.get("form").get("name")
+          name: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         areStatePropsEqual(oldStateProps, newStateProps) {
           callCount++;
           return oldStateProps.name === name && newStateProps.name === newName;
-        }
+        },
       }
     )(
       class extends React.Component<any> {
@@ -857,39 +857,39 @@ describe("lugiax.bind", () => {
     );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newName);
     expect(callCount).toBe(1);
   });
 
-  it("option areStatePropsEqual false", async () => {
-    const name = "ligx";
-    const newName = "wwww";
-    const pwd = "123456";
+  it('option areStatePropsEqual false', async () => {
+    const name = 'ligx';
+    const newName = 'wwww';
+    const pwd = '123456';
     const userModel = createDeepUserModel(name, pwd);
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       userModel,
       model => {
         return {
-          name: model.get("form").get("name")
+          name: model.get('form').get('name'),
         };
       },
       {
         onChange: (mutations, e) => {
-          return mutations.changeName({ name: e.target.value });
-        }
+          return mutations.changeName({ name: e.target.value, });
+        },
       },
       {
         areStatePropsEqual(oldStateProps, newStateProps) {
           callCount++;
           return oldStateProps.name === newStateProps.name;
-        }
+        },
       }
     )(
       class extends React.Component<any> {
@@ -900,40 +900,40 @@ describe("lugiax.bind", () => {
     );
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(callCount).toBe(1);
   });
 
-  it("option areOwnPropsEqual true", async () => {
-    const name = "ligx";
-    const newName = "wwww";
-    const pwd = "123456";
-    const hello = "hello";
+  it('option areOwnPropsEqual true', async () => {
+    const name = 'ligx';
+    const newName = 'wwww';
+    const pwd = '123456';
+    const hello = 'hello';
 
     const userModel = createDeepUserModel(name, pwd);
     const hellModule = lugiax.register({
-      model: "hello",
-      state: { hello },
+      model: 'hello',
+      state: { hello, },
       mutations: {
         sync: {
           changeInfo(data: Object, inParam: Object) {
-            return data.set("hello", inParam.value);
-          }
-        }
-      }
+            return data.set('hello', inParam.value);
+          },
+        },
+      },
     });
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       hellModule,
       model => {
         return {
-          hello: model.get("hello")
+          hello: model.get('hello'),
         };
       },
       null,
@@ -941,7 +941,7 @@ describe("lugiax.bind", () => {
         areOwnPropsEqual(oldProps, newProps) {
           callCount++;
           return oldProps.hello === name && newProps.hello === newName;
-        }
+        },
       }
     )(
       class extends React.Component<any> {
@@ -953,7 +953,7 @@ describe("lugiax.bind", () => {
 
     const From = connect(userModel, state => {
       return {
-        hello: state.get("form").get("name")
+        hello: state.get('form').get('name'),
       };
     })(
       class PropsInput extends React.Component {
@@ -964,40 +964,40 @@ describe("lugiax.bind", () => {
     );
 
     const target = mount(<From />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newName);
     expect(callCount).toBe(1);
   });
 
-  it("option areOwnPropsEqual false", async () => {
-    const name = "ligx";
-    const newName = "wwww";
-    const pwd = "123456";
-    const hello = "hello";
+  it('option areOwnPropsEqual false', async () => {
+    const name = 'ligx';
+    const newName = 'wwww';
+    const pwd = '123456';
+    const hello = 'hello';
 
     const userModel = createDeepUserModel(name, pwd);
     const hellModule = lugiax.register({
-      model: "hello",
-      state: { hello },
+      model: 'hello',
+      state: { hello, },
       mutations: {
         sync: {
           changeInfo(data: Object, inParam: Object) {
-            return data.set("hello", inParam.value);
-          }
-        }
-      }
+            return data.set('hello', inParam.value);
+          },
+        },
+      },
     });
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       hellModule,
       model => {
         return {
-          hello: model.get("hello")
+          hello: model.get('hello'),
         };
       },
       null,
@@ -1005,7 +1005,7 @@ describe("lugiax.bind", () => {
         areOwnPropsEqual(oldProps, newProps) {
           callCount++;
           return !(oldProps.hello === name && newProps.hello === newName);
-        }
+        },
       }
     )(
       class extends React.Component<any> {
@@ -1017,7 +1017,7 @@ describe("lugiax.bind", () => {
 
     const From = connect(userModel, state => {
       return {
-        hello: state.get("form").get("name")
+        hello: state.get('form').get('name'),
       };
     })(
       class PropsInput extends React.Component {
@@ -1028,52 +1028,52 @@ describe("lugiax.bind", () => {
     );
 
     const target = mount(<From />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(callCount).toBe(1);
   });
 
-  it("option areOwnPropsEqual false and areStatePropsEqual true", async () => {
-    const name = "ligx";
-    const newName = "world";
-    const pwd = "123456";
-    const hello = "hello";
+  it('option areOwnPropsEqual false and areStatePropsEqual true', async () => {
+    const name = 'ligx';
+    const newName = 'world';
+    const pwd = '123456';
+    const hello = 'hello';
 
     const userModel = createDeepUserModel(name, pwd);
     const hellModule = lugiax.register({
-      model: "hello",
-      state: { hello },
+      model: 'hello',
+      state: { hello, },
       mutations: {
         sync: {
           changeInfo(data: Object, inParam: Object) {
-            return data.set("hello", inParam.value);
-          }
-        }
-      }
+            return data.set('hello', inParam.value);
+          },
+        },
+      },
     });
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       hellModule,
       model => {
         return {
-          hello: model.get("hello")
+          hello: model.get('hello'),
         };
       },
       null,
       {
         areOwnPropsEqual(oldProps, newProps) {
           callCount++;
-          return !(oldProps.hello === "ligx" && newProps.hello === "world");
+          return !(oldProps.hello === 'ligx' && newProps.hello === 'world');
         },
         areStatePropsEqual() {
           callCount++;
           return true;
-        }
+        },
       }
     )(
       class extends React.Component<any> {
@@ -1085,7 +1085,7 @@ describe("lugiax.bind", () => {
 
     const From = connect(userModel, state => {
       return {
-        hello: state.get("form").get("name")
+        hello: state.get('form').get('name'),
       };
     })(
       class PropsInput extends React.Component {
@@ -1096,40 +1096,40 @@ describe("lugiax.bind", () => {
     );
 
     const target = mount(<From />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(callCount).toBe(2);
   });
 
-  it("option areOwnPropsEqual true and areStatePropsEqual false", async () => {
-    const name = "ligx";
-    const newName = "wwww";
-    const pwd = "123456";
-    const hello = "hello";
+  it('option areOwnPropsEqual true and areStatePropsEqual false', async () => {
+    const name = 'ligx';
+    const newName = 'wwww';
+    const pwd = '123456';
+    const hello = 'hello';
 
     const userModel = createDeepUserModel(name, pwd);
     const hellModule = lugiax.register({
-      model: "hello",
-      state: { hello },
+      model: 'hello',
+      state: { hello, },
       mutations: {
         sync: {
           changeInfo(data: Object, inParam: Object) {
-            return data.set("hello", inParam.value);
-          }
-        }
-      }
+            return data.set('hello', inParam.value);
+          },
+        },
+      },
     });
     let callCount = 0;
-    let MyInput = bind(
+    const MyInput = bind(
       hellModule,
       model => {
         return {
-          hello: model.get("hello")
+          hello: model.get('hello'),
         };
       },
       null,
@@ -1141,7 +1141,7 @@ describe("lugiax.bind", () => {
         areStatePropsEqual(oldStateProps, newStateProps) {
           callCount++;
           return false;
-        }
+        },
       }
     )(
       class extends React.Component<any> {
@@ -1153,7 +1153,7 @@ describe("lugiax.bind", () => {
 
     const From = connect(userModel, state => {
       return {
-        hello: state.get("form").get("name")
+        hello: state.get('form').get('name'),
       };
     })(
       class PropsInput extends React.Component {
@@ -1164,13 +1164,13 @@ describe("lugiax.bind", () => {
     );
 
     const target = mount(<From />);
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
 
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
-    changeName({ name: newName });
-    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    changeName({ name: newName, });
+    expect(getInputValue(target.find('input').at(0))).toBe(name);
     expect(callCount).toBe(2);
   });
 
@@ -1180,89 +1180,89 @@ describe("lugiax.bind", () => {
       state,
       mutations: {
         sync: {
-          changeName(data: Object, inParam: Object, { mutations }) {
-            data = mutations.changePwd({ pwd: newData.newPwd });
-            return data.set("name", newData.newName);
+          changeName(data: Object, inParam: Object, { mutations, }) {
+            data = mutations.changePwd({ pwd: newData.newPwd, });
+            return data.set('name', newData.newName);
           },
-          timerChangeName(data: Object, inParam: Object, { mutations }) {
+          timerChangeName(data: Object, inParam: Object, { mutations, }) {
             setTimeout(() => {
-              mutations.changePwd({ pwd: newData.newPwd });
+              mutations.changePwd({ pwd: newData.newPwd, });
             });
-            return data.set("name", newData.newName);
+            return data.set('name', newData.newName);
           },
-          changeNameCallAsync(data: Object, inParam: Object, { mutations }) {
-            mutations.asyncChangePwd({ pwd: newData.newPwd });
-            data = data.set("name", newData.newName);
+          changeNameCallAsync(data: Object, inParam: Object, { mutations, }) {
+            mutations.asyncChangePwd({ pwd: newData.newPwd, });
+            data = data.set('name', newData.newName);
             return data;
           },
-          changePwd(data: Object, inParam: Object, { mutations }) {
-            data = mutations.changeAge({ age: newData.newAge });
-            return data.set("pwd", inParam.pwd);
+          changePwd(data: Object, inParam: Object, { mutations, }) {
+            data = mutations.changeAge({ age: newData.newAge, });
+            return data.set('pwd', inParam.pwd);
           },
           changeAge(data: Object, inParam: Object) {
-            return data.set("age", inParam.age);
-          }
+            return data.set('age', inParam.age);
+          },
         },
         async: {
-          async changeName(data: Object, inParam: Object, { mutations }) {
+          async changeName(data: Object, inParam: Object, { mutations, }) {
             data = await mutations.asyncChangePwd({
-              pwd: newData.newPwd
+              pwd: newData.newPwd,
             });
-            return data.set("name", newData.newName);
+            return data.set('name', newData.newName);
           },
-          async NameCallSyncFn(data: Object, inParam: Object, { mutations }) {
-            data = await mutations.changePwd({ pwd: newData.newPwd });
-            return data.set("name", newData.newName);
+          async NameCallSyncFn(data: Object, inParam: Object, { mutations, }) {
+            data = await mutations.changePwd({ pwd: newData.newPwd, });
+            return data.set('name', newData.newName);
           },
-          async changePwd(data: Object, inParam: Object, { mutations }) {
-            data = await mutations.asyncChangeAge({ age: newData.newAge });
-            return data.set("pwd", inParam.pwd);
+          async changePwd(data: Object, inParam: Object, { mutations, }) {
+            data = await mutations.asyncChangeAge({ age: newData.newAge, });
+            return data.set('pwd', inParam.pwd);
           },
           async changeAge(data: Object, inParam: Object) {
-            return data.set("age", inParam.age);
-          }
-        }
-      }
+            return data.set('age', inParam.age);
+          },
+        },
+      },
     });
     const BindComponent = connect(userModel, (user: Object) => {
       return {
-        name: user.get("name"),
-        pwd: user.get("pwd"),
-        age: user.get("age")
+        name: user.get('name'),
+        pwd: user.get('pwd'),
+        age: user.get('age'),
       };
     })(target);
     return {
       model: userModel,
-      BindComponent
+      BindComponent,
     };
   }
 
-  it("component bind Single model syncMutation deep  invoking syncMutation && render 2", () => {
-    const model = "user";
+  it('component bind Single model syncMutation deep  invoking syncMutation && render 2', () => {
+    const model = 'user';
     const state = {
-      name: "lugiax",
-      pwd: "admin",
-      age: "1"
+      name: 'lugiax',
+      pwd: 'admin',
+      age: '1',
     };
     let renderCount = 0;
     class Input extends React.Component<any, any> {
-      static displayName = "MyInput";
+      static displayName = 'MyInput';
       render() {
         renderCount++;
-        const { name, pwd, age } = this.props;
+        const { name, pwd, age, } = this.props;
         return [
           <input value={name} />,
           <input value={pwd} />,
-          <input value={age} />
+          <input value={age} />,
         ];
       }
     }
     const newState = {
-      newName: "he",
-      newPwd: "admin11",
-      newAge: "2"
+      newName: 'he',
+      newPwd: 'admin11',
+      newAge: '2',
     };
-    const { model: userModel, BindComponent } = createMoreMutationModel(
+    const { model: userModel, BindComponent, } = createMoreMutationModel(
       model,
       state,
       Input,
@@ -1270,47 +1270,47 @@ describe("lugiax.bind", () => {
     );
     const target = mount(<BindComponent />);
 
-    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
-    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    expect(getInputValue(target.find('input').at(0))).toEqual(state.name);
+    expect(getInputValue(target.find('input').at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(state.age);
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
     expect(renderCount).toEqual(1);
     changeName();
-    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
-    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(getInputValue(target.find('input').at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find('input').at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(newState.newAge);
     expect(renderCount).toEqual(2);
   });
 
-  it("component bind Single model syncMutation setTimeout deep  invoking syncMutation && render 3", () => {
+  it('component bind Single model syncMutation setTimeout deep  invoking syncMutation && render 3', () => {
     jest.useFakeTimers();
-    const model = "user";
+    const model = 'user';
     const state = {
-      name: "lugiax",
-      pwd: "admin",
-      age: "1"
+      name: 'lugiax',
+      pwd: 'admin',
+      age: '1',
     };
     let renderCount = 0;
     class Input extends React.Component<any, any> {
-      static displayName = "MyInput";
+      static displayName = 'MyInput';
       render() {
         renderCount++;
-        const { name, pwd, age } = this.props;
+        const { name, pwd, age, } = this.props;
         return [
           <input value={name} />,
           <input value={pwd} />,
-          <input value={age} />
+          <input value={age} />,
         ];
       }
     }
     const newState = {
-      newName: "he",
-      newPwd: "admin11",
-      newAge: "2"
+      newName: 'he',
+      newPwd: 'admin11',
+      newAge: '2',
     };
-    const { model: userModel, BindComponent } = createMoreMutationModel(
+    const { model: userModel, BindComponent, } = createMoreMutationModel(
       model,
       state,
       Input,
@@ -1318,47 +1318,47 @@ describe("lugiax.bind", () => {
     );
     const target = mount(<BindComponent />);
 
-    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
-    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    expect(getInputValue(target.find('input').at(0))).toEqual(state.name);
+    expect(getInputValue(target.find('input').at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(state.age);
     const {
-      mutations: { timerChangeName }
+      mutations: { timerChangeName, },
     } = userModel;
     expect(renderCount).toEqual(1);
     timerChangeName();
     jest.runAllTimers();
-    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
-    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(getInputValue(target.find('input').at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find('input').at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(newState.newAge);
     expect(renderCount).toEqual(3);
   });
 
-  it("component bind Single model && asyncMutation deep invoking asyncMutation && render 2", async () => {
-    const model = "user";
+  it('component bind Single model && asyncMutation deep invoking asyncMutation && render 2', async () => {
+    const model = 'user';
     const state = {
-      name: "lugiax",
-      pwd: "admin",
-      age: "1"
+      name: 'lugiax',
+      pwd: 'admin',
+      age: '1',
     };
     let renderCount = 0;
     class Input extends React.Component<any, any> {
-      static displayName = "MyInput";
+      static displayName = 'MyInput';
       render() {
         renderCount++;
-        const { name, pwd, age } = this.props;
+        const { name, pwd, age, } = this.props;
         return [
           <input value={name} />,
           <input value={pwd} />,
-          <input value={age} />
+          <input value={age} />,
         ];
       }
     }
     const newState = {
-      newName: "he",
-      newPwd: "admin11",
-      newAge: "2"
+      newName: 'he',
+      newPwd: 'admin11',
+      newAge: '2',
     };
-    const { model: userModel, BindComponent } = createMoreMutationModel(
+    const { model: userModel, BindComponent, } = createMoreMutationModel(
       model,
       state,
       Input,
@@ -1366,46 +1366,46 @@ describe("lugiax.bind", () => {
     );
     const target = mount(<BindComponent />);
 
-    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
-    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    expect(getInputValue(target.find('input').at(0))).toEqual(state.name);
+    expect(getInputValue(target.find('input').at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(state.age);
     const {
-      mutations: { asyncChangeName }
+      mutations: { asyncChangeName, },
     } = userModel;
     expect(renderCount).toEqual(1);
     await asyncChangeName();
-    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
-    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(getInputValue(target.find('input').at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find('input').at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(newState.newAge);
     expect(renderCount).toEqual(2);
   });
 
-  it("component bind Single model && asyncMutation deep invoking syncMutation && render 2", async () => {
-    const model = "user";
+  it('component bind Single model && asyncMutation deep invoking syncMutation && render 2', async () => {
+    const model = 'user';
     const state = {
-      name: "lugiax",
-      pwd: "admin",
-      age: "1"
+      name: 'lugiax',
+      pwd: 'admin',
+      age: '1',
     };
     let renderCount = 0;
     class Input extends React.Component<any, any> {
-      static displayName = "MyInput";
+      static displayName = 'MyInput';
       render() {
         renderCount++;
-        const { name, pwd, age } = this.props;
+        const { name, pwd, age, } = this.props;
         return [
           <input value={name} />,
           <input value={pwd} />,
-          <input value={age} />
+          <input value={age} />,
         ];
       }
     }
     const newState = {
-      newName: "he",
-      newPwd: "admin11",
-      newAge: "2"
+      newName: 'he',
+      newPwd: 'admin11',
+      newAge: '2',
     };
-    const { model: userModel, BindComponent } = createMoreMutationModel(
+    const { model: userModel, BindComponent, } = createMoreMutationModel(
       model,
       state,
       Input,
@@ -1413,262 +1413,262 @@ describe("lugiax.bind", () => {
     );
     const target = mount(<BindComponent />);
 
-    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
-    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    expect(getInputValue(target.find('input').at(0))).toEqual(state.name);
+    expect(getInputValue(target.find('input').at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(state.age);
     const {
-      mutations: { asyncNameCallSyncFn }
+      mutations: { asyncNameCallSyncFn, },
     } = userModel;
     expect(renderCount).toEqual(1);
     await asyncNameCallSyncFn();
-    expect(getInputValue(target.find("input").at(0))).toEqual(newState.newName);
-    expect(getInputValue(target.find("input").at(1))).toEqual(newState.newPwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(newState.newAge);
+    expect(getInputValue(target.find('input').at(0))).toEqual(newState.newName);
+    expect(getInputValue(target.find('input').at(1))).toEqual(newState.newPwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(newState.newAge);
     expect(renderCount).toEqual(2);
   });
 
-  it("component bind more model && syncMutation of A-model deep invoking syncMutation of B-model && render 2", () => {
-    const model = "user";
-    const info = "info";
+  it('component bind more model && syncMutation of A-model deep invoking syncMutation of B-model && render 2', () => {
+    const model = 'user';
+    const info = 'info';
     const state = {
-      name: "lugiax",
-      pwd: "admin",
-      age: "1"
+      name: 'lugiax',
+      pwd: 'admin',
+      age: '1',
     };
     const infoState = {
-      info: "lugiax-admin"
+      info: 'lugiax-admin',
     };
-    const newName = "he";
-    const newPwd = "admin11";
-    const newAge = "2";
-    const newInfo = "lugiax-web";
+    const newName = 'he';
+    const newPwd = 'admin11';
+    const newAge = '2';
+    const newInfo = 'lugiax-web';
     const infoModel = lugiax.register({
       model: info,
       state: infoState,
       mutations: {
         sync: {
-          changeInfo(data: Object, inParam: Object, { mutations }) {
-            return data.set("info", newInfo);
-          }
+          changeInfo(data: Object, inParam: Object, { mutations, }) {
+            return data.set('info', newInfo);
+          },
         },
         async: {
-          async changeInfo(data: Object, inParam: Object, { mutations }) {
-            return data.set("info", newInfo);
-          }
-        }
-      }
+          async changeInfo(data: Object, inParam: Object, { mutations, }) {
+            return data.set('info', newInfo);
+          },
+        },
+      },
     });
     const {
-      mutations: { changeInfo }
+      mutations: { changeInfo, },
     } = infoModel;
     const userModel = lugiax.register({
       model,
       state,
       mutations: {
         sync: {
-          changePwd(data: Object, inParam: Object, { mutations }) {
-            data = mutations.changeAge({ age: newAge });
+          changePwd(data: Object, inParam: Object, { mutations, }) {
+            data = mutations.changeAge({ age: newAge, });
             changeInfo();
-            return data.set("pwd", inParam.pwd);
+            return data.set('pwd', inParam.pwd);
           },
-          changeName(data: Object, inParam: Object, { mutations }) {
-            data = mutations.changePwd({ pwd: newPwd });
-            return data.set("name", newName);
+          changeName(data: Object, inParam: Object, { mutations, }) {
+            data = mutations.changePwd({ pwd: newPwd, });
+            return data.set('name', newName);
           },
           changeAge(data: Object, inParam: Object) {
-            return data.set("age", inParam.age);
-          }
+            return data.set('age', inParam.age);
+          },
         },
-        async: {}
-      }
+        async: {},
+      },
     });
 
     let renderCount = 0;
     class Input extends React.Component<any, any> {
       render() {
         renderCount++;
-        const { name, pwd, age } = this.props;
+        const { name, pwd, age, } = this.props;
         return [
           <input value={name} />,
           <input value={pwd} />,
-          <input value={age} />
+          <input value={age} />,
         ];
       }
     }
     const MyInput = bind(userModel, (user: Object) => {
       return {
-        name: user.get("name"),
-        pwd: user.get("pwd"),
-        age: user.get("age")
+        name: user.get('name'),
+        pwd: user.get('pwd'),
+        age: user.get('age'),
       };
     })(Input);
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
-    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    expect(getInputValue(target.find('input').at(0))).toEqual(state.name);
+    expect(getInputValue(target.find('input').at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(state.age);
     expect(
       lugiax
         .getState()
         .get(info)
-        .get("info")
+        .get('info')
     ).toBe(infoState.info);
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
     changeName();
-    expect(getInputValue(target.find("input").at(0))).toEqual(newName);
-    expect(getInputValue(target.find("input").at(1))).toEqual(newPwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(newAge);
+    expect(getInputValue(target.find('input').at(0))).toEqual(newName);
+    expect(getInputValue(target.find('input').at(1))).toEqual(newPwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(newAge);
     expect(
       lugiax
         .getState()
         .get(info)
-        .get("info")
+        .get('info')
     ).toBe(newInfo);
     expect(renderCount).toEqual(2);
   });
 
-  it("component bind more model && syncMutation of A-model setTimeout deep invoking syncMutation of B-model && render 2", () => {
+  it('component bind more model && syncMutation of A-model setTimeout deep invoking syncMutation of B-model && render 2', () => {
     jest.useFakeTimers();
-    const model = "user";
-    const info = "info";
+    const model = 'user';
+    const info = 'info';
     const state = {
-      name: "lugiax",
-      pwd: "admin",
-      age: "1"
+      name: 'lugiax',
+      pwd: 'admin',
+      age: '1',
     };
     const infoState = {
-      info: "lugiax-admin"
+      info: 'lugiax-admin',
     };
-    const newName = "he";
-    const newPwd = "admin11";
-    const newAge = "2";
-    const newInfo = "lugiax-web";
+    const newName = 'he';
+    const newPwd = 'admin11';
+    const newAge = '2';
+    const newInfo = 'lugiax-web';
     const infoModel = lugiax.register({
       model: info,
       state: infoState,
       mutations: {
         sync: {
-          changeInfo(data: Object, inParam: Object, { mutations }) {
-            return data.set("info", newInfo);
-          }
+          changeInfo(data: Object, inParam: Object, { mutations, }) {
+            return data.set('info', newInfo);
+          },
         },
         async: {
-          async changeInfo(data: Object, inParam: Object, { mutations }) {
-            return data.set("info", newInfo);
-          }
-        }
-      }
+          async changeInfo(data: Object, inParam: Object, { mutations, }) {
+            return data.set('info', newInfo);
+          },
+        },
+      },
     });
     const {
-      mutations: { changeInfo }
+      mutations: { changeInfo, },
     } = infoModel;
     const userModel = lugiax.register({
       model,
       state,
       mutations: {
         sync: {
-          changePwd(data: Object, inParam: Object, { mutations }) {
-            data = mutations.changeAge({ age: newAge });
+          changePwd(data: Object, inParam: Object, { mutations, }) {
+            data = mutations.changeAge({ age: newAge, });
             setTimeout(() => {
               changeInfo();
             });
-            return data.set("pwd", inParam.pwd);
+            return data.set('pwd', inParam.pwd);
           },
-          changeName(data: Object, inParam: Object, { mutations }) {
-            data = mutations.changePwd({ pwd: newPwd });
-            return data.set("name", newName);
+          changeName(data: Object, inParam: Object, { mutations, }) {
+            data = mutations.changePwd({ pwd: newPwd, });
+            return data.set('name', newName);
           },
           changeAge(data: Object, inParam: Object) {
-            return data.set("age", inParam.age);
-          }
+            return data.set('age', inParam.age);
+          },
         },
-        async: {}
-      }
+        async: {},
+      },
     });
 
     let renderCount = 0;
     class Input extends React.Component<any, any> {
       render() {
         renderCount++;
-        const { name, pwd, age } = this.props;
+        const { name, pwd, age, } = this.props;
         return [
           <input value={name} />,
           <input value={pwd} />,
-          <input value={age} />
+          <input value={age} />,
         ];
       }
     }
     const MyInput = bind(userModel, (user: Object) => {
       return {
-        name: user.get("name"),
-        pwd: user.get("pwd"),
-        age: user.get("age")
+        name: user.get('name'),
+        pwd: user.get('pwd'),
+        age: user.get('age'),
       };
     })(Input);
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
-    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    expect(getInputValue(target.find('input').at(0))).toEqual(state.name);
+    expect(getInputValue(target.find('input').at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(state.age);
     expect(
       lugiax
         .getState()
         .get(info)
-        .get("info")
+        .get('info')
     ).toBe(infoState.info);
     expect(renderCount).toEqual(1);
     const {
-      mutations: { changeName }
+      mutations: { changeName, },
     } = userModel;
     changeName();
     jest.runAllTimers();
-    expect(getInputValue(target.find("input").at(0))).toEqual(newName);
-    expect(getInputValue(target.find("input").at(1))).toEqual(newPwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(newAge);
+    expect(getInputValue(target.find('input').at(0))).toEqual(newName);
+    expect(getInputValue(target.find('input').at(1))).toEqual(newPwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(newAge);
     expect(
       lugiax
         .getState()
         .get(info)
-        .get("info")
+        .get('info')
     ).toBe(newInfo);
     expect(renderCount).toEqual(2);
   });
 
-  it("component bind more model && asyncMutation of A-model deep invoking asyncMutation of B-model && render 2", async () => {
-    const model = "user";
-    const info = "info";
+  it('component bind more model && asyncMutation of A-model deep invoking asyncMutation of B-model && render 2', async () => {
+    const model = 'user';
+    const info = 'info';
     const state = {
-      name: "lugiax",
-      pwd: "admin",
-      age: "1"
+      name: 'lugiax',
+      pwd: 'admin',
+      age: '1',
     };
     const infoState = {
-      info: "lugiax-admin"
+      info: 'lugiax-admin',
     };
 
-    const newName = "he";
-    const newPwd = "admin11";
-    const newAge = "2";
-    const newInfo = "lugiax-web";
+    const newName = 'he';
+    const newPwd = 'admin11';
+    const newAge = '2';
+    const newInfo = 'lugiax-web';
     const infoModel = lugiax.register({
       model: info,
       state: infoState,
       mutations: {
         sync: {
-          changeInfo(data: Object, inParam: Object, { mutations }) {
-            return data.set("info", newInfo);
-          }
+          changeInfo(data: Object, inParam: Object, { mutations, }) {
+            return data.set('info', newInfo);
+          },
         },
         async: {
-          async changeInfo(data: Object, inParam: Object, { mutations }) {
-            return data.set("info", newInfo);
-          }
-        }
-      }
+          async changeInfo(data: Object, inParam: Object, { mutations, }) {
+            return data.set('info', newInfo);
+          },
+        },
+      },
     });
     const {
-      mutations: { asyncChangeInfo }
+      mutations: { asyncChangeInfo, },
     } = infoModel;
     const userModel = lugiax.register({
       model,
@@ -1676,70 +1676,70 @@ describe("lugiax.bind", () => {
       mutations: {
         sync: {},
         async: {
-          async changePwd(data: Object, inParam: Object, { mutations }) {
-            data = await mutations.asyncChangeAge({ age: newAge });
+          async changePwd(data: Object, inParam: Object, { mutations, }) {
+            data = await mutations.asyncChangeAge({ age: newAge, });
             await asyncChangeInfo();
-            return data.set("pwd", inParam.pwd);
+            return data.set('pwd', inParam.pwd);
           },
-          async changeName(data: Object, inParam: Object, { mutations }) {
-            data = await mutations.asyncChangePwd({ pwd: newPwd });
-            return data.set("name", newName);
+          async changeName(data: Object, inParam: Object, { mutations, }) {
+            data = await mutations.asyncChangePwd({ pwd: newPwd, });
+            return data.set('name', newName);
           },
           async changeAge(data: Object, inParam: Object) {
-            return data.set("age", inParam.age);
-          }
-        }
-      }
+            return data.set('age', inParam.age);
+          },
+        },
+      },
     });
 
     let renderCount = 0;
     class Input extends React.Component<any, any> {
-      static displayName = "MyInput";
+      static displayName = 'MyInput';
       onClick = () => {
-        this.props.changeName({ name });
+        this.props.changeName({ name, });
       };
 
       render() {
         renderCount++;
-        const { name, pwd, age } = this.props;
+        const { name, pwd, age, } = this.props;
         return [
           <input value={name} />,
           <input value={pwd} />,
-          <input value={age} />
+          <input value={age} />,
         ];
       }
     }
     const MyInput = bind(userModel, (user: Object) => {
       return {
-        name: user.get("name"),
-        pwd: user.get("pwd"),
-        age: user.get("age")
+        name: user.get('name'),
+        pwd: user.get('pwd'),
+        age: user.get('age'),
       };
     })(Input);
 
     const target = mount(<MyInput />);
-    expect(getInputValue(target.find("input").at(0))).toEqual(state.name);
-    expect(getInputValue(target.find("input").at(1))).toEqual(state.pwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(state.age);
+    expect(getInputValue(target.find('input').at(0))).toEqual(state.name);
+    expect(getInputValue(target.find('input').at(1))).toEqual(state.pwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(state.age);
     expect(
       lugiax
         .getState()
         .get(info)
-        .get("info")
+        .get('info')
     ).toBe(infoState.info);
     const {
-      mutations: { asyncChangeName }
+      mutations: { asyncChangeName, },
     } = userModel;
     expect(renderCount).toEqual(1);
     await asyncChangeName();
-    expect(getInputValue(target.find("input").at(0))).toEqual(newName);
-    expect(getInputValue(target.find("input").at(1))).toEqual(newPwd);
-    expect(getInputValue(target.find("input").at(2))).toEqual(newAge);
+    expect(getInputValue(target.find('input').at(0))).toEqual(newName);
+    expect(getInputValue(target.find('input').at(1))).toEqual(newPwd);
+    expect(getInputValue(target.find('input').at(2))).toEqual(newAge);
     expect(
       lugiax
         .getState()
         .get(info)
-        .get("info")
+        .get('info')
     ).toBe(newInfo);
     expect(renderCount).toEqual(2);
   });

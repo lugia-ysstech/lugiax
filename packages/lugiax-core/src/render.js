@@ -4,10 +4,10 @@
  *
  * @flow
  */
-import Subscribe from "./subscribe";
-import Stack from "./stack";
+import Subscribe from './subscribe';
+import Stack from './stack';
 
-const BatchModels = "batchModels";
+const BatchModels = 'batchModels';
 
 class Render {
   renderEvent: Subscribe;
@@ -33,7 +33,7 @@ class Render {
     this.renderEvent = new Subscribe();
     this.renderCollector = new Stack({
       onPushItem: this.onAfterPush,
-      onStackEmpty: this.onAfterPop
+      onStackEmpty: this.onAfterPop,
     });
     this.willRenderModules = {};
   }

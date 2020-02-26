@@ -12,11 +12,10 @@ import todo from './models/todo';
 
 const TodoList = connect(
   todo,
-  state => {
-    return { data: state.todo.get('tasks'), };
+  todo => {
+    return { data: todo.get('tasks'), };
   },
-  mutations => {
-    const { todo, } = mutations;
+  todo => {
     return { delItem: todo.delTask, };
   }
 )(List);

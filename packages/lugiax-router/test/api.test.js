@@ -1,7 +1,7 @@
-import React from "react";
-import Enzyme, { mount } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
-import { createBrowserHistory } from "history";
+import React from 'react';
+import Enzyme, { mount, } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { createBrowserHistory, } from 'history';
 import {
   createRoute,
   createApp,
@@ -9,25 +9,25 @@ import {
   Link,
   goBack,
   goForward,
-  replace
-} from "../src";
-import lugiax from "@lugia/lugiax";
-import { createMemoryHistory } from "history";
-import { push } from "connected-react-router";
-import { delay } from "@lugia/react-test-utils";
-import styled from "styled-components";
-Enzyme.configure({ adapter: new Adapter() });
+  replace,
+} from '../src';
+import lugiax from '@lugia/lugiax';
+import { createMemoryHistory, } from 'history';
+import { push, } from 'connected-react-router';
+import { delay, } from '@lugia/react-test-utils';
+import styled from 'styled-components';
+Enzyme.configure({ adapter: new Adapter(), });
 
 const Sport = () => <h1>Sport</h1>;
-Sport.displayName = "Sport";
+Sport.displayName = 'Sport';
 const Car = () => <h1>Car</h1>;
-Car.displayName = "Car";
+Car.displayName = 'Car';
 
 const News = () => <h1>News</h1>;
-News.displayName = "News";
+News.displayName = 'News';
 
 const Games = () => <h1>Games</h1>;
-Games.displayName = "Games";
+Games.displayName = 'Games';
 
 const CommonBotton = styled.div`
   width: 240px;
@@ -45,25 +45,25 @@ const CommonBotton = styled.div`
 `;
 
 const GoToBackCountOneButton = styled(CommonBotton)``;
-GoToBackCountOneButton.displayName = "GoToBackCountOneButton";
+GoToBackCountOneButton.displayName = 'GoToBackCountOneButton';
 
 const GoToForwardCountOneButton = styled(CommonBotton)``;
-GoToForwardCountOneButton.displayName = "GoToForwardCountOneButton";
+GoToForwardCountOneButton.displayName = 'GoToForwardCountOneButton';
 
 const GoToBackCountTwoButton = styled(CommonBotton)``;
-GoToBackCountTwoButton.displayName = "GoToBackCountTwoButton";
+GoToBackCountTwoButton.displayName = 'GoToBackCountTwoButton';
 
 const GoToForwardCountTwoButton = styled(CommonBotton)``;
-GoToForwardCountTwoButton.displayName = "GoToForwardCountTwoButton";
+GoToForwardCountTwoButton.displayName = 'GoToForwardCountTwoButton';
 
 const GoBackButton = styled(CommonBotton)``;
-GoBackButton.displayName = "GoBackButton";
+GoBackButton.displayName = 'GoBackButton';
 
 const GoForwardButton = styled(CommonBotton)``;
-GoForwardButton.displayName = "GoForwardButton";
+GoForwardButton.displayName = 'GoForwardButton';
 
 const ReplaceButton = styled(CommonBotton)``;
-ReplaceButton.displayName = "ReplaceButton";
+ReplaceButton.displayName = 'ReplaceButton';
 
 class Header extends React.Component {
   render() {
@@ -127,11 +127,11 @@ class Buttons extends React.Component {
   }
 
   onGoToBackCount2Click = () => {
-    go({ count: -2 });
+    go({ count: -2, });
   };
 
   onGoToForwardCount2Click = () => {
-    go({ count: 2 });
+    go({ count: 2, });
   };
 
   onGoBackClick = () => {
@@ -143,15 +143,15 @@ class Buttons extends React.Component {
   };
 
   onReplaceClick = () => {
-    replace({ url: "/sport" });
+    replace({ url: '/sport', });
   };
 
   onGoToBackCount1Click = () => {
-    go({ count: -1 });
+    go({ count: -1, });
   };
 
   onGoToForwardCount1Click = () => {
-    go({ count: 1 });
+    go({ count: 1, });
   };
 }
 
@@ -161,52 +161,52 @@ class Main extends React.Component {
       <Buttons />,
       <Header />,
       createRoute({
-        "/sport": {
+        '/sport': {
           exact: true,
-          component: Sport
+          component: Sport,
         },
-        "/car": {
+        '/car': {
           exact: true,
-          component: Car
+          component: Car,
         },
-        "/news": {
+        '/news': {
           exact: true,
-          component: News
+          component: News,
         },
-        "/games": {
+        '/games': {
           exact: true,
-          component: Games
-        }
-      })
+          component: Games,
+        },
+      }),
     ];
   }
 }
 
-describe("go({count: -1}) 后退一次", () => {
+describe('go({count: -1}) 后退一次', () => {
   let cmp;
   beforeAll(() => {
     const history = createMemoryHistory();
     const App = createApp(
       {
-        "/": {
-          component: Main
-        }
+        '/': {
+          component: Main,
+        },
       },
       history,
       {
-        async onBeforeGo({ url }) {
-          if (url === "/nowPower") {
-            await go({ url: "/403" });
+        async onBeforeGo({ url, }) {
+          if (url === '/nowPower') {
+            await go({ url: '/403', });
             return false;
           }
-          return url !== "/not";
-        }
+          return url !== '/not';
+        },
       }
     );
     cmp = mount(<App />);
   });
 
-  it("go({count: -1}) , 后退一步, 后退到初始页面后, 后退不生效", async () => {
+  it('go({count: -1}) , 后退一步, 后退到初始页面后, 后退不生效', async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -217,27 +217,27 @@ describe("go({count: -1}) 后退一次", () => {
     cmp.update();
 
     cmp
-      .find("GoToBackCountOneButton")
+      .find('GoToBackCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/sport");
+    checkUrl('/sport');
 
     cmp
-      .find("GoToBackCountOneButton")
+      .find('GoToBackCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/sport");
+    checkUrl('/sport');
   });
 
-  it("go({count: 1}), 先后退一步，再前进一步，前进到最后一个页面后，前进不生效", async () => {
+  it('go({count: 1}), 先后退一步，再前进一步，前进到最后一个页面后，前进不生效', async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -248,37 +248,37 @@ describe("go({count: -1}) 后退一次", () => {
     cmp.update();
 
     cmp
-      .find("GoToBackCountOneButton")
+      .find('GoToBackCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/sport");
+    checkUrl('/sport');
 
     cmp
-      .find("GoToForwardCountOneButton")
+      .find('GoToForwardCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/car");
+    checkUrl('/car');
 
     cmp
-      .find("GoToForwardCountOneButton")
+      .find('GoToForwardCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/car");
+    checkUrl('/car');
   });
 
-  it("go({count: -2}), 后退两步", async () => {
+  it('go({count: -2}), 后退两步', async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -297,17 +297,17 @@ describe("go({count: -1}) 后退一次", () => {
     cmp.update();
 
     cmp
-      .find("GoToBackCountTwoButton")
+      .find('GoToBackCountTwoButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/car");
+    checkUrl('/car');
   });
 
-  it("go({count: 2}),先后退两步， 前进两步", async () => {
+  it('go({count: 2}),先后退两步， 前进两步', async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -326,27 +326,27 @@ describe("go({count: -1}) 后退一次", () => {
     cmp.update();
 
     cmp
-      .find("GoToBackCountTwoButton")
+      .find('GoToBackCountTwoButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/car");
+    checkUrl('/car');
 
     cmp
-      .find("GoToForwardCountTwoButton")
+      .find('GoToForwardCountTwoButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/games");
+    checkUrl('/games');
   });
 
-  it("go({count: 2}),先后退一步， 前进两步", async () => {
+  it('go({count: 2}),先后退一步， 前进两步', async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -365,27 +365,27 @@ describe("go({count: -1}) 后退一次", () => {
     cmp.update();
 
     cmp
-      .find("GoToBackCountOneButton")
+      .find('GoToBackCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/news");
+    checkUrl('/news');
 
     cmp
-      .find("GoToForwardCountTwoButton")
+      .find('GoToForwardCountTwoButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/games");
+    checkUrl('/games');
   });
 
-  it("goback(),后退一步", async () => {
+  it('goback(),后退一步', async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -398,27 +398,27 @@ describe("go({count: -1}) 后退一次", () => {
     await delay(100);
 
     cmp
-      .find("GoBackButton")
+      .find('GoBackButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/car");
+    checkUrl('/car');
 
     cmp
-      .find("GoBackButton")
+      .find('GoBackButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/sport");
+    checkUrl('/sport');
   });
 
-  it("goforward(),后退一步,再前进一步", async () => {
+  it('goforward(),后退一步,再前进一步', async () => {
     clickLink(0);
     cmp.update();
     await delay(100);
@@ -434,34 +434,34 @@ describe("go({count: -1}) 后退一次", () => {
     await delay(100);
 
     cmp
-      .find("GoBackButton")
+      .find('GoBackButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/news");
+    checkUrl('/news');
 
     cmp
-      .find("GoForwardButton")
+      .find('GoForwardButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/games");
+    checkUrl('/games');
 
     cmp
-      .find("GoForwardButton")
+      .find('GoForwardButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/games");
+    checkUrl('/games');
   });
 
   it("replace({url: 'sport'}),重新加载页面，不保存加载前的页面历史记录", async () => {
@@ -480,47 +480,47 @@ describe("go({count: -1}) 后退一次", () => {
     await delay(100);
 
     cmp
-      .find("ReplaceButton")
+      .find('ReplaceButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/sport");
+    checkUrl('/sport');
 
     cmp
-      .find("GoToBackCountOneButton")
+      .find('GoToBackCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/news");
+    checkUrl('/news');
 
     cmp
-      .find("GoToForwardCountOneButton")
+      .find('GoToForwardCountOneButton')
       .at(0)
-      .simulate("click", {});
+      .simulate('click', {});
     cmp.update();
     await delay(100);
     cmp.update();
 
-    checkUrl("/sport");
+    checkUrl('/sport');
   });
 
   function clickLink(i: number) {
-    const links = cmp.find(Link).find("a");
-    links.at(i).simulate("click", {});
+    const links = cmp.find(Link).find('a');
+    links.at(i).simulate('click', {});
   }
 
   function checkUrl(url: string) {
     expect(
       lugiax
         .getState()
-        .get("router")
-        .get("location")
+        .get('router')
+        .get('location')
         .toJS().pathname
     ).toBe(url);
   }

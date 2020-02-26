@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import type { SubscribeResult } from "@lugia/lugiax-core";
+import type { SubscribeResult, } from '@lugia/lugiax-core';
 
 export default class Subscribe {
   listeners: { [key: string]: { [id: string]: Function } };
@@ -21,7 +21,7 @@ export default class Subscribe {
     const call = (cb: Function) => {
       cb(...param);
     };
-    const { listeners } = this;
+    const { listeners, } = this;
     const listener = listeners[topic];
     if (listener) {
       Object.keys(listener).forEach((key: string) => {
@@ -34,7 +34,7 @@ export default class Subscribe {
   subscribeId: number;
 
   subscribe(topic: string, cb: Function): SubscribeResult {
-    const { listeners } = this;
+    const { listeners, } = this;
     if (!listeners[topic]) {
       listeners[topic] = {};
     }
@@ -43,7 +43,7 @@ export default class Subscribe {
     return {
       unSubscribe() {
         delete listeners[topic][topicId];
-      }
+      },
     };
   }
 }

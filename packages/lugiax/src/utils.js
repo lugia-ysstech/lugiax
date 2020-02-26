@@ -5,7 +5,7 @@
  * @flow
  */
 export function getDisplayName(Target: Object): string {
-  return Target.displayName || Target.name || "Component";
+  return Target.displayName || Target.name || 'Component';
 }
 
 export function tillMethodAttribute(
@@ -14,7 +14,7 @@ export function tillMethodAttribute(
   const events = {};
   paramA &&
     Object.keys(paramA).reduce((pre, current) => {
-      if (typeof paramA[current] === "function") {
+      if (typeof paramA[current] === 'function') {
         let config = pre[current];
         if (!config) {
           pre[current] = config = [];
@@ -81,10 +81,10 @@ export function isShouldRender(
   areOwnPropsEqual: function,
   comparativeData: Object
 ): boolean {
-  let areStatePropsEqualVal =
+  const areStatePropsEqualVal =
     !areStatePropsEqual ||
     areStatePropsEqual(comparativeData.preState, comparativeData.nextState);
-  let areOwnPropsEqualVal =
+  const areOwnPropsEqualVal =
     !areOwnPropsEqual ||
     areOwnPropsEqual(comparativeData.preProps, comparativeData.nextProps);
   return areStatePropsEqualVal && areOwnPropsEqualVal;

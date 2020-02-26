@@ -4,21 +4,21 @@
  *
  * @flow
  */
-import type { Mutation, RegisterResult } from "@lugia/lugiax-core";
+import type { Mutation, RegisterResult, } from '@lugia/lugiax-core';
 import type {
   BindConfig,
   EventHandle,
   EventMuationConfig,
-  Field2Props
-} from "@lugia/lugiax";
+  Field2Props,
+} from '@lugia/lugiax';
 
-import * as React from "react";
-import bind from "./bind";
+import * as React from 'react';
+import bind from './bind';
 
-const valueAttr = "value";
-const defaultBindProps = "value";
-const CntName = "_lugiax_event_cnt";
-const DefaultEvent = "onChange";
+const valueAttr = 'value';
+const defaultBindProps = 'value';
+const CntName = '_lugiax_event_cnt';
+const DefaultEvent = 'onChange';
 
 export function gettor(model: Object, pathStr: string): Function {
   return () => {
@@ -32,13 +32,13 @@ export function settor(model: Object, pathStr: string): Function {
   };
 }
 
-export function getPathArray(pathStr: ?string = ""): string[] {
-  const path = pathStr.split(".");
+export function getPathArray(pathStr: ?string = ''): string[] {
+  const path = pathStr.split('.');
 
   const res = [];
 
   path.forEach((str: string) => {
-    const craftIndex = str.indexOf("[");
+    const craftIndex = str.indexOf('[');
     if (~craftIndex) {
       const attr = str.substr(0, craftIndex);
       res.push(attr);
@@ -65,7 +65,7 @@ export default function(
   const eventHandle = {};
   const isNotDefaultEvent = key => key !== DefaultEvent;
 
-  Object.keys(Object.assign({ [DefaultEvent]: true }, eventConfig)).forEach(
+  Object.keys(Object.assign({ [DefaultEvent]: true, }, eventConfig)).forEach(
     (eventName: string) => {
       eventHandle[eventName] = (mutations, ...args) => {
         fieldNames
@@ -93,7 +93,7 @@ export default function(
       modelData,
       generateMode2Props(fieldNames, field2Props),
       eventHandle,
-      { areStateEqual, ...opt }
+      { areStateEqual, ...opt, }
     )(Target);
   };
 }
@@ -134,7 +134,7 @@ function triggerMutations(
   return (field: string) => {
     const autoMutationName = field2AutoMutationName[field];
     const valueMethod = getValueMethod(eventConfig, eventName, field);
-    mutations[autoMutationName]({ [valueAttr]: valueMethod(...args) });
+    mutations[autoMutationName]({ [valueAttr]: valueMethod(...args), });
   };
 }
 
@@ -151,7 +151,7 @@ function getField2Event(eventConfig: EventMuationConfig, fieldNames: string[]) {
       let fieldEvent = res[field];
       if (!fieldEvent) {
         fieldEvent = res[field] = {
-          [CntName]: 0
+          [CntName]: 0,
         };
       }
       const handle = cfg[field];
@@ -193,8 +193,8 @@ function getFieldNames(field2Props: Field2Props): string[] {
 function getFieldProps(bindConfig: BindConfig) {
   let field2Props: Field2Props = {};
 
-  if (typeof bindConfig === "string") {
-    field2Props = { [bindConfig]: defaultBindProps };
+  if (typeof bindConfig === 'string') {
+    field2Props = { [bindConfig]: defaultBindProps, };
   } else {
     field2Props = bindConfig;
   }
@@ -227,7 +227,7 @@ function generateAutoMutations(
   fieldNames: string[]
 ) {
   const field2AutoMutationName = {};
-  const { addMutation, mutations } = modelData;
+  const { addMutation, mutations, } = modelData;
   fieldNames.forEach((fieldName: string) => {
     const autoMutationName = `_alugiax_change${fieldName}`;
     field2AutoMutationName[fieldName] = autoMutationName;

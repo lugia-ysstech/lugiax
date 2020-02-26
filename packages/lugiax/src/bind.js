@@ -4,19 +4,19 @@
  *
  * @flow
  */
-import type { ConnectOptionType } from "@lugia/lugiax";
-import type { RegisterResult } from "@lugia/lugiax-core";
-import lugiax from "@lugia/lugiax-core";
+import type { ConnectOptionType, } from '@lugia/lugiax';
+import type { RegisterResult, } from '@lugia/lugiax-core';
+import lugiax from '@lugia/lugiax-core';
 
-import * as React from "react";
+import * as React from 'react';
 import {
   getDisplayName,
   combineFunction,
   withRef,
-  isShouldRender
-} from "./utils";
-import hoistStatics from "hoist-non-react-statics";
-import { BatchModels } from "./connect";
+  isShouldRender,
+} from './utils';
+import hoistStatics from 'hoist-non-react-statics';
+import { BatchModels, } from './connect';
 
 export default function(
   modelData: RegisterResult,
@@ -32,10 +32,10 @@ export default function(
     withRef: withRefEnable = false,
     areStateEqual,
     areStatePropsEqual,
-    areOwnPropsEqual
+    areOwnPropsEqual,
   } = opt;
 
-  const { model } = modelData;
+  const { model, } = modelData;
   trigger = trigger ? trigger : {};
 
   return (Target: React.ComponentType<any>) => {
@@ -51,12 +51,12 @@ export default function(
         super(props);
         this.oldModel = modelData.getState();
         this.state = mapValue(this.oldModel);
-        const { unSubscribe } = lugiax.onRender(BatchModels, renderModels => {
+        const { unSubscribe, } = lugiax.onRender(BatchModels, renderModels => {
           if (!renderModels[model]) {
             return;
           }
           const newModel = modelData.getState();
-          const { oldModel } = this;
+          const { oldModel, } = this;
           this.oldModel = newModel;
           if (areStateEqual && !areStateEqual(oldModel, newModel)) {
             return;
@@ -79,7 +79,7 @@ export default function(
           preState: this.state,
           nextState,
           preProps: this.props,
-          nextProps
+          nextProps,
         });
       }
 

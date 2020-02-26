@@ -4,8 +4,8 @@
  *
  * @flow
  */
-import lugiax from "@lugia/lugiax";
-import { push } from "connected-react-router";
+import lugiax from '@lugia/lugiax';
+import { push, } from 'connected-react-router';
 
 function getUrlAndNextCurrent(arr: Array, newCurrent: number) {
   const len = arr.length - 1;
@@ -13,15 +13,15 @@ function getUrlAndNextCurrent(arr: Array, newCurrent: number) {
 
   return {
     url: arr[nextCurrent],
-    nextCurrent
+    nextCurrent,
   };
 }
 
 const model = lugiax.register({
-  model: "@lugiax/router",
+  model: '@lugiax/router',
   state: {
     current: 0,
-    history: []
+    history: [],
   },
   mutations: {
     async: {
@@ -30,61 +30,61 @@ const model = lugiax.register({
       },
       async go(state: Object, inParam: Object) {
         const store = lugiax.getStore();
-        const { url } = inParam;
-        const current = state.get("current");
+        const { url, } = inParam;
+        const current = state.get('current');
         if (url) {
           store.dispatch(push(url));
 
-          let history = state.get("history");
+          let history = state.get('history');
           history =
             history.size === 0
               ? history.push(url)
               : history.slice(0, current + 1).push(url);
 
-          state = state.set("current", history.size - 1);
-          return state.set("history", history);
+          state = state.set('current', history.size - 1);
+          return state.set('history', history);
         }
 
-        const { count } = inParam;
+        const { count, } = inParam;
         const goIndex = Math.floor(count);
         if (isNaN(goIndex)) {
           return state;
         }
 
-        const { nextCurrent, url: nextUrl } = getUrlAndNextCurrent(
-          state.get("history").toJS(),
+        const { nextCurrent, url: nextUrl, } = getUrlAndNextCurrent(
+          state.get('history').toJS(),
           current + goIndex
         );
         store.dispatch(push(nextUrl));
-        return state.set("current", nextCurrent);
+        return state.set('current', nextCurrent);
       },
 
       async replace(state: Object, inParam: Object) {
         const store = lugiax.getStore();
-        const { url } = inParam;
-        const current = state.get("current");
+        const { url, } = inParam;
+        const current = state.get('current');
 
         store.dispatch(push(url));
 
-        let history = state.get("history");
+        let history = state.get('history');
         history =
           history.size === 0
             ? history.push(url)
             : history.slice(0, current).push(url);
 
-        state = state.set("current", history.size - 1);
-        return state.set("history", history);
+        state = state.set('current', history.size - 1);
+        return state.set('history', history);
       },
 
       async goBack(state: Object, inParam: Object, mutations: Object) {
-        mutations.mutations.asyncGo({ count: -1 });
+        mutations.mutations.asyncGo({ count: -1, });
       },
 
       async goForward(state: Object, inParam: Object, mutations: Object) {
-        mutations.mutations.asyncGo({ count: 1 });
-      }
-    }
-  }
+        mutations.mutations.asyncGo({ count: 1, });
+      },
+    },
+  },
 });
 
 export const GoModel = model;
