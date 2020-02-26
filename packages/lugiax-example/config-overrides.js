@@ -4,7 +4,7 @@
  *
  * @flow
  */
-const { getBabelLoader, addBabelPlugin , override} = require("customize-cra");
+const { getBabelLoader, addBabelPlugin , override,} = require('customize-cra');
 
 module.exports = function(config, env) {
   console.info(getBabelLoader(config));
@@ -15,13 +15,13 @@ module.exports = function(config, env) {
 
   return override(addBabelPlugin(
     [
-      "import",
+      'import',
       {
-        libraryName: "@lugia/lugia-web",
-        libraryDirectory: "dist"
+        libraryName: '@lugia/lugia-web',
+        libraryDirectory: 'dist',
       },
-      "@lugia/lugia-web"
+      '@lugia/lugia-web',
     ],
-    `fix-@lugia/lugia-web-imports`
+    'fix-@lugia/lugia-web-imports'
   ))(config);
 };

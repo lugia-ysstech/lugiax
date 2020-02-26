@@ -1696,7 +1696,7 @@ describe('lugiax.bind', () => {
     class Input extends React.Component<any, any> {
       static displayName = 'MyInput';
       onClick = () => {
-        this.props.changeName({ name, });
+        this.props.changeName({ name: 'test', });
       };
 
       render() {
