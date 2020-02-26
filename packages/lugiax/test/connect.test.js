@@ -280,12 +280,132 @@ describe("lugiax.connect", () => {
     expect(getInputValue(target.find("input").at(0))).toBe(name);
   });
 
-  it("connect twoModel areStateEqual true", () => {
+  it("connect Single model areStateEqual true", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const userModel = createUserModel(name, pwd);
+    let oldModelState = {};
+    let newModelState = {};
+
+    let callCount = 0;
+    const MyInput = connect(
+      userModel,
+      (state: Object) => {
+        return {
+          name: state.get("name"),
+          pwd: state.get("pwd")
+        };
+      },
+      null,
+      {
+        areStateEqual(oldState, newState) {
+          oldModelState = oldState;
+          newModelState = newState;
+          callCount++;
+          return true;
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+
+    const {
+      mutations: { changeName }
+    } = userModel;
+    let newName = "world";
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(newName);
+    expect(
+      Object.prototype.toString.call(oldModelState) === "[object Object]"
+    ).toBe(true);
+    expect(
+      Object.prototype.toString.call(newModelState) === "[object Object]"
+    ).toBe(true);
+    let afterChangeData = oldModelState.toJS();
+    afterChangeData["name"] = newName;
+    expect(afterChangeData).toEqual(newModelState.toJS());
+  });
+
+  it("connect Single model areStateEqual false && areStateEqual parameter is object", () => {
+    const name = "ligx";
+    const pwd = "helol";
+    const info = "ligx";
+    const userModel = createUserModel(name, pwd);
+    let oldModelState = {};
+    let newModelState = {};
+
+    let callCount = 0;
+    const MyInput = connect(
+      userModel,
+      (state: Object) => {
+        return {
+          name: state.get("name"),
+          pwd: state.get("pwd")
+        };
+      },
+      null,
+      {
+        areStateEqual(oldState, newState) {
+          oldModelState = oldState;
+          newModelState = newState;
+          callCount++;
+          return false;
+        }
+      }
+    )(
+      class extends React.Component<any> {
+        render() {
+          return [
+            <input value={this.props.name} />,
+            <input value={this.props.pwd} />,
+            <input value={this.props.info} />
+          ];
+        }
+      }
+    );
+
+    const target = mount(<MyInput />);
+    expect(callCount).toBe(0);
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+    expect(getInputValue(target.find("input").at(1))).toBe(pwd);
+    const {
+      mutations: { changeName }
+    } = userModel;
+    let newName = "world";
+    changeName({ name: newName });
+    expect(getInputValue(target.find("input").at(0))).toBe(name);
+
+    expect(
+      Object.prototype.toString.call(oldModelState) === "[object Object]"
+    ).toBe(true);
+    expect(
+      Object.prototype.toString.call(newModelState) === "[object Object]"
+    ).toBe(true);
+    expect(oldModelState.toJS()).not.toEqual(newModelState.toJS());
+  });
+
+  it("connect twoModel areStateEqual true && areStateEqual parameter is object", () => {
     const name = "ligx";
     const pwd = "helol";
     const info = "ligx";
     const infoModel = createInfoModel(info);
     const userModel = createUserModel(name, pwd);
+    let oldModelState = {};
+    let newModelState = {};
 
     let callCount = 0;
     const MyInput = connect(
@@ -301,6 +421,8 @@ describe("lugiax.connect", () => {
       null,
       {
         areStateEqual(oldState, newState) {
+          oldModelState = oldState;
+          newModelState = newState;
           const [olduser, oldInfo] = oldState;
           const [newUser, newInfo] = newState;
           callCount++;
@@ -333,12 +455,23 @@ describe("lugiax.connect", () => {
 
     expect(getInputValue(target.find("input").at(2))).toEqual(newInfo);
     expect(callCount).toBe(1);
+
+    let [oldUserModelState, oldInfoModelState] = oldModelState;
+    let [newUserModelState, newInfoModelState] = newModelState;
+    let afterChangeData = oldInfoModelState.toJS();
+    afterChangeData["info"] = newInfo;
+    expect(Array.isArray(oldModelState)).toBe(true);
+    expect(Array.isArray(newModelState)).toBe(true);
+    expect(afterChangeData).toEqual(newInfoModelState.toJS());
+    expect(oldUserModelState.toJS()).toEqual(newUserModelState.toJS());
   });
 
   it("connect twoModel areStateEqual true render twice", () => {
     const name = "ligx";
     const pwd = "helol";
     const initInfo = "ligx";
+    let oldModelState = {};
+    let newModelState = {};
 
     const infoModel = createInfoModel(initInfo);
     const userModel = createUserModel(name, pwd);
@@ -357,6 +490,8 @@ describe("lugiax.connect", () => {
       null,
       {
         areStateEqual(oldState, newState) {
+          oldModelState = oldState;
+          newModelState = newState;
           const [, oldInfo] = oldState;
           const [, newInfo] = newState;
           callCount++;
@@ -394,6 +529,15 @@ describe("lugiax.connect", () => {
     changeInfo({ value: secondInfo });
     expect(getInputValue(target.find("input").at(2))).toEqual(secondInfo);
     expect(callCount).toBe(2);
+
+    let [oldUserModelState, oldInfoModelState] = oldModelState;
+    let [newUserModelState, newInfoModelState] = newModelState;
+    expect(Array.isArray(oldModelState)).toBe(true);
+    expect(Array.isArray(newModelState)).toBe(true);
+    let afterChangeData = oldInfoModelState.toJS();
+    afterChangeData["info"] = secondInfo;
+    expect(afterChangeData).toEqual(newInfoModelState.toJS());
+    expect(oldUserModelState.toJS()).toEqual(newUserModelState.toJS());
   });
 
   it("connect twoModel areStateEqual false", () => {
@@ -402,6 +546,8 @@ describe("lugiax.connect", () => {
     const info = "ligx";
     const infoModel = createInfoModel(info);
     const userModel = createUserModel(name, pwd);
+    let oldModelState = {};
+    let newModelState = {};
 
     let callCount = 0;
     const MyInput = connect(
@@ -417,6 +563,8 @@ describe("lugiax.connect", () => {
       null,
       {
         areStateEqual(oldState, newState) {
+          oldModelState = oldState;
+          newModelState = newState;
           const [, oldInfo] = oldState;
           const [, newInfo] = newState;
           callCount++;
@@ -449,6 +597,12 @@ describe("lugiax.connect", () => {
 
     expect(getInputValue(target.find("input").at(2))).toEqual(info);
     expect(callCount).toBe(1);
+    expect(Array.isArray(oldModelState)).toBe(true);
+    expect(Array.isArray(newModelState)).toBe(true);
+    let [oldUserModelState, oldInfoModelState] = oldModelState;
+    let [newUserModelState, newInfoModelState] = newModelState;
+    expect(oldInfoModelState.toJS()).not.toEqual(newInfoModelState.toJS());
+    expect(oldUserModelState.toJS()).toEqual(newUserModelState.toJS());
   });
 
   it("connect twoModel areStateEqual false render twice", () => {
@@ -457,6 +611,8 @@ describe("lugiax.connect", () => {
     const initInfo = "ligx";
     const infoModel = createInfoModel(initInfo);
     const userModel = createUserModel(name, pwd);
+    let oldModelState = {};
+    let newModelState = {};
 
     let callCount = 0;
     const MyInput = connect(
@@ -473,6 +629,8 @@ describe("lugiax.connect", () => {
       {
         areStateEqual(oldState, newState) {
           const [, oldInfo] = oldState;
+          oldModelState = oldState;
+          newModelState = newState;
           const [, newInfo] = newState;
           callCount++;
           return oldInfo.get("info") === newInfo.get("info");
@@ -509,6 +667,14 @@ describe("lugiax.connect", () => {
     changeInfo({ value: secondInfo });
     expect(getInputValue(target.find("input").at(2))).toEqual(initInfo);
     expect(callCount).toBe(2);
+    expect(Array.isArray(oldModelState)).toBe(true);
+    expect(Array.isArray(newModelState)).toBe(true);
+    let [oldUserModelState, oldInfoModelState] = oldModelState;
+    let [newUserModelState, newInfoModelState] = newModelState;
+    let afterChangeData = oldInfoModelState.toJS();
+    afterChangeData["info"] = secondInfo;
+    expect(afterChangeData).toEqual(newInfoModelState.toJS());
+    expect(oldUserModelState.toJS()).toEqual(newUserModelState.toJS());
   });
 
   it("connect twoModel areStatePropsEqual true", () => {

@@ -81,15 +81,12 @@ export default function(
 
         this.unSubscribe = [];
         const { unSubscribe } = lugiax.onRender(BatchModels, renderModels => {
-          const oldModelData = [];
+          let oldModelData = [];
           const modelData = this.state.modelData;
           if (!renderModels || Object.keys(renderModels).length <= 0) {
             return;
           }
           let isIgnoreRender = true;
-          modelData.forEach((itemModel: Object, index: number) => {
-            oldModelData[index] = itemModel;
-          });
           for (var i = 0; i < modelNames.length; i++) {
             const modelName = modelNames[i];
             const isModelInRenderModel = renderModels[modelName];
@@ -98,13 +95,20 @@ export default function(
               continue;
             }
             isIgnoreRender = false;
+            if (oldModelData.length === 0) {
+              oldModelData = [...modelData];
+            }
             const modelIndex = model2Index[modelName];
             const newState = model.getState();
             modelData[modelIndex] = newState;
           }
           if (
             isIgnoreRender === true ||
-            (areStateEqual && !areStateEqual(oldModelData, modelData))
+            (areStateEqual &&
+              !areStateEqual(
+                oldModelData.length === 1 ? oldModelData[0] : oldModelData,
+                modelData.length === 1 ? modelData[0] : modelData
+              ))
           ) {
             return;
           }
