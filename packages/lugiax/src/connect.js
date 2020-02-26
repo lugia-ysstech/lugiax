@@ -81,12 +81,13 @@ export default function(
 
         this.unSubscribe = [];
         const { unSubscribe } = lugiax.onRender(BatchModels, renderModels => {
-          let oldModelData = [];
+          
           const modelData = this.state.modelData;
           if (!renderModels || Object.keys(renderModels).length <= 0) {
             return;
           }
           let isIgnoreRender = true;
+          let oldModelData = [];
           for (var i = 0; i < modelNames.length; i++) {
             const modelName = modelNames[i];
             const isModelInRenderModel = renderModels[modelName];
