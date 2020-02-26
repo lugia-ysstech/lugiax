@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import React, { Component, } from 'react';
+import React from 'react';
 import InputTask from './components/InputTask';
 import List from './components/List';
 import { bindTo, connect, } from '@lugia/lugiax';
@@ -36,8 +36,10 @@ const TodoInput = bindTo(
     },
   },
   {
-    onEnter() {
-      todo.mutations.addTask();
+    props: {
+      onEnter() {
+        todo.mutations.addTask();
+      },
     },
   }
 )(InputTask);

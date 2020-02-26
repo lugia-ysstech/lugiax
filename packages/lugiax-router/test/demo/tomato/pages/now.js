@@ -21,8 +21,10 @@ const TomatoButton = bindTo(
   },
   {},
   {
-    onClick() {
-      mutations.switch();
+    props: {
+      onClick() {
+        mutations.switch();
+      },
     },
   }
 )(Button);
@@ -52,7 +54,7 @@ const TomatoNowTimer = bindTo(
 const TodoInput = bindTo(
   tomato,
   {
-    taskName: 'value',
+    taskName: ['value', 'label',],
   },
   {
     onChange: {
@@ -60,8 +62,7 @@ const TodoInput = bindTo(
         return v;
       },
     },
-  },
-  {}
+  }
 )(InputTask);
 
 export default () => {

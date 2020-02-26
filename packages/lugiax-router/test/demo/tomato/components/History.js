@@ -17,7 +17,7 @@ const Item = styled.li`
   }
 `;
 
-export default class List extends Component<any, any> {
+export default class List extends Component {
   render() {
     return <ul>{this.renderList()}</ul>;
   }
