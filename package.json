@@ -74,8 +74,7 @@
     "packages/**/*.js": [
       "prettier",
       "eslint --fix",
-      "npm run lint",
-      "git add"
+      "npm run lint"
     ]
   },
   "dependencies": {
