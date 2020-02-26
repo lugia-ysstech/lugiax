@@ -13,7 +13,7 @@
     "prettier": "prettier --trailing-comma all --single-quote --write",
     "postinstall": "yarn bootstrap",
     "stylelint": "stylelint",
-    "lint": "eslint --ext .js",
+    "lint": "eslint",
     "publish": "node ./scripts/publish.js"
   },
   "devDependencies": {
@@ -71,7 +71,7 @@
     }
   },
   "lint-staged": {
-    "packages/**/src/**/*.js": [
+    "packages/**/*.js": [
       "prettier",
       "eslint --fix",
       "npm run lint",
