@@ -4,17 +4,17 @@ module.exports = {
     '!src/**/demo*.js',
     '!src/*.js',
   ],
-  testMatch: [__dirname + '/packages/**/?(*.)(spec|test).js?(x)'],
+  testMatch: [__dirname + '/packages/**/?(*.)(spec|test).js?(x)',],
   testEnvironment: 'node',
   testURL: 'http://localhost',
   transform: {
     '.+\\.(js|jsx)$':
       __dirname + '/node_modules/@lugia/mega-jest/lib/jsTransformer.js',
   },
-  transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-  moduleNameMapper: {
-    'react-native$': 'react-native-web',
+  transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$',],
+moduleNameMapper: {
+  'react-native$': 'react-native-web',
     '\\.(css|less)$': 'identity-obj-proxy',
-  },
-  moduleFileExtensions: ['web.js', 'js', 'json', 'web.jsx', 'jsx'],
+},
+moduleFileExtensions: ['web.js', 'js', 'json', 'web.jsx', 'jsx',],
 };
