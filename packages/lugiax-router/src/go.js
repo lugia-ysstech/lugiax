@@ -18,10 +18,7 @@ function getUrlAndNextCurrent(arr: Array, newCurrent: number) {
 
 const model = lugiax.register({
   model: '@lugiax/router',
-  state: {
-    current: 0,
-    history: [],
-  },
+  state: {},
   mutations: {
     sync: {
       beforeGo(state: Object) {
@@ -31,22 +28,15 @@ const model = lugiax.register({
         return state;
       },
 
-      reload(state: Object, inParam: Object) {
-        return state.set('history', fromJS(inParam.history));
-      },
-    },
-    async: {
-      async go(state: Object, inParam: Object) {
+      go(state: Object, inParam: Object) {
         const { url, } = inParam;
-        const { history: windowHistory, } = inParam;
-        const current = state.get('current');
+        const { history, } = inParam;
+        if (!history) {
+          return state;
+        }
         if (url) {
-          windowHistory.push(url);
-
-          let history = state.get('history');
-          history = history.slice(0, current + 1).push(url);
-          state = state.set('current', history.size - 1);
-          return state.set('history', history);
+          history.push(url);
+          return state;
         }
 
         const { count, } = inParam;
@@ -55,33 +45,21 @@ const model = lugiax.register({
           return state;
         }
 
-        const { nextCurrent, } = getUrlAndNextCurrent(
-          state.get('history').toJS(),
-          current + goIndex
-        );
-        windowHistory.go(count);
-        return state.set('current', nextCurrent);
+        history.go(count);
+        return state;
       },
-
-      async replace(state: Object, inParam: Object) {
+      replace(state: Object, inParam: Object) {
         const { url, } = inParam;
-        const current = state.get('current');
-
-        let history = state.get('history');
-        history = history.slice(0, current).push(url);
-
-        state = state.set('current', history.size - 1);
-
-        const { history: windowHistory, } = inParam;
-        windowHistory.replace(url);
-        return state.set('history', history);
+        const { history, } = inParam;
+        history.replace(url);
+        return state;
       },
 
-      async goBack(state: Object, inParam: Object, mutations: Object) {
+      goBack(state: Object, inParam: Object, mutations: Object) {
         mutations.mutations.beforeGo({ count: -1, });
       },
 
-      async goForward(state: Object, inParam: Object, mutations: Object) {
+      goForward(state: Object, inParam: Object, mutations: Object) {
         mutations.mutations.beforeGo({ count: 1, });
       },
     },
@@ -89,7 +67,7 @@ const model = lugiax.register({
 });
 
 export const GoModel = model;
-export const goBack = model.mutations.asyncGoBack;
-export const goForward = model.mutations.asyncGoForward;
+export const goBack = model.mutations.goBack;
+export const goForward = model.mutations.goForward;
 export const replace = model.mutations.beforeReplace;
 export default model.mutations.beforeGo;

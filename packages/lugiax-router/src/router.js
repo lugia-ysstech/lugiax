@@ -97,7 +97,7 @@ export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?
 }
 
 const {
-  mutations: { beforeGo, beforeReplace, asyncGo, asyncReplace,  reload, },
+  mutations: { beforeGo, beforeReplace, go: goUrl, replace, },
 } = GoModel;
 
 export function createApp(routerMap: RouterMap, history: Object, param: ?CreateAppParam = {}) {
@@ -108,19 +108,23 @@ export function createApp(routerMap: RouterMap, history: Object, param: ?CreateA
       const { url, } = param;
       res = await onBeforeGo({ url, });
     }
-    res && cb && (await cb(param));
+    res && cb && cb(param);
   }
 
+  function createHandle(cb) {
+    return param => {
+      cb({ ...param, history, });
+    };
+  }
+
+  const doBeforeGo = createHandle(goUrl);
+  const doBeforeReplace = createHandle(replace);
   const { unSubscribe: unSubscribeLugiax, } = lugiax.on(async (mutation, param) => {
     if (mutation === beforeGo) {
-      await checkBefore(param, async param => {
-        await asyncGo({ ...param, history, });
-      });
+      await checkBefore(param, doBeforeGo);
     }
     if (mutation === beforeReplace) {
-      await checkBefore(param, async param => {
-        await asyncReplace({ ...param, history, });
-      });
+      await checkBefore(param, doBeforeReplace);
     }
   });
 
@@ -136,13 +140,8 @@ export function createApp(routerMap: RouterMap, history: Object, param: ?CreateA
   });
 
   class App extends Component<any, any> {
-    componentDidMount() {
-      reload({ history: [window.location.pathname,], });
-    }
-
     componentWillUnmount() {
       unSubscribeLugiax();
-      reload({ history: [], });
     }
 
     render() {
