@@ -18,28 +18,6 @@ export default () => {
 
   return [
     <Header />,
-    createRoute({
-      '/todo': {
-        exact: true,
-        component: Todo,
-      },
-      '/count': {
-        exact: true,
-        component: Count,
-      },
-      '/from': {
-        component: Form,
-      },
-      '/lugiax-test': {
-        component: LugiaxTest,
-      },
-      '/tomato': {
-        component: Tomato,
-      },
-      '/403': {
-        component: NotAccess,
-        exact: true,
-      },
-    }),
+    <ApiTest/>,
   ];
 };

@@ -9,7 +9,7 @@ import go from './go';
 
 export default function Link(props: Object) {
   return (
-    <a onClick={() => go({ url: props.to, })} href="javascript:void(0)">
+    <a onClick={() => go({ url: props.to, })} href="javascript:void(0)" {...props}>
       {' '}
       {props.children}
     </a>

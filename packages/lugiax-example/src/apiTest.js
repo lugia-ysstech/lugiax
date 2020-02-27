@@ -7,10 +7,13 @@
 import React from 'react';
 import { go, Link, createRoute, goBack, goForward, replace, } from '@lugia/lugiax-router';
 import styled from 'styled-components';
-const Sport = () => <h1>Sport</h1>;
-const Car = () => <h1>Car</h1>;
-const News = () => <h1>News</h1>;
-const Games = () => <h1>Games</h1>;
+
+const createPage = (id, text = id) => () => <h1 id={`${id}Res`}>{text}</h1>;
+const Sport = createPage('Sport');
+const Car = createPage('Car');
+const News = createPage('News');
+const Games = createPage('Games');
+const NotPower = createPage('P403', '没有权限');
 
 const CommonBotton = styled.div`
   width: 240px;
@@ -32,19 +35,27 @@ class Header extends React.Component {
     return (
       <div>
         <p>
-          <Link to="/sport">运动</Link>
+          <Link to="/sport" id="sport">
+            运动
+          </Link>
         </p>
 
         <p>
-          <Link to="/car">汽车</Link>
+          <Link to="/car" id="car">
+            汽车
+          </Link>
         </p>
 
         <p>
-          <Link to="/news">新闻</Link>
+          <Link to="/news" id="news">
+            新闻
+          </Link>
         </p>
 
         <p>
-          <Link to="/games">游戏</Link>
+          <Link to="/games" id="games">
+            游戏
+          </Link>
         </p>
       </div>
     );
@@ -132,6 +143,10 @@ export default class Demo extends React.Component<any> {
         '/games': {
           exact: true,
           component: Games,
+        },
+        '/403': {
+          exact: true,
+          component: NotPower,
         },
       }),
     ];

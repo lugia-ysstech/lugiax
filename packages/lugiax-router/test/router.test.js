@@ -1,257 +1,162 @@
-/**
- *
- * create by ligx
- *
- * @flow
- */
-import React from 'react';
-import Enzyme, { mount, } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import Main from './demo';
-import { createApp, go, Link, } from '../src';
-import lugiax from '@lugia/lugiax';
-import { createMemoryHistory, } from 'history';
-import { push, } from 'connected-react-router';
-import { delay, } from '@lugia/react-test-utils';
+const timeout = 5000;
 
-Enzyme.configure({ adapter: new Adapter(), });
-
-describe('router', () => {
-  let cmp;
-  beforeAll(() => {
-    const history = createMemoryHistory();
-    const App = createApp(
-      {
-        '/': {
-          component: Main,
-        },
-      },
-      history,
-      {
-        async onBeforeGo({ url, }) {
-          if (url === '/nowPower') {
-            await go({ url: '/403', });
-            return false;
-          }
-          return url !== '/not';
-        },
+describe(
+  'router.test.js',
+  () => {
+    let page;
+    let globalHistory;
+    let lugiaxHistory;
+    beforeAll(async () => {
+      page = await global.__BROWSER__.newPage();
+      try {
+        await page.goto('http://localhost:3000/');
+      } catch (error) {
+        console.info('项目目录  yarn start 启动实时编译代码');
+        console.info('项目目录/packages/lugiax-example  yarn start 启动待测试用例');
+        throw error;
       }
-    );
-    cmp = mount(<App />);
-  });
 
-  it('createApp', () => {
-    const state = lugiax.getState();
-    expect(state.get('todo').toJS()).toEqual({
-      formData: {
-        task: '',
-      },
-      tasks: ['hello',],
+      await page.evaluate(() => (globalHistory = window.globalHistory));
+      await page.evaluate(() => (lugiaxHistory = window.lugiaxHistory));
+    }, timeout);
+
+    afterAll(async () => {
+      await page.close();
     });
-    expect(state.get('tomato')).toBeUndefined();
-    checkUrl('/');
-  });
 
-  it('url change', async () => {
-    const targetUrl = '/todo';
-    goUrl(targetUrl);
-    checkUrl(targetUrl);
-  });
+    function getId(id) {
+      return `#${id.toLowerCase()}`;
+    }
 
-  it('async url change', async () => {
-    const targetUrl = '/tomato/history';
-    goAndCheckUrl(targetUrl);
+    function getPageId(id) {
+      return `#${id}Res`;
+    }
 
-    await new Promise(res => {
-      setTimeout(() => {
-        expect(
-          lugiax
-            .getState()
-            .get('tomato')
-            .toJS()
-        ).toEqual({
-          tomotos: [],
-          doing: false,
-          time: 0,
-          beginAt: '',
-          taskName: '',
-        });
-        res(true);
-      }, 200);
+    it('click Sport link', async () => {
+      await goPageAndCheck('Sport');
     });
-  });
 
-  it('todo', async () => {
-    const targetUrl = '/todo';
-    goAndCheckUrl(targetUrl);
-    const newTask = 'new Task';
-    const input = cmp.find('input');
-    expect(input.length).toBe(1);
-    input.simulate('change', { target: { value: newTask, }, });
-    expect(
-      lugiax
-        .getState()
-        .get('todo')
-        .get('formData')
-        .get('task')
-    ).toEqual(newTask);
-    input.simulate('keydown', { keyCode: 13, });
-
-    expect(
-      lugiax
-        .getState()
-        .get('todo')
-        .get('tasks')
-        .toJS()
-    ).toEqual(['hello', newTask,]);
-  });
-
-  it('link', async () => {
-    const targetUrl = '/tomato';
-    goAndCheckUrl(targetUrl);
-
-    const links = cmp.find(Link).find('a');
-    const todoLink = links.at(1);
-    todoLink.simulate('click', {});
-    await delay(100);
-    cmp.update();
-    checkUrl('/todo');
-    const input = cmp.find('input');
-    expect(input.length).toBe(1);
-  });
-
-  it('go', async () => {
-    const targetUrl = '/tomato';
-    goAndCheckUrl(targetUrl);
-    const btn = cmp.find('button');
-    const todoLink = btn.at(0);
-    todoLink.simulate('click', {});
-    await delay(100);
-    cmp.update();
-    checkUrl('/todo');
-  });
-
-  it('add tomato', async () => {
-    const targetUrl = '/tomato/now';
-    goAndCheckUrl(targetUrl);
-
-    await new Promise(res => {
-      setTimeout(() => {
-        cmp.update();
-        const newTask = 'newTask';
-        const theName = cmp.find('input').at(0);
-        theName.simulate('change', { target: { value: newTask, }, });
-        const addBtn = cmp.find('button').at(1);
-        addBtn.simulate('click', {});
-        console.info('a1', lugiax.getState().toJS());
-        const { doing, time, error, beginAt, taskName, } = lugiax
-          .getState()
-          .get('tomato')
-          .toJS();
-        const recive = { doing, time, error, taskName, beginAt, };
-        expect(recive).toEqual({
-          doing: true,
-          error: '',
-          time: 0,
-          taskName: newTask,
-          beginAt: new Date().toString(),
-        });
-        addBtn.simulate('click', {});
-        expect(
-          lugiax
-            .getState()
-            .get('tomato')
-            .toJS().tomotos
-        ).toEqual([
-          {
-            time: 0,
-            taskName: newTask,
-            beginAt: new Date().toString(),
-          },
-        ]);
-        res(true);
-      }, 1500);
+    it('click Car link', async () => {
+      await goPageAndCheck('Car');
     });
-  });
 
-  it('onBeforeGo', async () => {
-    const oldUrl = '/tomato/now';
-    goAndCheckUrl(oldUrl);
-    const targetUrl = '/not';
-    await go({ url: targetUrl, });
-    await delay(100);
-    checkUrl(oldUrl);
-  });
-  it('onBeforeGo go to 403', async () => {
-    const oldUrl = '/tomato/now';
-    goAndCheckUrl(oldUrl);
-    const targetUrl = '/nowPower';
-    await go({ url: targetUrl, });
-    await delay(100);
-    cmp.update();
-    expect(
-      cmp
-        .find('div')
-        .at(2)
-        .text()
-    ).toBe('403');
-    checkUrl('/403');
-  });
+    it('click News link not power', async () => {
+      const id = 'News';
+      await goPage(id);
+      const html = await getHtml('P403');
+      expect(html).toEqual('没有权限');
+      await expectPathname('/403');
+    });
 
-  it('onPageLoad ', async () => {
-    expect(
-      lugiax
-        .getState()
-        .get('pageload')
-        .get('load')
-    ).toBeFalsy();
-    const oldUrl = '/tomato/pageload';
-    goAndCheckUrl(oldUrl);
-    await delay(100);
-    cmp.update();
-    expect(
-      cmp
-        .find('div')
-        .at(3)
-        .text()
-    ).toBe('PageLoad');
-    expect(
-      lugiax
-        .getState()
-        .get('pageload')
-        .get('load')
-    ).toBeTruthy();
-    goAndCheckUrl('/tomato/now');
-    cmp.update();
-    await delay(100);
-    expect(
-      lugiax
-        .getState()
-        .get('pageload')
-        .get('load')
-    ).toBeFalsy();
-  });
+    it('click Games link not power', async () => {
+      const id = 'Games';
+      await goPage(id);
+      const html = await getHtml('P403');
+      await expectPathname('/403');
+      expect(html).toEqual('没有权限');
+    });
 
-  function goAndCheckUrl(targetUrl: string) {
-    goUrl(targetUrl);
-    cmp.update();
-    checkUrl(targetUrl);
-  }
+    it('page.goBack', async () => {
+      await page.goBack();
+      await expectPathname('/403');
+      await page.goBack();
+      await expectPathname('/car');
+      await page.goBack();
+      await expectPathname('/sport');
+    });
 
-  function goUrl(url: string) {
-    lugiax.getStore().dispatch(push(url));
-  }
+    it('page.goForward', async () => {
+      await page.goForward();
+      await expectPathname('/car');
+      await page.goForward();
+      await expectPathname('/403');
+      await page.goForward();
+      await expectPathname('/403');
+    });
 
-  function checkUrl(url: string) {
-    expect(
-      lugiax
-        .getState()
-        .get('router')
-        .get('location')
-        .toJS().pathname
-    ).toBe(url);
-  }
+    it('history.replace goBack goForward go push', async () => {
+      await page.evaluate(() => globalHistory.replace('/sport'));
+      await expectPathname('/sport');
+      expect(await getHtml('Sport')).toBe('Sport');
 
-  it('exact', () => {});
-  it('strict', () => {});
-});
+      // await historyGoBack();
+      await page.evaluate(() => globalHistory.goBack());
+
+      await expectPathname('/403');
+
+      await page.evaluate(() => globalHistory.goBack());
+      await expectPathname('/car');
+
+      await page.evaluate(() => globalHistory.goBack());
+      await expectPathname('/sport');
+
+      await page.evaluate(() => globalHistory.goForward());
+      await expectPathname('/car');
+
+      await page.evaluate(() => globalHistory.goForward());
+      await expectPathname('/403');
+
+      await page.evaluate(() => globalHistory.goForward());
+      await expectPathname('/sport');
+
+      await page.evaluate(() => globalHistory.go(-3));
+      await expectPathname('/sport');
+
+      await page.evaluate(() => globalHistory.go(3));
+      await expectPathname('/sport');
+    });
+
+    it('lugiaxHistory', async () => {
+      await page.evaluate(() => lugiaxHistory.go({ url: '/news', }));
+      await expectPathname('/403');
+
+      await page.evaluate(() => lugiaxHistory.go({ url: '/sport', }));
+      await expectPathname('/sport');
+
+      await page.evaluate(() => lugiaxHistory.goBack());
+      await expectPathname('/403');
+
+      await page.evaluate(() => lugiaxHistory.goForward());
+      await expectPathname('/sport');
+
+      await page.evaluate(() => lugiaxHistory.go({ url: '/car', }));
+      await expectPathname('/car');
+
+      await page.evaluate(() => lugiaxHistory.go({ count: -2, }));
+      await expectPathname('/403');
+
+      await page.evaluate(() => lugiaxHistory.go({ count: 2, }));
+      await expectPathname('/car');
+    });
+
+    async function expectPathname(pathname) {
+      expect(await getPathname()).toEqual(pathname);
+    }
+    async function getPathname() {
+      return await page.evaluate(() => window.location.pathname);
+    }
+
+    async function goPageAndCheck(id, expectStr) {
+      await goPage(id);
+      const html = await getHtml(id);
+      expect(html).toBe(expectStr ? expectStr : id);
+      await expectPathname('/' + id.toLowerCase());
+    }
+    async function goPage(id) {
+      await page.click(getId(id));
+    }
+    async function getHtml(id) {
+      return await evaluate(body => body.innerHTML, getPageId(id));
+    }
+
+    async function evaluate(cb, id) {
+      return page.evaluate(cb, await page.$(id));
+    }
+
+    async function getBody() {
+      const bodyHandle = await page.$('body');
+      return bodyHandle;
+    }
+  },
+  timeout
+);

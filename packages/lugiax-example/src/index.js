@@ -1,10 +1,17 @@
 import React from 'react';
 import { createBrowserHistory, } from 'history';
-import { createApp, go, render, } from '@lugia/lugiax-router';
+import { createApp, replace, render, go, goBack, goForward,} from '@lugia/lugiax-router';
 import registerServiceWorker from './registerServiceWorker';
 import Main from './App';
 
 const history = createBrowserHistory();
+window.globalHistory = history;
+window.lugiaxHistory = {
+  replace,
+  go,
+  goBack,
+  goForward,
+};
 const App = createApp(
   {
     '/': {
@@ -15,10 +22,14 @@ const App = createApp(
   {
     async onBeforeGo({ url, }) {
       if (url === '/nowPower') {
-        await go({ url: '/403', });
         return false;
       }
-      return url !== '/not';
+      if (url === '/news') {
+        replace({ url: '/403', });
+      }
+      if (url === '/games') {
+        replace({ url: '/403', });
+      }
     },
   }
 );
