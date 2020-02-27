@@ -7,7 +7,7 @@
 import type { CreateAppParam, RouterMap, } from '@lugia/lugiax-router';
 
 import ReactDOM from 'react-dom';
-import React, { Component, } from 'react';
+import React, { Component, useContext, } from 'react';
 import lugiax from '@lugia/lugiax';
 import go, { GoModel, } from './go';
 import Link from './Link';
@@ -41,6 +41,48 @@ const WrapPageLoad = (
     }
   };
 };
+export const LugiaxContext: any = React.createContext({});
+
+const PowerRouter = (props: Object) => {
+  const { loading, } = props;
+  const lugiaxConfig = useContext(LugiaxContext);
+
+  const render = (routerProps: Object) => {
+    const { location, } = routerProps;
+    const { onBeforeGo, } = lugiaxConfig;
+
+    const LoaderResult = Loadable({
+      loader: async () => {
+        const { pathname: url, } = location;
+        const { notFound, } = props;
+        if (!notFound) {
+          await onBeforeGo({ url, });
+        }
+        let { component: Target, } = props;
+        if (!Target) {
+          const { render, } = props;
+          Target = await render();
+        }
+        const { needWrap, onPageLoad, onPageUnLoad, } = props;
+        return needWrap
+          ? WrapPageLoad(Target, {
+              onPageLoad,
+              onPageUnLoad,
+            })
+          : Target;
+      },
+      loading,
+    });
+
+    return <LoaderResult {...routerProps} />;
+  };
+
+  return (
+    <Route {...props} render={render} component={null}>
+      {' '}
+    </Route>
+  );
+};
 
 export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?Object {
   if (!routerMap) {
@@ -53,43 +95,46 @@ export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?
 
     if (component) {
       if (path === 'NotFound') {
-        return <Route component={component} />;
+        return <Route component={component} notFound />;
       }
       return (
-        <Route
+        <PowerRouter
           path={path}
           exact={exact}
           strict={strict}
-          component={
-            needWrap
-              ? WrapPageLoad(component, {
-                  onPageLoad,
-                  onPageUnLoad,
-                })
-              : component
-          }
+          loading={loading}
+          needWrap={needWrap}
+          component={component}
+          onPageLoad={onPageLoad}
+          onPageUnLoad={onPageUnLoad}
         />
       );
     }
     const { render, } = config;
     if (render) {
-      const getRender = () => {
-        const Comp = Loadable({
-          loader: render,
-          loading,
-        });
-        const Target = needWrap
-          ? WrapPageLoad(Comp, {
-              onPageLoad,
-              onPageUnLoad,
-            })
-          : Comp;
-        return <Target />;
-      };
       if (path === 'NotFound') {
-        return <Route render={getRender} />;
+        return (
+          <PowerRouter
+            render={render}
+            onPageLoad={onPageLoad}
+            loading={loading}
+            onPageUnLoad={onPageUnLoad}
+            notFound
+          />
+        );
       }
-      return <Route exact={exact} strict={strict} path={path} render={getRender} />;
+      return (
+        <PowerRouter
+          exact={exact}
+          strict={strict}
+          path={path}
+          loading={loading}
+          render={render}
+          needWrap={needWrap}
+          onPageLoad={onPageLoad}
+          onPageUnLoad={onPageUnLoad}
+        />
+      );
     }
     return 'render or component is not found!';
   });
@@ -102,14 +147,6 @@ const {
 
 export function createApp(routerMap: RouterMap, history: Object, param: ?CreateAppParam = {}) {
   const { loading = Loading, onBeforeGo, } = param;
-  async function checkBefore(param, cb?: (param: Object) => Promise<any>) {
-    let res = true;
-    if (onBeforeGo) {
-      const { url, } = param;
-      res = await onBeforeGo({ url, });
-    }
-    res && cb && cb(param);
-  }
 
   function createHandle(cb) {
     return param => {
@@ -119,23 +156,12 @@ export function createApp(routerMap: RouterMap, history: Object, param: ?CreateA
 
   const doBeforeGo = createHandle(goUrl);
   const doBeforeReplace = createHandle(replace);
-  const { unSubscribe: unSubscribeLugiax, } = lugiax.on(async (mutation, param) => {
+  const { unSubscribe: unSubscribeLugiax, } = lugiax.on((mutation, param) => {
     if (mutation === beforeGo) {
-      await checkBefore(param, doBeforeGo);
+      doBeforeGo(param);
     }
     if (mutation === beforeReplace) {
-      await checkBefore(param, doBeforeReplace);
-    }
-  });
-
-  lugiax.takeEveryAction(async (action: Object) => {
-    if (action.type === '@@router/LOCATION_CHANGE') {
-      const {
-        payload: {
-          location: { pathname, },
-        },
-      } = action;
-      await checkBefore({ url: pathname, });
+      doBeforeReplace(param);
     }
   });
 
@@ -145,7 +171,11 @@ export function createApp(routerMap: RouterMap, history: Object, param: ?CreateA
     }
 
     render() {
-      return <Router history={history}>{createRoute(routerMap, loading)}</Router>;
+      return (
+        <LugiaxContext.Provider value={{ onBeforeGo, }}>
+          <Router history={history}>{createRoute(routerMap, loading)}</Router>
+        </LugiaxContext.Provider>
+      );
     }
   }
 
