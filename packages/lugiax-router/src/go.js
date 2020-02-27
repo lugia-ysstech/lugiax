@@ -5,8 +5,7 @@
  * @flow
  */
 import lugiax from '@lugia/lugiax';
-import { push, } from 'connected-react-router';
-
+import { fromJS, } from 'immutable';
 function getUrlAndNextCurrent(arr: Array, newCurrent: number) {
   const len = arr.length - 1;
   const nextCurrent = newCurrent > len ? len : newCurrent < 0 ? 0 : newCurrent;
@@ -24,23 +23,28 @@ const model = lugiax.register({
     history: [],
   },
   mutations: {
-    async: {
-      async beforeGo(state: Object) {
+    sync: {
+      beforeGo(state: Object) {
         return state;
       },
+      beforeReplace(state: Object) {
+        return state;
+      },
+
+      reload(state: Object, inParam: Object) {
+        return state.set('history', fromJS(inParam.history));
+      },
+    },
+    async: {
       async go(state: Object, inParam: Object) {
-        const store = lugiax.getStore();
         const { url, } = inParam;
+        const { history: windowHistory, } = inParam;
         const current = state.get('current');
         if (url) {
-          store.dispatch(push(url));
+          windowHistory.push(url);
 
           let history = state.get('history');
-          history =
-            history.size === 0
-              ? history.push(url)
-              : history.slice(0, current + 1).push(url);
-
+          history = history.slice(0, current + 1).push(url);
           state = state.set('current', history.size - 1);
           return state.set('history', history);
         }
@@ -51,37 +55,34 @@ const model = lugiax.register({
           return state;
         }
 
-        const { nextCurrent, url: nextUrl, } = getUrlAndNextCurrent(
+        const { nextCurrent, } = getUrlAndNextCurrent(
           state.get('history').toJS(),
           current + goIndex
         );
-        store.dispatch(push(nextUrl));
+        windowHistory.go(count);
         return state.set('current', nextCurrent);
       },
 
       async replace(state: Object, inParam: Object) {
-        const store = lugiax.getStore();
         const { url, } = inParam;
         const current = state.get('current');
 
-        store.dispatch(push(url));
-
         let history = state.get('history');
-        history =
-          history.size === 0
-            ? history.push(url)
-            : history.slice(0, current).push(url);
+        history = history.slice(0, current).push(url);
 
         state = state.set('current', history.size - 1);
+
+        const { history: windowHistory, } = inParam;
+        windowHistory.replace(url);
         return state.set('history', history);
       },
 
       async goBack(state: Object, inParam: Object, mutations: Object) {
-        mutations.mutations.asyncGo({ count: -1, });
+        mutations.mutations.beforeGo({ count: -1, });
       },
 
       async goForward(state: Object, inParam: Object, mutations: Object) {
-        mutations.mutations.asyncGo({ count: 1, });
+        mutations.mutations.beforeGo({ count: 1, });
       },
     },
   },
@@ -90,5 +91,5 @@ const model = lugiax.register({
 export const GoModel = model;
 export const goBack = model.mutations.asyncGoBack;
 export const goForward = model.mutations.asyncGoForward;
-export const replace = model.mutations.asyncReplace;
-export default model.mutations.asyncBeforeGo;
+export const replace = model.mutations.beforeReplace;
+export default model.mutations.beforeGo;

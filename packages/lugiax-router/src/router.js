@@ -9,15 +9,9 @@ import type { CreateAppParam, RouterMap, } from '@lugia/lugiax-router';
 import ReactDOM from 'react-dom';
 import React, { Component, } from 'react';
 import lugiax from '@lugia/lugiax';
-import { Provider, } from 'react-redux';
 import go, { GoModel, } from './go';
 import Link from './Link';
-import {
-  ConnectedRouter,
-  connectRouter,
-  routerMiddleware,
-} from 'connected-react-router/immutable';
-import { Redirect, Route, StaticRouter, Switch, } from 'react-router'; // react-router v4
+import { Redirect, Route, StaticRouter, Switch, Router, } from 'react-router'; // react-router v4
 import Loadable from 'react-loadable';
 import Loading from './Loading';
 
@@ -48,10 +42,7 @@ const WrapPageLoad = (
   };
 };
 
-export function createRoute(
-  routerMap: RouterMap,
-  loading?: Object = Loading
-): ?Object {
+export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?Object {
   if (!routerMap) {
     return null;
   }
@@ -98,9 +89,7 @@ export function createRoute(
       if (path === 'NotFound') {
         return <Route render={getRender} />;
       }
-      return (
-        <Route exact={exact} strict={strict} path={path} render={getRender} />
-      );
+      return <Route exact={exact} strict={strict} path={path} render={getRender} />;
     }
     return 'render or component is not found!';
   });
@@ -108,18 +97,11 @@ export function createRoute(
 }
 
 const {
-  mutations: { asyncBeforeGo, asyncGo, },
+  mutations: { beforeGo, beforeReplace, asyncGo, asyncReplace,  reload, },
 } = GoModel;
 
-export function createApp(
-  routerMap: RouterMap,
-  history: Object,
-  param?: CreateAppParam = {}
-) {
+export function createApp(routerMap: RouterMap, history: Object, param: ?CreateAppParam = {}) {
   const { loading = Loading, onBeforeGo, } = param;
-
-  lugiax.resetStore(routerMiddleware(history), connectRouter(history));
-
   async function checkBefore(param, cb?: (param: Object) => Promise<any>) {
     let res = true;
     if (onBeforeGo) {
@@ -129,10 +111,15 @@ export function createApp(
     res && cb && (await cb(param));
   }
 
-  lugiax.on(async (mutation, param) => {
-    if (mutation === asyncBeforeGo) {
+  const { unSubscribe: unSubscribeLugiax, } = lugiax.on(async (mutation, param) => {
+    if (mutation === beforeGo) {
       await checkBefore(param, async param => {
-        await asyncGo(param);
+        await asyncGo({ ...param, history, });
+      });
+    }
+    if (mutation === beforeReplace) {
+      await checkBefore(param, async param => {
+        await asyncReplace({ ...param, history, });
       });
     }
   });
@@ -149,14 +136,17 @@ export function createApp(
   });
 
   class App extends Component<any, any> {
+    componentDidMount() {
+      reload({ history: [window.location.pathname,], });
+    }
+
+    componentWillUnmount() {
+      unSubscribeLugiax();
+      reload({ history: [], });
+    }
+
     render() {
-      return (
-        <Provider store={lugiax.getStore()}>
-          <ConnectedRouter history={history}>
-            {createRoute(routerMap, loading)}
-          </ConnectedRouter>
-        </Provider>
-      );
+      return <Router history={history}>{createRoute(routerMap, loading)}</Router>;
     }
   }
 

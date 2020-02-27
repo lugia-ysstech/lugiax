@@ -9,10 +9,10 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@lugia/lugiax-core@^1.0.15":
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.0.15.tgz#e8b7795fca1552fedd1f9e112e762a7ae43a256f"
-  integrity sha512-2AndDvQZKqghDZTt3x3sPdFWQn791az1O95i49pUDlEOH5T1C7Cdve2Cx5Qd+TCwb1B5WLGCD7zohjbf40rKEg==
+"@lugia/lugiax-core@^1.0.17-alpha.0":
+  version "1.0.17-alpha.0"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.17-alpha.0.tgz#17ca90612f1231230cc7a2d86d7684de0fdbd8ec"
+  integrity sha1-F8qQYS8SMSMMx6LYbXaE3g/b2Ow=
   dependencies:
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
@@ -20,12 +20,12 @@
     redux-immutable "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax@^1.0.20":
-  version "1.0.20"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax/-/lugiax-1.0.20.tgz#ba9761e13ed7c4eba3a19e5f91f1245f5020f65b"
-  integrity sha512-sIq0AHDoYah3hZBdMfS6EOP3CHKfxSsuzkdj8Mo8bmekqPAZ2+npbSba4ZWcYSg+sOoUibbpnEqQJm/KkVe3rA==
+"@lugia/lugiax@^1.0.22-alpha.0":
+  version "1.0.22-alpha.0"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax/download/@lugia/lugiax-1.0.22-alpha.0.tgz#6cc58a17ecb517219fe8ee05489edfbed2c7e0fc"
+  integrity sha1-bMWKF+y1FyGf6O4FSJ7fvtLH4Pw=
   dependencies:
-    "@lugia/lugiax-core" "^1.0.15"
+    "@lugia/lugiax-core" "^1.0.17-alpha.0"
     hoist-non-react-statics "^3.3.2"
     immutable "^3.8.2"
 
@@ -189,15 +189,6 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
-
-connected-react-router@^4.4.1:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/connected-react-router/-/connected-react-router-4.5.0.tgz#b6f021cc284a244fbee70e16e5ff0f2a4613e3d3"
-  integrity sha512-SBBmAZrtmw4y7Rkl2PCct8lN/DuCftl7QSAFLgFyjjuYkeJKAzAvQjzNNNE4R3j2+6a4TUiv8qselxQ4+6H5eA==
-  dependencies:
-    immutable "^3.8.1"
-    redux-seamless-immutable "^0.4.0"
-    seamless-immutable "^7.1.3"
 
 core-js@^1.0.0:
   version "1.2.7"
@@ -385,13 +376,6 @@ hoist-non-react-statics@^2.5.0:
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
   integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
 
-hoist-non-react-statics@^3.3.0:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.1.tgz#101685d3aff3b23ea213163f6e8e12f4f111e19f"
-  integrity sha512-wbg3bpgA/ZqWrZuMOeJi8+SKMhr7X9TesL/rXMjTzh0p0JUBo3II8DHboYbuIXWRlttrUFxwcu/5kygrCw8fJw==
-  dependencies:
-    react-is "^16.7.0"
-
 hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
@@ -423,7 +407,7 @@ ieee754@^1.1.4:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
   integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
 
-immutable@^3.8.1, immutable@^3.8.2:
+immutable@^3.8.2:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
   integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
@@ -538,7 +522,7 @@ lodash@^4.3.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
-loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.2.0, loose-envify@^1.3.1, loose-envify@^1.4.0:
+loose-envify@^1.0.0, loose-envify@^1.2.0, loose-envify@^1.3.1, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
@@ -691,15 +675,10 @@ react-error-overlay@^3.0.0:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-3.0.0.tgz#c2bc8f4d91f1375b3dad6d75265d51cd5eeaf655"
   integrity sha512-XzgvowFrwDo6TWcpJ/WTiarb9UI6lhA4PMzS7n1joK3sHfBBBOQHUc0U4u57D6DWO9vHv6lVSWx2Q/Ymfyv4hw==
 
-react-is@^16.3.1, react-is@^16.4.1, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
+react-is@^16.3.1, react-is@^16.4.1, react-is@^16.7.0, react-is@^16.8.1:
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
-
-react-lifecycles-compat@^3.0.0:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
-  integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
 react-loadable@^5.5.0:
   version "5.5.0"
@@ -707,24 +686,6 @@ react-loadable@^5.5.0:
   integrity sha512-C8Aui0ZpMd4KokxRdVAm2bQtI03k2RMRNzOB+IipV3yxFTSVICv7WoUr5L9ALB5BmKO1iHgZtWM8EvYG83otdg==
   dependencies:
     prop-types "^15.5.0"
-
-react-redux@^5.0.7:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.2.tgz#b19cf9e21d694422727bf798e934a916c4080f57"
-  integrity sha512-Ns1G0XXc8hDyH/OcBHOxNgQx9ayH3SPxBnFCOidGKSle8pKihysQw2rG/PmciUQRoclhVBO8HMhiRmGXnDja9Q==
-  dependencies:
-    "@babel/runtime" "^7.1.2"
-    hoist-non-react-statics "^3.3.0"
-    invariant "^2.2.4"
-    loose-envify "^1.1.0"
-    prop-types "^15.6.1"
-    react-is "^16.6.0"
-    react-lifecycles-compat "^3.0.0"
-
-react-router-redux@^4.0.0:
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/react-router-redux/-/react-router-redux-4.0.8.tgz#227403596b5151e182377dab835b5d45f0f8054e"
-  integrity sha1-InQDWWtRUeGCN32rg1tdRfD4BU4=
 
 react-router@^4.3.1:
   version "4.3.1"
@@ -765,14 +726,6 @@ redux-saga@^0.16.0:
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.2.tgz#993662e86bc945d8509ac2b8daba3a8c615cc971"
   integrity sha512-iIjKnRThI5sKPEASpUvySemjzwqwI13e3qP7oLub+FycCRDysLSAOwt958niZW6LhxfmS6Qm1BzbU70w/Koc4w==
-
-redux-seamless-immutable@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/redux-seamless-immutable/-/redux-seamless-immutable-0.4.0.tgz#b50f8680ecc5ef04021551267f78fa1ffd3cf985"
-  integrity sha512-/oS3fhrize9D3RSHemgJxVllohybRrad5IjccotFy8Ni4IKAPTtX1mqszpiCIl12+7v0dNqBpq6ES6R236AliQ==
-  dependencies:
-    react-router-redux "^4.0.0"
-    seamless-immutable "^7.1.2"
 
 redux@^4.0.0:
   version "4.0.5"
@@ -841,11 +794,6 @@ safe-buffer@>=5.1.0:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
-
-seamless-immutable@^7.1.2, seamless-immutable@^7.1.3:
-  version "7.1.4"
-  resolved "https://registry.yarnpkg.com/seamless-immutable/-/seamless-immutable-7.1.4.tgz#6e9536def083ddc4dea0207d722e0e80d0f372f8"
-  integrity sha512-XiUO1QP4ki4E2PHegiGAlu6r82o5A+6tRh7IkGGTVg/h+UoeX4nFBeCGPOhb4CYjvkqsfm/TUtvOMYC1xmV30A==
 
 setimmediate@^1.0.5:
   version "1.0.5"
