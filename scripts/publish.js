@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
 const shell = require('shelljs');
-const { join } = require('path');
-const { fork } = require('child_process');
-const { packagesDirName, scope, igronPkgs } = require('./config.json');
-
+const { join, } = require('path');
+const { fork, } = require('child_process');
+const { packagesDirName, scope, igronPkgs, } = require('./config.json');
 
 const cwd = process.cwd();
 const updatedRepos = shell
@@ -17,7 +16,7 @@ if (updatedRepos.length === 0) {
   process.exit(0);
 }
 
-const { code: buildCode } = shell.exec('yarn run build -m');
+const { code: buildCode, } = shell.exec('yarn run build -m');
 if (buildCode === 1) {
   console.error('Failed: yarn run build -m');
   process.exit(1);
@@ -25,10 +24,10 @@ if (buildCode === 1) {
 
 const cp = fork(
   join(cwd, './node_modules/lerna/cli.js'),
-  ['publish', '--skip-npm'].concat(process.argv.slice(2)),
+  ['publish', '--skip-npm',].concat(process.argv.slice(2)),
   {
     cwd,
-  },
+  }
 );
 cp.on('error', err => {
   console.log(err);

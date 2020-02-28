@@ -8,6 +8,11 @@
     "redux-immutable": "^4.0.0",
     "redux-saga": "^0.16.0"
   },
+  "keywords": [
+    "lugia",
+    "lugiax",
+    "redux"
+  ],
   "author": "ysstech",
   "scripts": {
     "build": "lugia-complie lint && lugia-complie build",
