@@ -129,6 +129,11 @@ describe(
       await expectPathname('/car');
     });
 
+    it('doNotOnBeforeGo', async () => {
+      await page.evaluate(() => window.doNotOnBeforeGo());
+      await expectPathname('/car');
+      expect(await getHtml('Car')).toBe('Car');
+    });
     async function expectPathname(pathname) {
       expect(await getPathname()).toEqual(pathname);
     }

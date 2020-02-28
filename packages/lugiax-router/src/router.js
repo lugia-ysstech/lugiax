@@ -53,23 +53,28 @@ const PowerRouter = (props: Object) => {
 
     const LoaderResult = Loadable({
       loader: async () => {
-        const { pathname: url, } = location;
-        const { notFound, } = props;
-        if (!notFound) {
-          await onBeforeGo({ url, });
+        try {
+          const { pathname: url, } = location;
+          const { notFound, } = props;
+          if (!notFound && onBeforeGo) {
+            await onBeforeGo({ url, });
+          }
+          let { component: Target, } = props;
+          if (!Target) {
+            const { render, } = props;
+            Target = await render();
+          }
+          const { needWrap, onPageLoad, onPageUnLoad, } = props;
+
+          return needWrap
+            ? WrapPageLoad(Target, {
+                onPageLoad,
+                onPageUnLoad,
+              })
+            : Target;
+        } catch (error) {
+          console.error(error);
         }
-        let { component: Target, } = props;
-        if (!Target) {
-          const { render, } = props;
-          Target = await render();
-        }
-        const { needWrap, onPageLoad, onPageUnLoad, } = props;
-        return needWrap
-          ? WrapPageLoad(Target, {
-              onPageLoad,
-              onPageUnLoad,
-            })
-          : Target;
       },
       loading,
     });

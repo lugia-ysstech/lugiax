@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBrowserHistory, } from 'history';
-import { createApp, replace, render, go, goBack, goForward,} from '@lugia/lugiax-router';
+import { createApp, replace, render, go, goBack, goForward, } from '@lugia/lugiax-router';
 import registerServiceWorker from './registerServiceWorker';
 import Main from './App';
 
@@ -12,30 +12,45 @@ window.lugiaxHistory = {
   goBack,
   goForward,
 };
-const App = createApp(
-  {
-    '/': {
-      component: Main,
-    },
-  },
-  history,
-  {
-    async onBeforeGo({ url, }) {
-      if (url === '/nowPower') {
-        return false;
-      }
-      if (url === '/news') {
-        replace({ url: '/403', });
-      }
-      if (url === '/games') {
-        replace({ url: '/403', });
-      }
-    },
-  }
-);
 
 render(() => {
+  const App = createApp(
+    {
+      '/': {
+        component: Main,
+      },
+    },
+    history,
+    {
+      async onBeforeGo({ url, }) {
+        if (url === '/nowPower') {
+          return false;
+        }
+        if (url === '/news') {
+          replace({ url: '/403', });
+        }
+        if (url === '/games') {
+          replace({ url: '/403', });
+        }
+      },
+    }
+  );
   return <App />;
 }, 'root');
+
+window.doNotOnBeforeGo = () => {
+  render(() => {
+    const App = createApp(
+      {
+        '/': {
+          component: Main,
+        },
+      },
+      history,
+      {}
+    );
+    return <App />;
+  }, 'root');
+};
 
 registerServiceWorker();
