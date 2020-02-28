@@ -38,6 +38,12 @@
     "lib",
     "interface"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lugia-ysstech/lugiax"
+  },
+  "license": "Apache License 2.0",
+  "homepage": "http://lugia.tech",
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,mjs}"
