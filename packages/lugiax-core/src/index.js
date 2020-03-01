@@ -26,7 +26,7 @@ import { combineReducers, } from 'redux-immutable';
 import createSagaMiddleware from 'redux-saga';
 
 import { ObjectUtils, } from '@lugia/type-utils';
-import Subscribe from './subscribe';
+import { Subscribe, } from '@lugia/lugiax-common';
 import render from './render';
 
 const ReloadAction = '@lugiax/reload';
@@ -39,10 +39,10 @@ class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
   mutationId2Mutaions: {
     async: { [key: string]: MutationFunction },
-    sync: { [key: string]: MutationFunction }
+    sync: { [key: string]: MutationFunction },
   };
   mutationId2MutationInfo: {
-    [key: string]: { body: Function, model: string, mutationId: string }
+    [key: string]: { body: Function, model: string, mutationId: string },
   };
   existModel: { [key: string]: RegisterParam };
   listeners: { [key: string]: { [id: string]: Function } };
@@ -61,10 +61,7 @@ class LugiaxImpl implements LugiaxType {
     this.storeEvent.trigger(All, newState, oldState);
   }
 
-  register(
-    param: RegisterParam,
-    option: Option = { force: false, }
-  ): RegisterResult {
+  register(param: RegisterParam, option: Option = { force: false, }): RegisterResult {
     if (!param) {
       console.error('lugiax.register param must be not undefined!');
       return;
@@ -166,18 +163,13 @@ class LugiaxImpl implements LugiaxType {
   ) => {
     this.checkMutationName(model, mutationName, type);
     const mutations = { [mutationName]: func, };
-    const targetMutation = this.generateMutation(
-      { [type]: mutations, },
-      model,
-      type
-    );
+    const targetMutation = this.generateMutation({ [type]: mutations, }, model, type);
     Object.assign(this.modelName2Mutations[model], targetMutation);
   };
 
   checkMutationName(model: string, mutationName: string, type: MutationType) {
     const modelMutation = this.modelName2Mutations[model];
-    const innerMutationName =
-      type === 'sync' ? mutationName : this.addAsyncPrefix(mutationName);
+    const innerMutationName = type === 'sync' ? mutationName : this.addAsyncPrefix(mutationName);
     if (modelMutation && modelMutation[innerMutationName]) {
       throw new Error(`The ${type} [${model}.${mutationName}] is exist model!`);
     }
@@ -192,11 +184,7 @@ class LugiaxImpl implements LugiaxType {
     }
   }
 
-  generateMutation(
-    mutations: Mutations,
-    model: string,
-    type: MutationType
-  ): Mutation {
+  generateMutation(mutations: Mutations, model: string, type: MutationType): Mutation {
     const result = {};
     const targetMutations = mutations[type];
     targetMutations &&
@@ -377,13 +365,10 @@ class LugiaxImpl implements LugiaxType {
         preloadedState = window.__PRELOADED_STATE__;
         delete window.__PRELOADED_STATE__;
       }
-      const dev =
-        window.__REDUX_DEVTOOLS_EXTENSION__ &&
-        window.__REDUX_DEVTOOLS_EXTENSION__();
+      const dev = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
       if (dev) {
         const composeEnhancers =
-          typeof window === 'object' &&
-          window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+          typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
             ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
                 shouldHotReload: false,
               })

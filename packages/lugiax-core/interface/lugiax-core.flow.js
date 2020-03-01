@@ -3,7 +3,7 @@
  * @flow
  */
 
-declare module "@lugia/lugiax-core" {
+declare module '@lugia/lugiax-core' {
   declare type Handler = {
     mutations: Mutation,
     getState(): Object

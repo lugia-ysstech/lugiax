@@ -8,7 +8,6 @@
 ./interface/
 ./node_modules/@lugia/react-test-utils/interface/
 ./node_modules/@lugia/type-utils/interface/
-./node_modules/@lugia/lugiax-common/interface/
 [options]
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable

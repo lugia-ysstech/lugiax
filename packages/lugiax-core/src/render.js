@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import Subscribe from './subscribe';
+import { Subscribe, } from '@lugia/lugiax-common';
 import Stack from './stack';
 
 const BatchModels = 'batchModels';

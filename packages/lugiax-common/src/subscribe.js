@@ -4,9 +4,9 @@
  *
  * @flow
  */
-import type { SubscribeResult, } from '@lugia/lugiax-core';
+import type { SubscribeResult, ISubscribe, } from '@lugia/lugiax-common';
 
-export default class Subscribe {
+export default class Subscribe implements ISubscribe {
   listeners: { [key: string]: { [id: string]: Function } };
   constructor() {
     this.clear();
