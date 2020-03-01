@@ -6,6 +6,67 @@
  */
 import { createDataOnChange, Change, Delete, } from '../src/data';
 
+export function createDeleteChangeParam(path, value, isArray = false) {
+  return {
+    isArray,
+    path: path.split('.'),
+    value,
+    type: Delete,
+  };
+}
+
+export function createSpecialChangeParam(path, value, type, isArray) {
+  return {
+    isArray,
+    path,
+    value,
+    type,
+  };
+}
+
+export function createChangeParam(path, value, isArray = false) {
+  path = path.split('.');
+  if (path.length === 0) {
+    throw new Error('特殊数据');
+  }
+  return {
+    isArray,
+    path,
+    value,
+    type: Change,
+  };
+}
+
+export function createChangeParamForArrayOperator(path, params, operator) {
+  path = path.split('.');
+  if (path.length === 0) {
+    throw new Error('特殊数据');
+  }
+  return {
+    isArray: true,
+    path,
+    params,
+    type: Change,
+    operator,
+  };
+}
+
+export function createChangeParamForNumberAttributeToArray(path, index, value) {
+  return createChangeParamForNumberAttribute(path, index, value, true);
+}
+
+export function createChangeParamForNumberAttributeToObject(path, index, value) {
+  return createChangeParamForNumberAttribute(path, index, value, false);
+}
+
+function createChangeParamForNumberAttribute(path, index, value, isArray) {
+  return {
+    path: [...path.split('.'), index,],
+    value,
+    isArray,
+    type: Change,
+  };
+}
 describe('data.createDataOnChange.test.js', () => {
   let target;
 
@@ -171,13 +232,13 @@ describe('data.createDataOnChange.test.js', () => {
     const word = 'word';
     target.$set('hello', word);
     expect(target.hello).toBe(word);
-    expect(changeParams).toEqual([createChangeParam('hello', word, Change),]);
+    expect(changeParams).toEqual([createChangeParam('hello', word),]);
 
     const newWord = 'aaaaaa';
     target.hello = newWord;
     expect(changeParams).toEqual([
-      createChangeParam('hello', word, Change),
-      createChangeParam('hello', newWord, Change),
+      createChangeParam('hello', word),
+      createChangeParam('hello', newWord),
     ]);
   });
 
@@ -211,12 +272,12 @@ describe('data.createDataOnChange.test.js', () => {
       },
     });
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj.age', 5555, Change),
-      createChangeParam('obj.obj2', { name: 5, }, Change),
-      createChangeParam('obj.obj2.name', 6666, Change),
-      createChangeParam('obj.obj2.array', [], Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj.age', 5555),
+      createChangeParam('obj.obj2', { name: 5, }),
+      createChangeParam('obj.obj2.name', 6666),
+      createChangeParam('obj.obj2.array', []),
       createChangeParamForNumberAttributeToArray('obj.obj2.array', 0, 100),
       createChangeParamForArrayOperator('obj.obj2.array', [1000,], 'push'),
     ]);
@@ -233,9 +294,9 @@ describe('data.createDataOnChange.test.js', () => {
     // target.$set()
     expect(target.obj).toBeUndefined();
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj', undefined, Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj', undefined),
     ]);
   });
 
@@ -254,19 +315,19 @@ describe('data.createDataOnChange.test.js', () => {
       ligx: true,
     });
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj', { ligx: true, }, Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj', { ligx: true, }),
     ]);
 
     target.obj.ligx = false;
     expect(target.obj.ligx).toBeFalsy();
     expect(objB.ligx).toBeFalsy();
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj', { ligx: true, }, Change),
-      createChangeParam('obj.ligx', false, Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj', { ligx: true, }),
+      createChangeParam('obj.ligx', false),
     ]);
   });
 
@@ -283,29 +344,29 @@ describe('data.createDataOnChange.test.js', () => {
     // target.$set()
     expect(target.obj).toEqual(data);
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj', [1, 2, 3,], Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj', [1, 2, 3,]),
     ]);
 
     target.obj.$set(1, 100);
     expect(data).toEqual([1, 100, 3,]);
     expect(target.obj).toEqual([1, 100, 3,]);
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj', [1, 2, 3,], Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj', [1, 2, 3,]),
       createChangeParamForNumberAttributeToArray('obj', 1, 100),
     ]);
 
     target.$set('obj', 5);
     expect(target.obj).toBe(5);
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj', [1, 2, 3,], Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj', [1, 2, 3,]),
       createChangeParamForNumberAttributeToArray('obj', 1, 100),
-      createChangeParam('obj', 5, Change),
+      createChangeParam('obj', 5),
     ]);
   });
 
@@ -323,7 +384,7 @@ describe('data.createDataOnChange.test.js', () => {
     });
 
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
       createChangeParamForNumberAttributeToObject('obj', '100', 11),
     ]);
   });
@@ -334,25 +395,25 @@ describe('data.createDataOnChange.test.js', () => {
     target.$set('obj', object);
     expect(target.obj).toBe(object);
 
-    expect(changeParams).toEqual([createChangeParam('obj', [1, 2, 3,], Change),]);
+    expect(changeParams).toEqual([createChangeParam('obj', [1, 2, 3,]),]);
     target.obj.$set('abc', '煮饭');
     const result = [1, 2, 3,];
     result.abc = '煮饭';
     expect(target.obj).toEqual(result);
 
     expect(changeParams).toEqual([
-      createChangeParam('obj', [1, 2, 3,], Change),
-      { ...createChangeParam('obj.abc', '煮饭', Change), isArray: true, },
+      createChangeParam('obj', [1, 2, 3,]),
+      createChangeParam('obj.abc', '煮饭', true),
     ]);
   });
 
   it('object {1: 100}', () => {
     target.$set('obj', { 1: 100, });
-    expect(changeParams).toEqual([createChangeParam('obj', { 1: 100, }, Change),]);
+    expect(changeParams).toEqual([createChangeParam('obj', { 1: 100, }),]);
     target.obj[1] = 1000;
     expect(changeParams).toEqual([
-      createChangeParam('obj', { 1: 100, }, Change),
-      createChangeParam('obj.1', 1000, Change),
+      createChangeParam('obj', { 1: 100, }),
+      createChangeParam('obj.1', 1000),
     ]);
   });
   it('set Object {} change to null', () => {
@@ -368,9 +429,9 @@ describe('data.createDataOnChange.test.js', () => {
     expect(target.obj).toBeNull();
 
     expect(changeParams).toEqual([
-      createChangeParam('obj', { name: 1, age: 5, }, Change),
-      createChangeParam('obj.name', 1000, Change),
-      createChangeParam('obj', null, Change),
+      createChangeParam('obj', { name: 1, age: 5, }),
+      createChangeParam('obj.name', 1000),
+      createChangeParam('obj', null),
     ]);
   });
 
@@ -379,7 +440,7 @@ describe('data.createDataOnChange.test.js', () => {
     // target.$set()
     expect(target['']).toBe(1000);
 
-    expect(changeParams).toEqual([createChangeParam('', 1000, Change),]);
+    expect(changeParams).toEqual([createSpecialChangeParam(['',], 1000, Change, false),]);
   });
 
   it('set Object {} undefined', () => {
@@ -387,7 +448,7 @@ describe('data.createDataOnChange.test.js', () => {
     // target.$set()
     expect(target.undefined).toBe(1000);
 
-    expect(changeParams).toEqual([createChangeParam('undefined', 1000, Change),]);
+    expect(changeParams).toEqual([createChangeParam('undefined', 1000),]);
   });
 
   it('set Object {} null', () => {
@@ -395,19 +456,19 @@ describe('data.createDataOnChange.test.js', () => {
     // target.$set()
     expect(target.null).toBe(1000);
 
-    expect(changeParams).toEqual([createChangeParam('null', 1000, Change),]);
+    expect(changeParams).toEqual([createChangeParam('null', 1000),]);
   });
   it('set Array [] empty string', () => {
     const data = [];
     target.$set('data', data);
 
     expect(target.data).toEqual([]);
-    expect(changeParams).toEqual([createChangeParam('data', [], Change),]);
+    expect(changeParams).toEqual([createChangeParam('data', []),]);
 
     target.data.$set('', 'hello');
     expect(changeParams).toEqual([
-      createChangeParam('data', [], Change),
-      { type: Change, value: 'hello', isArray: true, path: ['data', '',], },
+      createChangeParam('data', []),
+      createSpecialChangeParam(['data', '',], 'hello', Change, true),
     ]);
   });
   it('set Array [] null', () => {
@@ -415,12 +476,12 @@ describe('data.createDataOnChange.test.js', () => {
     target.$set('data', data);
 
     expect(target.data).toEqual([]);
-    expect(changeParams).toEqual([createChangeParam('data', [], Change),]);
+    expect(changeParams).toEqual([createChangeParam('data', []),]);
 
     target.data.$set(null, 'hello');
     expect(changeParams).toEqual([
-      createChangeParam('data', [], Change),
-      { type: Change, value: 'hello', isArray: true, path: ['data', 'null',], },
+      createChangeParam('data', []),
+      createSpecialChangeParam(['data', 'null',], 'hello', Change, true),
     ]);
   });
 
@@ -429,12 +490,12 @@ describe('data.createDataOnChange.test.js', () => {
     target.$set('data', data);
 
     expect(target.data).toEqual([]);
-    expect(changeParams).toEqual([createChangeParam('data', [], Change),]);
+    expect(changeParams).toEqual([createChangeParam('data', []),]);
 
     target.data.$set(undefined, 'hello');
     expect(changeParams).toEqual([
-      createChangeParam('data', [], Change),
-      { type: Change, value: 'hello', isArray: true, path: ['data', 'undefined',], },
+      createChangeParam('data', []),
+      createSpecialChangeParam(['data', 'undefined',], 'hello', Change, true),
     ]);
   });
 
@@ -442,14 +503,14 @@ describe('data.createDataOnChange.test.js', () => {
     target.$delete('num');
     expect('num' in target).toBeFalsy();
     target.num = 111;
-    expect(changeParams).toEqual([{ ...createChangeParam('', 'num', Delete), path: [], },]);
+    expect(changeParams).toEqual([createSpecialChangeParam([], 'num', Delete, false),]);
   });
 
   it('$delete target.one.two.attr', () => {
     target.one.two.$delete('attr');
     expect('attr' in target.one.two).toBeFalsy();
     target.one.two.attr = 341234;
-    expect(changeParams).toEqual([{ ...createChangeParam('one.two', 'attr', Delete), },]);
+    expect(changeParams).toEqual([createDeleteChangeParam('one.two', 'attr'),]);
   });
 
   it('$delete target.one.two.1', () => {
@@ -457,15 +518,13 @@ describe('data.createDataOnChange.test.js', () => {
     expect('1' in target.one.two).toBeTruthy();
     target.one.two.$delete(1);
     expect('1' in target.one.two).toBeFalsy();
-    expect(changeParams).toEqual([{ ...createChangeParam('one.two', '1', Delete), },]);
+    expect(changeParams).toEqual([createDeleteChangeParam('one.two', '1'),]);
   });
 
   it('$delete target.array 0 ', () => {
     target.array.$delete(0);
     expect(target.array).toEqual([2, 3,]);
-    expect(changeParams).toEqual([
-      { ...createChangeParamForArrayOperator('array', [0, 1,], 'splice'), },
-    ]);
+    expect(changeParams).toEqual([createChangeParamForArrayOperator('array', [0, 1,], 'splice'),]);
   });
 
   it('$delete target.array undefined ', () => {
@@ -474,8 +533,8 @@ describe('data.createDataOnChange.test.js', () => {
     target.array.$delete(undefined);
     expect(target.array).toEqual([1, 2, 3,]);
     expect(changeParams).toEqual([
-      { ...createChangeParam('array.undefined', '123', Change), isArray: true, },
-      { ...createChangeParam('array', 'undefined', Delete), isArray: true, },
+      createChangeParam('array.undefined', '123', true),
+      createDeleteChangeParam('array', 'undefined', true),
     ]);
   });
   it('$delete target.array name', () => {
@@ -483,44 +542,6 @@ describe('data.createDataOnChange.test.js', () => {
     target.array.$delete('name');
     expect('name' in target.array).toBeFalsy();
     expect(target.array).toEqual([1, 2, 3,]);
-    expect(changeParams).toEqual([
-      { ...createChangeParam('array', 'name', Delete), isArray: true, },
-    ]);
+    expect(changeParams).toEqual([createDeleteChangeParam('array', 'name', true),]);
   });
-
-  function createChangeParam(path, value, type = Change) {
-    return {
-      isArray: false,
-      path: path.split('.'),
-      value,
-      type,
-    };
-  }
-
-  function createChangeParamForArrayOperator(path, params, operator) {
-    return {
-      isArray: true,
-      path: path.split('.'),
-      params,
-      type: Change,
-      operator,
-    };
-  }
-
-  function createChangeParamForNumberAttributeToArray(path, index, value) {
-    return createChangeParamForNumberAttribute(path, index, value, true);
-  }
-
-  function createChangeParamForNumberAttributeToObject(path, index, value) {
-    return createChangeParamForNumberAttribute(path, index, value, false);
-  }
-
-  function createChangeParamForNumberAttribute(path, index, value, isArray) {
-    return {
-      path: [...path.split('.'), index,],
-      value,
-      isArray,
-      type: Change,
-    };
-  }
 });
