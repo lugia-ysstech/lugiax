@@ -4,13 +4,38 @@
  *
  * @flow
  */
+
+import type { OnChangeParam, LugiaxDataParam, LugiaxDataResult, } from '@lugia/lugiax-data';
+
 import { fromJS, } from 'immutable';
-import createData from './data';
+import createData, { Change, Delete, } from './data';
 
 import lugiax from '@lugia/lugiax-core';
 
+export function computeState(state: Object, param: OnChangeParam): Object {
+  if (!param) {
+    return state;
+  }
+  const { type, path, value, operator, isArray, } = param;
+
+  if (isArray && operator) {
+    let array = state.getIn(path);
+    const { params, } = param;
+    array = array[operator](...params);
+    return state.setIn(path, array);
+  }
+  switch (type) {
+    case Change:
+      return state.setIn(path, fromJS(value));
+    case Delete:
+      return state.deleteIn(path);
+    default:
+  }
+  return state;
+}
+
 export default {
-  createModel(param: { state: Object, model: string }) {
+  createData(param: LugiaxDataParam): LugiaxDataResult {
     const { model: modelName, state = {}, } = param;
 
     const model = lugiax.register({
@@ -18,33 +43,27 @@ export default {
       state,
       mutations: {
         sync: {
-          change(state, param) {
-            const { path, value, isArray, } = param;
-            if (isArray) {
-              const lastIndex = path.length - 1;
-              const arrayPath = path.slice(0, lastIndex);
-              const array = state.getIn(arrayPath).toJS();
-              array[Number(path[lastIndex])] = value;
-              return state.setIn(arrayPath, fromJS(array));
-            }
-            return state.setIn(path, fromJS(value));
+          __change__(state, param) {
+            return computeState(state, param);
           },
         },
       },
     });
 
-    const data = createData(state, param => {
-      const { type, path, value, isArray, } = param;
-      const {
-        mutations: { change, },
-      } = model;
-      if (type === 'change') {
-        change({ path, value, isArray, });
-      }
-    });
+    const { state: data, subscribe, } = createData(state);
+    const {
+      mutations: { __change__: change, },
+    } = model;
+    const trigger = param => change(param);
+    const { unSubscribe: unSubscribeChange, } = subscribe(Change, trigger);
+    const { unSubscribe: unSubscribeDelete, } = subscribe(Delete, trigger);
     return {
       model,
       data,
+      unSubscribe() {
+        unSubscribeChange();
+        unSubscribeDelete();
+      },
     };
   },
 };

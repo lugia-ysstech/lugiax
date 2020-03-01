@@ -503,14 +503,14 @@ describe('data.createDataOnChange.test.js', () => {
     target.$delete('num');
     expect('num' in target).toBeFalsy();
     target.num = 111;
-    expect(changeParams).toEqual([createSpecialChangeParam([], 'num', Delete, false),]);
+    expect(changeParams).toEqual([createSpecialChangeParam(['num',], undefined, Delete, false),]);
   });
 
   it('$delete target.one.two.attr', () => {
     target.one.two.$delete('attr');
     expect('attr' in target.one.two).toBeFalsy();
     target.one.two.attr = 341234;
-    expect(changeParams).toEqual([createDeleteChangeParam('one.two', 'attr'),]);
+    expect(changeParams).toEqual([createDeleteChangeParam('one.two.attr'),]);
   });
 
   it('$delete target.one.two.1', () => {
@@ -518,7 +518,9 @@ describe('data.createDataOnChange.test.js', () => {
     expect('1' in target.one.two).toBeTruthy();
     target.one.two.$delete(1);
     expect('1' in target.one.two).toBeFalsy();
-    expect(changeParams).toEqual([createDeleteChangeParam('one.two', '1'),]);
+    expect(changeParams).toEqual([
+      createSpecialChangeParam(['one', 'two', 1,], undefined, Delete, false),
+    ]);
   });
 
   it('$delete target.array 0 ', () => {
@@ -534,7 +536,7 @@ describe('data.createDataOnChange.test.js', () => {
     expect(target.array).toEqual([1, 2, 3,]);
     expect(changeParams).toEqual([
       createChangeParam('array.undefined', '123', true),
-      createDeleteChangeParam('array', 'undefined', true),
+      createDeleteChangeParam('array.undefined', undefined, true),
     ]);
   });
   it('$delete target.array name', () => {
@@ -542,7 +544,7 @@ describe('data.createDataOnChange.test.js', () => {
     target.array.$delete('name');
     expect('name' in target.array).toBeFalsy();
     expect(target.array).toEqual([1, 2, 3,]);
-    expect(changeParams).toEqual([createDeleteChangeParam('array', 'name', true),]);
+    expect(changeParams).toEqual([createDeleteChangeParam('array.name', undefined, true),]);
   });
 
   it('$set [0] = {name} and change name', () => {

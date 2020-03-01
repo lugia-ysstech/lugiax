@@ -70,8 +70,7 @@ function defineDelete(state: Object, fatherPath: string[] = [], trigger: OnChang
           trigger({
             type: Delete,
             isArray,
-            value: String(attribute),
-            path: fatherPath,
+            path: [...fatherPath, attribute === null || attribute === undefined? String(attribute) : attribute,],
           });
         }
       };
