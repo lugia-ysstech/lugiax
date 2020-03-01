@@ -4,6 +4,8 @@
  *
  * @flow
  */
+import type { OnChangeParam, } from '@lugia/lugiax-data';
+
 import isPlainObject from 'is-plain-object';
 import { Subscribe, } from '@lugia/lugiax-common';
 
@@ -12,19 +14,6 @@ export const Delete = 'delete';
 
 const arrayFunctionNames = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse',];
 
-type ArrayOperator = 'push' | 'pop' | 'shift' | 'unshift' | 'splice' | 'sort' | 'reverse';
-type OperatorType = ArrayOperator;
-type ChangeType = Change | Delete;
-/**
- *  抛出value如果是对象会进行浅克隆处理，并且删除$delete $set的操作
- */
-type OnChangeParam = {
-  path: string[],
-  value: ?any, // operator存在时则无value
-  type: ChangeType,
-  params: ?(any[]), // operator存在是才有操作的参数
-  operator: ?OperatorType,
-};
 type OnChange = (param: OnChangeParam) => void;
 
 function defineArray(target: Object, path: string[], trigger: OnChange) {
@@ -32,8 +21,35 @@ function defineArray(target: Object, path: string[], trigger: OnChange) {
     Object.defineProperty(target, name, {
       get() {
         return (...rest) => {
-          const result = Array.prototype[name].call(target, ...rest);
-          trigger({ path, type: Change, params: rest, isArray: true, operator: name, });
+          let result = Array.prototype[name].call(target, ...rest);
+          if(name === 'pop' || name === 'shift'|| name === 'splice'){
+            result = clone(result);
+          }
+          if (name === 'push') {
+            const lastIndex = target.length - 1;
+            const pushItem = target[lastIndex];
+            if (isPlainObject(pushItem)) {
+              defineAllKeysProperty(pushItem, [...path, lastIndex,], trigger);
+            }
+            if (Array.isArray(pushItem)) {
+              defineOneProperty(target, lastIndex, path, trigger);
+            }
+          }
+          if (name === 'shift' || name === 'unshift' || name === 'sort' || name === 'reverse' || name === 'splice') {
+              for (let i = 0; i < target.length; i++) {
+                const item = target[i];
+                if (isPlainObject(item)) {
+                  defineAllKeysProperty(item, [...path, i,], trigger);
+                }
+              }
+          }
+          trigger({
+            path,
+            type: Change,
+            params: rest ? rest.map(item => clone(item)) : rest,
+            isArray: true,
+            operator: name,
+          });
           return result;
         };
       },
@@ -43,6 +59,7 @@ function defineArray(target: Object, path: string[], trigger: OnChange) {
 
 function defineDelete(state: Object, fatherPath: string[] = [], trigger: OnChange): void {
   Object.defineProperty(state, '$delete', {
+    configurable: true,
     get() {
       return (attribute: string) => {
         const isArray = Array.isArray(state);
@@ -64,6 +81,7 @@ function defineDelete(state: Object, fatherPath: string[] = [], trigger: OnChang
 
 function defineSet(state: Object, fatherPath: string[] = [], trigger: OnChange): void {
   Object.defineProperty(state, '$set', {
+    configurable: true,
     get() {
       return (attribute: string, value: any) => {
         const isEmptyAttribute = attribute === null || attribute === undefined;
@@ -76,13 +94,22 @@ function defineSet(state: Object, fatherPath: string[] = [], trigger: OnChange):
         const attributeInStateBeforeUpdate = attribute in state;
 
         state[attribute] = value;
+        const path = [...fatherPath, attribute,];
+        if (Array.isArray(value)) {
+          for (let i = 0; i < value.length; i++) {
+            const item = value[i];
+            if (isPlainObject(item)) {
+              defineAllKeysProperty(item, [...path, i,], trigger);
+            }
+          }
+        }
         defineOneProperty(state, attribute, fatherPath, trigger);
 
         const isArray = Array.isArray(state);
         const needTrigger = !attributeInStateBeforeUpdate || isArray || isNumberAttribute;
         if (needTrigger) {
           trigger({
-            path: [...fatherPath, attribute,],
+            path,
             value: clone(value),
             isArray,
             type: Change,
@@ -107,7 +134,8 @@ function defineOneProperty(
   fatherPath: string[] = [],
   trigger: onChange
 ): void {
-  if (typeof attribute === 'number') {
+  const stateIsArray = Array.isArray(state);
+  if (!isPlainObject(state) && !stateIsArray) {
     return;
   }
   let value = state[attribute];
@@ -132,29 +160,17 @@ function defineOneProperty(
         path: targetPath,
         value: clone(newValue),
         type: Change,
-        isArray: Array.isArray(state),
+        isArray: stateIsArray,
       });
     },
   });
 }
 
 function clone(target) {
-  if (isPlainObject(target)) {
-    const result = { ...target, };
-    deleteDataExtendAttribute(result);
-    return result;
-  } else if (Array.isArray(target)) {
-    const result = [...target,];
-    deleteDataExtendAttribute(result);
-    return result;
+  if (isPlainObject(target) || Array.isArray(target)) {
+    return JSON.parse(JSON.stringify(target));
   }
-
   return target;
-}
-
-function deleteDataExtendAttribute(target: Object) {
-  delete target.$set;
-  delete target.$delete;
 }
 export default function(state: Object => void) {
   const subscribe = new Subscribe();

@@ -544,4 +544,172 @@ describe('data.createDataOnChange.test.js', () => {
     expect(target.array).toEqual([1, 2, 3,]);
     expect(changeParams).toEqual([createDeleteChangeParam('array', 'name', true),]);
   });
+
+  it('$set [0] = {name} and change name', () => {
+    const data = [];
+    target.$set('datas', data);
+
+    data.$set(0, { name: 'hello', });
+
+    expect(data).toEqual([{ name: 'hello', },]);
+    data[0].name = 'world';
+    data[0].name = 'hello';
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [], false),
+      createChangeParamForNumberAttributeToArray('datas', 0, { name: 'hello', }),
+      createSpecialChangeParam(['datas', 0, 'name',], 'world', Change, false),
+      createSpecialChangeParam(['datas', 0, 'name',], 'hello', Change, false),
+    ]);
+  });
+
+  it('set datas [{age: 1},{age:2}, {age: 3}] sort', async () => {
+    const data = [{ age: 1, }, { age: 2, }, { age: 3, },];
+    target.$set('datas', data);
+
+    expect(data).toEqual([{ age: 1, }, { age: 2, }, { age: 3, },]);
+    data[0].age = 3;
+    data[2].age = 1;
+    const cb = (a, b) => a.age - b.age;
+    data.sort(cb);
+    data[0].age = 100;
+
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [{ age: 1, }, { age: 2, }, { age: 3, },], false),
+      createSpecialChangeParam(['datas', 0, 'age',], 3, Change, false),
+      createSpecialChangeParam(['datas', 2, 'age',], 1, Change, false),
+      createChangeParamForArrayOperator('datas', [cb,], 'sort'),
+      createSpecialChangeParam(['datas', 0, 'age',], 100, Change, false),
+    ]);
+  });
+  it('set datas [{age: 1},{age:2}, {age: 3}] reverse', async () => {
+    const data = [{ age: 1, }, { age: 2, }, { age: 3, },];
+    target.$set('datas', data);
+
+    expect(data).toEqual([{ age: 1, }, { age: 2, }, { age: 3, },]);
+    data[0].age = 3;
+    data[2].age = 1;
+    data.reverse();
+    data[0].age = 100;
+
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [{ age: 1, }, { age: 2, }, { age: 3, },], false),
+      createSpecialChangeParam(['datas', 0, 'age',], 3, Change, false),
+      createSpecialChangeParam(['datas', 2, 'age',], 1, Change, false),
+      createChangeParamForArrayOperator('datas', [], 'reverse'),
+      createSpecialChangeParam(['datas', 0, 'age',], 100, Change, false),
+    ]);
+  });
+
+  it('set datas [{age: 1},{age:2}, {age: 3}] shift', async () => {
+    const data = [{ age: 1, }, { age: 2, }, { age: 3, },];
+    target.$set('datas', data);
+
+    expect(data).toEqual([{ age: 1, }, { age: 2, }, { age: 3, },]);
+    data.shift().age = 1000;
+    data[0].age = 100;
+
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [{ age: 1, }, { age: 2, }, { age: 3, },], false),
+      createChangeParamForArrayOperator('datas', [], 'shift'),
+      createSpecialChangeParam(['datas', 0, 'age',], 100, Change, false),
+    ]);
+  });
+
+  it('set datas [{age: 1},{age:2}, {age: 3}] pop then change name', async () => {
+    const data = [{ age: 1, }, { age: 2, }, { age: 3, },];
+    target.$set('datas', data);
+    expect(data).toEqual([{ age: 1, }, { age: 2, }, { age: 3, },]);
+    data.pop().age = 1000;
+
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [{ age: 1, }, { age: 2, }, { age: 3, },], false),
+      createChangeParamForArrayOperator('datas', [], 'pop'),
+    ]);
+  });
+
+  it('set datas [{age: 1},{age:2}, {age: 3}] splice', async () => {
+    const data = [{ age: 1, }, { age: 2, }, { age: 3, },];
+    target.$set('datas', data);
+
+    expect(data).toEqual([{ age: 1, }, { age: 2, }, { age: 3, },]);
+    data.splice(0, 0, { age: 4, }, { age: 5, }, { age: 6, });
+    data[5].age = 1000;
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [{ age: 1, }, { age: 2, }, { age: 3, },], false),
+      createChangeParamForArrayOperator(
+        'datas',
+        [0, 0, { age: 4, }, { age: 5, }, { age: 6, },],
+        'splice'
+      ),
+      createSpecialChangeParam(['datas', 5, 'age',], 1000, Change, false),
+    ]);
+  });
+
+  it('set datas [{age: 1},{age:2}, {age: 3}] splice(0,1)', async () => {
+    const data = [{ age: 1, }, { age: 2, }, { age: 3, },];
+    target.$set('datas', data);
+
+    expect(data).toEqual([{ age: 1, }, { age: 2, }, { age: 3, },]);
+    data.splice(0, 1)[0].age = 11111;
+    data[0].age = 1000;
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [{ age: 1, }, { age: 2, }, { age: 3, },], false),
+      createChangeParamForArrayOperator('datas', [0, 1,], 'splice'),
+      createSpecialChangeParam(['datas', 0, 'age',], 1000, Change, false),
+    ]);
+  });
+
+  it('[] push {name} and change name', () => {
+    const data = [];
+    target.$set('datas', data);
+
+    data.push({ name: 'hello', });
+    data.push({ name: 'ligx', });
+
+    expect(data).toEqual([{ name: 'hello', }, { name: 'ligx', },]);
+    data[0].name = 'world';
+    data[1].name = 'hello';
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [], false),
+      createChangeParamForArrayOperator('datas', [{ name: 'hello', },], 'push'),
+      createChangeParamForArrayOperator('datas', [{ name: 'ligx', },], 'push'),
+      createSpecialChangeParam(['datas', 0, 'name',], 'world', Change, false),
+      createSpecialChangeParam(['datas', 1, 'name',], 'hello', Change, false),
+    ]);
+  });
+
+  it('[] push [{name}] and change name', () => {
+    const data = [];
+    target.$set('datas', data);
+
+    data.push([{ name: 'hello', },]);
+
+    expect(data).toEqual([[{ name: 'hello', },],]);
+
+    data[0][0].name = 'ligx';
+    expect(data).toEqual([[{ name: 'ligx', },],]);
+
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [], false),
+      createChangeParamForArrayOperator('datas', [[{ name: 'hello', },],], 'push'),
+    ]);
+  });
+
+  it('[] unshift {name} and change name', () => {
+    const data = [];
+    target.$set('datas', data);
+
+    data.unshift({ name: 'ligx', });
+    data.unshift({ name: 'hello', });
+    expect(data).toEqual([{ name: 'hello', }, { name: 'ligx', },]);
+    data[0].name = 'a';
+    data[1].name = 'b';
+    expect(changeParams).toEqual([
+      createChangeParam('datas', [], false),
+      createChangeParamForArrayOperator('datas', [{ name: 'ligx', },], 'unshift'),
+      createChangeParamForArrayOperator('datas', [{ name: 'hello', },], 'unshift'),
+      createSpecialChangeParam(['datas', 0, 'name',], 'a', Change, false),
+      createSpecialChangeParam(['datas', 1, 'name',], 'b', Change, false),
+    ]);
+  });
 });

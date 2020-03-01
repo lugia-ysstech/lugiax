@@ -1,121 +1,22 @@
+
 /**
  * Created by liguoxin on 2017/3/14.
  * @flow
  */
 
-declare module '@lugia/lugiax-core' {
-  declare type Handler = {
-    mutations: Mutation,
-    getState(): Object
+declare module '@lugia/lugiax-data' {
+ declare type ArrayOperator = 'push' | 'pop' | 'shift' | 'unshift' | 'splice' | 'sort' | 'reverse';
+  declare  type OperatorType = ArrayOperator;
+  declare  type ChangeType = 'change' | 'delete';
+  /**
+   *  抛出value如果是对象会进行浅克隆处理，并且删除$delete $set的操作
+   */
+  declare type OnChangeParam = {
+    path: string[],
+    value: ?any, // operator存在时则无value
+    type: ChangeType,
+    params: ?(any[]), // operator存在是才有操作的参数
+    operator: ?OperatorType,
   };
-
-  declare type AsyncHandler = Handler & {
-    wait: MutationFunction => Promise<Object>
-  };
-
-  declare type SyncMutationFunction = (
-    data: Object,
-    param: Object,
-    handle: AsyncHandler
-  ) => any;
-  declare type SyncMutation = {
-    [key: string]: SyncMutationFunction
-  };
-
-  declare type StackConstructorOption = {
-    onStackEmpty: function,
-    onPushItem: function
-  };
-
-  declare type AsyncMutationFunction = (
-    modelData: Object,
-    param: Object,
-    handle: AsyncHandler
-  ) => Promise<any>;
-
-  declare type AsyncMutation = {
-    [key: string]: AsyncMutationFunction
-  };
-
-  declare type Mutations = {
-    sync?: SyncMutation,
-    async?: AsyncMutation
-  };
-  declare type MutationType = "async" | "sync";
-
-  declare type MutationID = { name: string };
-  declare type MutationFunction = {
-    mutationType: MutationType,
-    mutationId: string,
-    model: string
-  } & ((param?: Object) => any);
-  declare type Mutation = {
-    [key: string]: MutationFunction
-  };
-  declare type RegisterResult = {
-    getState: () => Object,
-    model: string,
-    mutations: Mutation,
-    addMutation: (mutationName: string, func: SyncMutationFunction) => void,
-    addAsyncMutation: (
-      mutationName: string,
-      func: AsyncMutationFunction
-    ) => void
-  };
-
-  declare type RegisterParam = {
-    model: string,
-    state: Object,
-    mutations?: Mutations
-  };
-
-  declare type Option = {
-    force: boolean // 是否强制注册 默认为false
-  };
-  declare type WaitHandler = (
-    mutation: MutationFunction,
-    param: Object,
-    handler: AsyncHandler
-  ) => Promise<any>;
-
-  declare type SubscribeResult = {
-    unSubscribe: Function
-  };
-
-  declare type EventResult = {
-    unSubscribe: Function
-  };
-  declare export interface LugiaxType {
-    register(param: RegisterParam, option?: Option): RegisterResult;
-
-    getState(): Object;
-
-    getStore(): Object;
-
-    /**
-     * 根据model名称订阅相关模型数据变化消息
-     * @param modelName
-     * @param () => any
-     */
-    subscribe(
-      modelName: string,
-      (newModelState: Object, oldModelState: Object) => any
-    ): SubscribeResult;
-
-    clear(): void;
-
-    resetStore(configMiddleWare: ?Object, reducerMap?: Function): void;
-
-    subscribeAll(() => any): SubscribeResult;
-
-    on(cb: WaitHandler): EventResult;
-
-    emitEvent(event: string, param: Object): void;
-    onEvent(event: string, cb: Function): EventResult;
-    onceEvent(event: string, cb: Function): EventResult;
-    removeAllEvent(): boolean;
-    onRender(event: string, cb: Function): SubscribeResult;
-  }
-
-  declare module.exports: LugiaxType;
+  declare module.exports: {};
 }
