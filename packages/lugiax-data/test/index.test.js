@@ -484,6 +484,10 @@ describe('lugiax-data.index.test.js', () => {
     expect(model.getState().toJS().name).toEqual('kxy');
     data.$delete('name');
     expect(model.getState().toJS().name).toBeUndefined();
+    data.$set('name', 'ligx');
+    expect(model.getState().toJS().name).toBe('ligx');
+    data.name = 'kkkk';
+    expect(model.getState().toJS().name).toBe('kkkk');
   });
 
   function expectImmutable(state) {
