@@ -61,15 +61,27 @@ export default {
           ...inParam,
           __cb2Data__: (param: Object) => {
             const { newValue, path, } = param;
-            isInnerChange = true;
-            const paths = path.split('.');
-            let target = data;
-            let i = 0;
-            for (; i < paths.length - 1; i++) {
-              target = target[paths[i]];
+            if (path === null || path === undefined) {
+              return false;
             }
-            target[paths[i]] = newValue;
+
+            isInnerChange = true;
+            let target = data;
+            const paths = path.split('.');
+            const len = paths.length;
+            for (let i = 0; i < len; i++) {
+              const attr = paths[i];
+              if (!(attr in target)) {
+                target.$set(attr, {});
+              }
+              if (i === len - 1) {
+                target.$set(attr, newValue);
+                break;
+              }
+              target = target[attr];
+            }
             isInnerChange = false;
+            return true;
           },
         });
       });

@@ -490,6 +490,177 @@ describe('lugiax-data.index.test.js', () => {
     expect(model.getState().toJS().name).toBe('kkkk');
   });
 
+  it('addDataMutation attribute is exist', () => {
+    const state = {
+      name: 'ligx',
+      array: [1, 2, 3,],
+    };
+    const { data, model, } = createData({
+      state,
+      model: 'test',
+    });
+    model.addDataMutation('changeName', (data, param) => {
+      const { __cb2Data__, } = param;
+      __cb2Data__({
+        path: 'name',
+        newValue: param.value,
+      });
+    });
+
+    const {
+      mutations: { changeName, },
+    } = model;
+
+    changeName({ value: 'kxy', });
+
+    expect(data.name).toBe('kxy');
+  });
+  it('addDataMutation attribute is null', () => {
+    const state = {
+      name: 'ligx',
+      array: [1, 2, 3,],
+    };
+    const { model, } = createData({
+      state,
+      model: 'test',
+    });
+    model.addDataMutation('changeName', (data, param) => {
+      const { __cb2Data__, } = param;
+      expect(
+        __cb2Data__({
+          path: null,
+          newValue: param.value,
+        })
+      ).toBeFalsy();
+    });
+
+    const {
+      mutations: { changeName, },
+    } = model;
+
+    changeName({ value: 'kxy', });
+    expect(model.getState().toJS()).toEqual({
+      name: 'ligx',
+      array: [1, 2, 3,],
+    });
+  });
+  it('addDataMutation attribute is undefined', () => {
+    const state = {
+      name: 'ligx',
+      array: [1, 2, 3,],
+    };
+    const { model, } = createData({
+      state,
+      model: 'test',
+    });
+    model.addDataMutation('changeName', (data, param) => {
+      const { __cb2Data__, } = param;
+      expect(
+        __cb2Data__({
+          path: undefined,
+          newValue: param.value,
+        })
+      ).toBeFalsy();
+    });
+
+    const {
+      mutations: { changeName, },
+    } = model;
+
+    changeName({ value: 'kxy', });
+    expect(model.getState().toJS()).toEqual({
+      name: 'ligx',
+      array: [1, 2, 3,],
+    });
+  });
+
+  it('addDataMutation attribute  test is  not exist', () => {
+    const state = {
+      name: 'ligx',
+      array: [1, 2, 3,],
+    };
+    const { data, model, } = createData({
+      state,
+      model: 'test',
+    });
+    const notExistAttribute = 'test';
+    model.addDataMutation('changeName', (data, param) => {
+      const { __cb2Data__, } = param;
+      __cb2Data__({
+        path: notExistAttribute,
+        newValue: param.value,
+      });
+    });
+
+    const {
+      mutations: { changeName, },
+    } = model;
+
+    changeName({ value: 'kxy', });
+
+    expect(data.test).toBe('kxy');
+    data[notExistAttribute] = 'kkkk';
+    expect(model.getState().get(notExistAttribute)).toBe('kkkk');
+  });
+  it('addDataMutation attribute  test.obj.title is  not exist', () => {
+    const state = {
+      name: 'ligx',
+      array: [1, 2, 3,],
+    };
+    const { data, model, } = createData({
+      state,
+      model: 'test',
+    });
+    const notExistAttribute = 'test.obj.title';
+    model.addDataMutation('changeName', (data, param) => {
+      const { __cb2Data__, } = param;
+      __cb2Data__({
+        path: notExistAttribute,
+        newValue: param.value,
+      });
+    });
+
+    const {
+      mutations: { changeName, },
+    } = model;
+
+    changeName({ value: 'kxy', });
+
+    expect(data.test.obj.title).toBe('kxy');
+    data.test.obj.title = 'kkkk';
+    expect(model.getState().getIn(notExistAttribute.split('.'))).toBe('kkkk');
+  });
+
+  it('addDataMutation attribute  array.1', () => {
+    const state = {
+      name: 'ligx',
+      array: [1, 2, 3,],
+    };
+    const { data, model, } = createData({
+      state,
+      model: 'test',
+    });
+    const attr = 'array.1';
+    model.addDataMutation('changeName', (data, param) => {
+      const { __cb2Data__, } = param;
+      expect(__cb2Data__({
+        path: attr,
+        newValue: param.value,
+      })).toBeTruthy();
+    });
+
+    const {
+      mutations: { changeName, },
+    } = model;
+
+    changeName({ value: 'kxy', });
+
+    expect(data.array[1]).toBe('kxy');
+    data.array[1] = 'kkkk';
+    expect(data.array).toEqual([1, 'kkkk', 3,]);
+    expect(model.getState().getIn(attr.split('.'))).toBe('kkkk');
+  });
+
   function expectImmutable(state) {
     return expect(state.toJS());
   }
