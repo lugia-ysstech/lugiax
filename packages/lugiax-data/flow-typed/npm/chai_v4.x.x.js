@@ -1,7 +1,7 @@
 // flow-typed signature: e3d42118a34a627d9c121880be7d1a52
 // flow-typed version: 120d43bb08/chai_v4.x.x/flow_>=v0.25.0
 
-declare module "chai" {
+declare module 'chai' {
   declare type ExpectChain<T> = {
     and: ExpectChain<T>,
     at: ExpectChain<T>,

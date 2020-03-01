@@ -3,8 +3,8 @@
 
 // @flow
 
-declare module "redux-saga" {
-  import typeof * as _effects from "redux-saga/effects";
+declare module 'redux-saga' {
+  import typeof * as _effects from 'redux-saga/effects';
   declare export var effects: _effects;
 
   declare export interface Channel {
@@ -357,7 +357,7 @@ declare module "redux-saga" {
     | AllEffect;
 }
 
-declare module "redux-saga/effects" {
+declare module 'redux-saga/effects' {
   import type {
     ActionChannelEffect,
     AllEffect,
@@ -380,8 +380,8 @@ declare module "redux-saga/effects" {
     SetContextEffect,
     SpawnEffect,
     TakeEffect,
-    Task
-  } from "redux-saga";
+    Task,
+  } from 'redux-saga';
 
   declare export var take: {
     <P: Pattern>(pattern: P): TakeEffect<P, void, void>,

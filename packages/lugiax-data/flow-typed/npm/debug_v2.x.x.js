@@ -1,7 +1,7 @@
 // flow-typed signature: c7b1e1d8d9c2230d131299ddc21dcb0e
 // flow-typed version: da30fe6876/debug_v2.x.x/flow_>=v0.28.x
 
-declare module "debug" {
+declare module 'debug' {
   declare type Debugger = {
     (...args: Array<mixed>): void,
     (formatter: string, ...args: Array<mixed>): void,
