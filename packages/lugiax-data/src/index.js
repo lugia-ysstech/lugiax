@@ -38,19 +38,43 @@ export default {
   createData(param: LugiaxDataParam): LugiaxDataResult {
     const { model: modelName, state = {}, } = param;
 
+    let isInnerChange = false;
     const model = lugiax.register({
       model: modelName,
       state,
       mutations: {
         sync: {
           __change__(state, param) {
+            if (isInnerChange) {
+              return state;
+            }
             return computeState(state, param);
           },
         },
       },
     });
-
     const { state: data, subscribe, } = createData(state);
+
+    model.addDataMutation = (mutationName: string, cb: Function) => {
+      model.addMutation(mutationName, (state: Object, inParam: Object) => {
+        return cb(state, {
+          ...inParam,
+          __cb2Data__: (param: Object) => {
+            const { newValue, path, } = param;
+            isInnerChange = true;
+            const paths = path.split('.');
+            let target = data;
+            let i = 0;
+            for (; i < paths.length - 1; i++) {
+              target = target[paths[i]];
+            }
+            target[paths[i]] = newValue;
+            isInnerChange = false;
+          },
+        });
+      });
+    };
+
     const {
       mutations: { __change__: change, },
     } = model;

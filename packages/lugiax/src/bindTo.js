@@ -5,12 +5,7 @@
  * @flow
  */
 import type { Mutation, RegisterResult, } from '@lugia/lugiax-core';
-import type {
-  BindConfig,
-  EventHandle,
-  EventMuationConfig,
-  Field2Props,
-} from '@lugia/lugiax';
+import type { BindConfig, EventHandle, EventMuationConfig, Field2Props, } from '@lugia/lugiax';
 
 import * as React from 'react';
 import bind from './bind';
@@ -65,36 +60,25 @@ export default function(
   const eventHandle = {};
   const isNotDefaultEvent = key => key !== DefaultEvent;
 
-  Object.keys(Object.assign({ [DefaultEvent]: true, }, eventConfig)).forEach(
-    (eventName: string) => {
-      eventHandle[eventName] = (mutations, ...args) => {
-        fieldNames
-          .filter(field => {
-            return (
-              isNotDefaultEvent(eventName) ||
-              defaultOnChangeEvent(eventConfig, fieldNames)(field)
-            );
-          })
-          .forEach(
-            triggerMutations(
-              mutations,
-              field2AutoMutationName,
-              eventConfig,
-              eventName,
-              ...args
-            )
+  Object.keys(Object.assign({ [DefaultEvent]: true, }, eventConfig)).forEach((eventName: string) => {
+    eventHandle[eventName] = (mutations, ...args) => {
+      fieldNames
+        .filter(field => {
+          return (
+            isNotDefaultEvent(eventName) || defaultOnChangeEvent(eventConfig, fieldNames)(field)
           );
-      };
-    }
-  );
+        })
+        .forEach(
+          triggerMutations(mutations, field2AutoMutationName, eventConfig, eventName, ...args)
+        );
+    };
+  });
   const areStateEqual = autoCreateAreStateEqual(fieldNames);
   return (Target: React.ComponentType<any>) => {
-    return bind(
-      modelData,
-      generateMode2Props(fieldNames, field2Props),
-      eventHandle,
-      { areStateEqual, ...opt, }
-    )(Target);
+    return bind(modelData, generateMode2Props(fieldNames, field2Props), eventHandle, {
+      areStateEqual,
+      ...opt,
+    })(Target);
   };
 }
 
@@ -108,19 +92,12 @@ function autoCreateAreStateEqual(fieldNames: string[]) {
   };
 }
 
-function defaultOnChangeEvent(
-  eventConfig: EventMuationConfig,
-  fieldNames: string[]
-) {
+function defaultOnChangeEvent(eventConfig: EventMuationConfig, fieldNames: string[]) {
   const field2Event = getField2Event(eventConfig, fieldNames);
 
   return (field: string) => {
     const fieldEventConfig = field2Event[field];
-    return (
-      !fieldEventConfig ||
-      fieldEventConfig[CntName] === 0 ||
-      fieldEventConfig[DefaultEvent]
-    );
+    return !fieldEventConfig || fieldEventConfig[CntName] === 0 || fieldEventConfig[DefaultEvent];
   };
 }
 
@@ -166,16 +143,8 @@ function getField2Event(eventConfig: EventMuationConfig, fieldNames: string[]) {
 
 const getOnChangeValue = e => e.target.value;
 
-function getValueMethod(
-  eventConfig: EventMuationConfig,
-  eventName: string,
-  fieldName: string
-) {
-  if (
-    !eventConfig ||
-    !eventConfig[eventName] ||
-    !eventConfig[eventName][fieldName]
-  ) {
+function getValueMethod(eventConfig: EventMuationConfig, eventName: string, fieldName: string) {
+  if (!eventConfig || !eventConfig[eventName] || !eventConfig[eventName][fieldName]) {
     return getOnChangeValue;
   }
   const targetEventConfig = eventConfig[eventName];
@@ -201,10 +170,7 @@ function getFieldProps(bindConfig: BindConfig) {
   return field2Props;
 }
 
-function generateMode2Props(
-  fieldNames: string[],
-  field2Props: Field2Props
-): Function {
+function generateMode2Props(fieldNames: string[], field2Props: Field2Props): Function {
   return model => {
     const result = {};
     fieldNames.forEach((field: string) => {
@@ -222,19 +188,23 @@ function generateMode2Props(
   };
 }
 
-function generateAutoMutations(
-  modelData: RegisterResult,
-  fieldNames: string[]
-) {
+function generateAutoMutations(modelData: RegisterResult, fieldNames: string[]) {
   const field2AutoMutationName = {};
-  const { addMutation, mutations, } = modelData;
+  let { addMutation, } = modelData;
+  const { mutations, addDataMutation, } = modelData;
+  addMutation = addDataMutation || addMutation;
   fieldNames.forEach((fieldName: string) => {
     const autoMutationName = `_alugiax_change${fieldName}`;
     field2AutoMutationName[fieldName] = autoMutationName;
     if (!mutations[autoMutationName]) {
       addMutation(autoMutationName, (data: Object, inParam: Object) => {
+        const newValue = inParam[valueAttr];
+        const { __cb2Data__, } = inParam;
+        if (__cb2Data__) {
+          __cb2Data__({ path: fieldName, newValue, });
+        }
         const set = settor(data, fieldName);
-        return set(inParam[valueAttr]);
+        return set(newValue);
       });
     }
   });
