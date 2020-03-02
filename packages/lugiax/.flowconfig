@@ -7,6 +7,7 @@
 flow-typed/
 ./interface/
 ./node_modules/@lugia/lugiax-core/interface
+./node_modules/@lugia/combine/interface
 [options]
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable

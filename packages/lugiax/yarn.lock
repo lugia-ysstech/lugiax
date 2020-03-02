@@ -18,6 +18,11 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@lugia/combine@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/@lugia/combine/download/@lugia/combine-1.0.1.tgz#1b037ea931b358712e144042469a18410a64cbcb"
+  integrity sha1-GwN+qTGzWHEuFEBCRpoYQQpky8s=
+
 "@lugia/lugiax-common@^1.0.1":
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
