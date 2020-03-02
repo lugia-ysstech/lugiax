@@ -5,17 +5,9 @@
  * @flow
  */
 import lugiax from '@lugia/lugiax';
-import { fromJS, } from 'immutable';
-function getUrlAndNextCurrent(arr: Array, newCurrent: number) {
-  const len = arr.length - 1;
-  const nextCurrent = newCurrent > len ? len : newCurrent < 0 ? 0 : newCurrent;
-
-  return {
-    url: arr[nextCurrent],
-    nextCurrent,
-  };
+function getUrl(inParam: Object) {
+  return typeof inParam === 'string' ? inParam : inParam.url;
 }
-
 const model = lugiax.register({
   model: '@lugiax/router',
   state: {},
@@ -29,7 +21,7 @@ const model = lugiax.register({
       },
 
       go(state: Object, inParam: Object) {
-        const { url, } = inParam;
+        const url = getUrl(inParam);
         const { history, } = inParam;
         if (!history) {
           return state;
@@ -49,7 +41,7 @@ const model = lugiax.register({
         return state;
       },
       replace(state: Object, inParam: Object) {
-        const { url, } = inParam;
+        const url = getUrl(inParam);
         const { history, } = inParam;
         history.replace(url);
         return state;
