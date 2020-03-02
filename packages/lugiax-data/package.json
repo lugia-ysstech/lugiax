@@ -2,8 +2,8 @@
   "name": "@lugia/lugiax-data",
   "version": "1.0.0",
   "dependencies": {
-    "is-plain-object": "^3.0.0",
-    "@lugia/lugiax-common": "^1.0.0"
+    "@lugia/lugiax-common": "^1.0.1",
+    "is-plain-object": "^3.0.0"
   },
   "peerDependencies": {
     "@lugia/lugiax-core": ">1.1.1"
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@lugia/jverify": "^1.0.1",
-    "@lugia/lugiax-core": "^1.1.1",
+    "@lugia/lugiax-core": "^1.1.2",
     "@lugia/react-test-utils": "^1.0.2",
     "debug": "2.6.8",
     "dotenv": "4.0.0",
