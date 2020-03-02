@@ -8,7 +8,12 @@ import React from 'react';
 import { go, Link, } from '@lugia/lugiax-router';
 
 export default class Header extends React.Component<any> {
-  render() {
+  constructor () {
+    super();
+    console.info('Header init');
+  }
+
+  render () {
     return (
       <div>
         <button onClick={this.onClick}>gotodo</button>

@@ -7,13 +7,17 @@
 import React from 'react';
 import { go, Link, createRoute, goBack, goForward, replace, } from '@lugia/lugiax-router';
 import styled from 'styled-components';
+import Data from './data';
 
-const createPage = (id, text = id) => () => <h1 id={`${id}Res`}>{text}</h1>;
-const Sport = createPage('Sport');
+const createPage = (id, text = id) => () => {
+  console.info('render', id);
+  return <h1 id={`${id}Res`}>{text}</h1>;
+};
 const Car = createPage('Car');
 const News = createPage('News');
 const Games = createPage('Games');
 const NotPower = createPage('P403', '没有权限');
+const NotFound = createPage('NotFound');
 
 const CommonBotton = styled.div`
   width: 240px;
@@ -39,22 +43,29 @@ class Header extends React.Component {
             运动
           </Link>
         </p>
-
         <p>
           <Link to="/car" id="car">
             汽车
           </Link>
         </p>
-
         <p>
           <Link to="/news" id="news">
             新闻
           </Link>
         </p>
-
         <p>
           <Link to="/games" id="games">
             游戏
+          </Link>
+        </p>{' '}
+        <p>
+          <Link to="/data" id="data">
+            Data
+          </Link>
+        </p>{' '}
+        <p>
+          <Link to="/adffsa" id="notfound">
+            NotFound
           </Link>
         </p>
       </div>
@@ -130,8 +141,9 @@ export default class Demo extends React.Component<any> {
       createRoute({
         '/sport': {
           exact: true,
-          component: Sport,
+          render: async () => import('./Sport'),
         },
+
         '/car': {
           exact: true,
           component: Car,
@@ -144,9 +156,17 @@ export default class Demo extends React.Component<any> {
           exact: true,
           component: Games,
         },
+        '/data': {
+          exact: true,
+          component: Data,
+        },
         '/403': {
           exact: true,
           component: NotPower,
+        },
+
+        NotFound: {
+          component: NotFound,
         },
       }),
     ];

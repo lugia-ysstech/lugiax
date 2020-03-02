@@ -21,6 +21,12 @@ const op = LugiaxData.createData({
 
 window.op = op;
 const PreviewList = bindTo(op.model, { 'data.text': 'text', })(List);
-export default () => {
-  return <PreviewList />;
-};
+export default class Main extends React.Component {
+  constructor (props) {
+    super(props);
+    console.info('Data init');
+  }
+  render(){
+    return <PreviewList />;
+  }
+}

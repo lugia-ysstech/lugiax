@@ -7,7 +7,7 @@
 import type { CreateAppParam, RouterMap, } from '@lugia/lugiax-router';
 
 import ReactDOM from 'react-dom';
-import React, { Component, useContext, } from 'react';
+import React, { Component, useContext, Suspense, lazy, } from 'react';
 import lugiax from '@lugia/lugiax';
 import go, { GoModel, } from './go';
 import Link from './Link';
@@ -43,28 +43,24 @@ const WrapPageLoad = (
 };
 export const LugiaxContext: any = React.createContext({});
 
-const PowerRouter = (props: Object) => {
-  const { loading, } = props;
-  const lugiaxConfig = useContext(LugiaxContext);
+const createPowerComponent = (opt: {
+  component: ?Object,
+  render: ?() => Promise<any>,
+  onPageLoad: ?Function,
+  onPageUnLoad: ?Function,
+  loading: any,
+}) => {
+  const { onPageLoad, onPageUnLoad, render, component, loading, } = opt;
 
-  const render = (routerProps: Object) => {
-    const { location, } = routerProps;
-    const { onBeforeGo, } = lugiaxConfig;
-
-    const LoaderResult = Loadable({
+  if (render) {
+    return Loadable({
       loader: async () => {
         try {
-          const { pathname: url, } = location;
-          const { notFound, } = props;
-          if (!notFound && onBeforeGo) {
-            await onBeforeGo({ url, });
-          }
-          let { component: Target, } = props;
+          let Target = component;
           if (!Target) {
-            const { render, } = props;
             Target = await render();
           }
-          const { needWrap, onPageLoad, onPageUnLoad, } = props;
+          const needWrap = onPageLoad || onPageUnLoad;
 
           return needWrap
             ? WrapPageLoad(Target, {
@@ -78,8 +74,45 @@ const PowerRouter = (props: Object) => {
       },
       loading,
     });
+  }
+  return WrapPageLoad(component, {
+    onPageLoad,
+    onPageUnLoad,
+  });
+};
 
-    return <LoaderResult {...routerProps} />;
+const PowerRouter = (props: Object) => {
+  const { PowerComponent, notVerify, Loading, verify, } = props;
+  const lugiaxConfig = useContext(LugiaxContext);
+  const render = (routerProps: Object) => {
+    const { location, } = routerProps;
+    const { pathname: url, } = location;
+    if (verify) {
+      if (!verify({ url, })) {
+        return null;
+      }
+    } else if (!notVerify) {
+      const { onBeforeGo, verifyUrl, } = lugiaxConfig;
+      if (verifyUrl) {
+        if (!verifyUrl({ url, })) {
+          return null;
+        }
+      } else if (onBeforeGo) {
+        const Target = lazy(async () => {
+          await onBeforeGo({ url, });
+          return {
+            default: PowerComponent,
+          };
+        });
+
+        return (
+          <Suspense fallback={<Loading />}>
+            <Target {...props} {...routerProps} />
+          </Suspense>
+        );
+      }
+    }
+    return <PowerComponent {...props} {...routerProps} />;
   };
 
   return (
@@ -95,49 +128,47 @@ export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?
   }
   const routes = Object.keys(routerMap).map(path => {
     const config = routerMap[path];
-    const { component, onPageLoad, onPageUnLoad, exact, strict, } = config;
-    const needWrap = onPageLoad || onPageUnLoad;
-
+    const { exact, strict, component, onPageLoad, onPageUnLoad, render, verify, } = config;
+    const PowerComponent = createPowerComponent({
+      onPageLoad,
+      loading,
+      onPageUnLoad,
+      component,
+      render,
+      exact,
+      strict,
+    });
+    const notFound = path === 'NotFound';
     if (component) {
-      if (path === 'NotFound') {
+      if (notFound) {
         return <Route component={component} notFound />;
       }
       return (
         <PowerRouter
+          verify={verify}
+          notVerify={notFound}
+          Loading={loading}
+          PowerComponent={PowerComponent}
           path={path}
           exact={exact}
           strict={strict}
-          loading={loading}
-          needWrap={needWrap}
           component={component}
-          onPageLoad={onPageLoad}
-          onPageUnLoad={onPageUnLoad}
         />
       );
     }
-    const { render, } = config;
     if (render) {
-      if (path === 'NotFound') {
-        return (
-          <PowerRouter
-            render={render}
-            onPageLoad={onPageLoad}
-            loading={loading}
-            onPageUnLoad={onPageUnLoad}
-            notFound
-          />
-        );
+      if (notFound) {
+        return <PowerRouter PowerComponent={PowerComponent} notVerify />;
       }
       return (
         <PowerRouter
+          verify={verify}
+          notVerify={notFound}
           exact={exact}
           strict={strict}
           path={path}
-          loading={loading}
-          render={render}
-          needWrap={needWrap}
-          onPageLoad={onPageLoad}
-          onPageUnLoad={onPageUnLoad}
+          PowerComponent={PowerComponent}
+          Loading={loading}
         />
       );
     }
@@ -151,7 +182,7 @@ const {
 } = GoModel;
 
 export function createApp(routerMap: RouterMap, history: Object, param: ?CreateAppParam = {}) {
-  const { loading = Loading, onBeforeGo, } = param;
+  const { loading = Loading, onBeforeGo, verifyUrl, } = param;
 
   function createHandle(cb) {
     return param => {
@@ -177,7 +208,7 @@ export function createApp(routerMap: RouterMap, history: Object, param: ?CreateA
 
     render() {
       return (
-        <LugiaxContext.Provider value={{ onBeforeGo, }}>
+        <LugiaxContext.Provider value={{ onBeforeGo, verifyUrl, }}>
           <Router history={history}>{createRoute(routerMap, loading)}</Router>
         </LugiaxContext.Provider>
       );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBrowserHistory, } from 'history';
-import { createApp, replace, render, go, goBack, goForward, } from '@lugia/lugiax-router';
+import { createApp, replace, render, go, goBack, goForward, Redirect,} from '@lugia/lugiax-router';
 import registerServiceWorker from './registerServiceWorker';
 import Main from './App';
 
@@ -16,8 +16,30 @@ window.lugiaxHistory = {
 render(() => {
   const App = createApp(
     {
+      '/login': {
+        verify() {
+          return true;
+        },
+        component: () => {
+          return (
+            <button
+              onClick={() => {
+                window.login = true;
+                history.replace('/');
+              }}
+            >
+              登录
+            </button>
+          );
+        },
+      },
       '/': {
-        component: Main,
+        verify() {
+          return true;
+        },
+        component: () => {
+          return window.login ? <Main /> : <Redirect to="/login" />;
+        },
       },
     },
     history,
@@ -28,10 +50,13 @@ render(() => {
         }
         if (url === '/news') {
           replace({ url: '/403', });
+          return false;
         }
         if (url === '/games') {
           replace({ url: '/403', });
+          return false;
         }
+        return true;
       },
     }
   );

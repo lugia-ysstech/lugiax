@@ -134,6 +134,12 @@ describe(
       await expectPathname('/car');
       expect(await getHtml('Car')).toBe('Car');
     });
+
+    it('click NotFound', async () => {
+      await goPage('NotFound');
+      const html = await getHtml('NotFound');
+      expect(html).toBe('NotFound');
+    });
     async function expectPathname(pathname) {
       expect(await getPathname()).toEqual(pathname);
     }
