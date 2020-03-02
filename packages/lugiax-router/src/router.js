@@ -41,17 +41,50 @@ const WrapPageLoad = (
     }
   };
 };
+const WrapRedirect = (
+  InTarget: Object,
+  option: {
+    redirect: { to: string, verify: () => boolean },
+  }
+) => {
+  const { redirect, } = option;
+
+  return (props: Object) => {
+    let Target = InTarget;
+    if (redirect) {
+      const { to, verify, } = redirect;
+      if (to && verify) {
+        Target = (...props) => {
+          const isVerify = verify();
+          return isVerify ? <InTarget {...props} /> : <Redirect to={to} />;
+        };
+      }
+    }
+    return <Target {...props} />;
+  };
+};
 export const LugiaxContext: any = React.createContext({});
 
 const createPowerComponent = (opt: {
   component: ?Object,
+  redirect: ?Object,
   render: ?() => Promise<any>,
   onPageLoad: ?Function,
   onPageUnLoad: ?Function,
   loading: any,
 }) => {
-  const { onPageLoad, onPageUnLoad, render, component, loading, } = opt;
-
+  const { onPageLoad, onPageUnLoad, render, component, loading, redirect, } = opt;
+  const createTarget = Target => {
+    const needWrap = onPageLoad || onPageUnLoad;
+    Target = needWrap
+      ? WrapPageLoad(Target, {
+          onPageLoad,
+          onPageUnLoad,
+          redirect,
+        })
+      : Target;
+    return redirect ? WrapRedirect(Target, { redirect, }) : Target;
+  };
   if (render) {
     return Loadable({
       loader: async () => {
@@ -60,14 +93,7 @@ const createPowerComponent = (opt: {
           if (!Target) {
             Target = await render();
           }
-          const needWrap = onPageLoad || onPageUnLoad;
-
-          return needWrap
-            ? WrapPageLoad(Target, {
-                onPageLoad,
-                onPageUnLoad,
-              })
-            : Target;
+          return createTarget(Target.default);
         } catch (error) {
           console.error(error);
         }
@@ -75,10 +101,7 @@ const createPowerComponent = (opt: {
       loading,
     });
   }
-  return WrapPageLoad(component, {
-    onPageLoad,
-    onPageUnLoad,
-  });
+  return createTarget(component);
 };
 
 const PowerRouter = (props: Object) => {
@@ -128,8 +151,9 @@ export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?
   }
   const routes = Object.keys(routerMap).map(path => {
     const config = routerMap[path];
-    const { exact, strict, component, onPageLoad, onPageUnLoad, render, verify, } = config;
+    const { exact, strict, component, onPageLoad, onPageUnLoad, render, verify, redirect, } = config;
     const PowerComponent = createPowerComponent({
+      redirect,
       onPageLoad,
       loading,
       onPageUnLoad,

@@ -1,9 +1,10 @@
 import React from 'react';
 import { createBrowserHistory, } from 'history';
-import { createApp, replace, render, go, goBack, goForward, Redirect,} from '@lugia/lugiax-router';
+import { createApp, go, goBack, goForward, render, replace, } from '@lugia/lugiax-router';
 import registerServiceWorker from './registerServiceWorker';
 import Main from './App';
 
+const type = window.location.search.substr(1);
 const history = createBrowserHistory();
 window.globalHistory = history;
 window.lugiaxHistory = {
@@ -12,7 +13,7 @@ window.lugiaxHistory = {
   goBack,
   goForward,
 };
-
+window.mountCount = 0;
 render(() => {
   const App = createApp(
     {
@@ -23,6 +24,7 @@ render(() => {
         component: () => {
           return (
             <button
+              id="login"
               onClick={() => {
                 window.login = true;
                 history.replace('/');
@@ -34,12 +36,21 @@ render(() => {
         },
       },
       '/': {
+        redirect: {
+          to: '/login',
+          verify: () => {
+            return window.login;
+          },
+        },
+        onPageLoad() {
+          document.title = 'onPageLoad';
+        },
+
         verify() {
           return true;
         },
-        component: () => {
-          return window.login ? <Main /> : <Redirect to="/login" />;
-        },
+        render: type === 'render' ? () => import('./App') : undefined,
+        component: type !== 'render' ? Main : undefined,
       },
     },
     history,

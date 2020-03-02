@@ -141,6 +141,12 @@ export default class Demo extends React.Component<any> {
       createRoute({
         '/sport': {
           exact: true,
+          onPageLoad() {
+            window.sportLoad = true;
+          },
+          onPageUnLoad() {
+            window.sportLoad = false;
+          },
           render: async () => import('./Sport'),
         },
 
