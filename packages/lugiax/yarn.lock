@@ -18,16 +18,30 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@lugia/lugiax-core@^1.0.15":
-  version "1.0.15"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.0.15.tgz#e8b7795fca1552fedd1f9e112e762a7ae43a256f"
-  integrity sha1-6Ld5X8oVUv7dH54RLnYqeuQ6JW8=
+"@lugia/lugiax-common@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
+  integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
+
+"@lugia/lugiax-core@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.2.tgz#2010d4045085dd8ab13fb333e94d666e1071fa9a"
+  integrity sha1-IBDUBFCF3YqxP7Mz6U1mbhBx+po=
   dependencies:
+    "@lugia/lugiax-common" "^1.0.1"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
     redux-immutable "^4.0.0"
     redux-saga "^0.16.0"
+
+"@lugia/lugiax-data@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.0.tgz#ca8200779b30a57e6c5cbfe9371de8313cc7eac6"
+  integrity sha1-yoIAd5swpX5sXL/pNx3oMTzH6sY=
+  dependencies:
+    "@lugia/lugiax-common" "^1.0.1"
+    is-plain-object "^3.0.0"
 
 "@lugia/type-utils@^1.0.6":
   version "1.0.6"
@@ -931,6 +945,13 @@ is-plain-object@^2.0.3, is-plain-object@^2.0.4:
   dependencies:
     isobject "^3.0.1"
 
+is-plain-object@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/is-plain-object/download/is-plain-object-3.0.0.tgz#47bfc5da1b5d50d64110806c199359482e75a928"
+  integrity sha1-R7/F2htdUNZBEIBsGZNZSC51qSg=
+  dependencies:
+    isobject "^4.0.0"
+
 is-promise@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-2.1.0.tgz#79a2a9ece7f096e80f36d2b2f3bc16c1ff4bf3fa"
@@ -977,6 +998,11 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
+
+isobject@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npm.taobao.org/isobject/download/isobject-4.0.0.tgz#3f1c9155e73b192022a80819bacd0343711697b0"
+  integrity sha1-PxyRVec7GSAiqAgZus0DQ3EWl7A=
 
 isomorphic-fetch@^2.1.1:
   version "2.2.1"
