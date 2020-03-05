@@ -11,11 +11,17 @@
     clone "^2.1.1"
     deep-equal "^1.0.1"
 
-"@lugia/lugiax-core@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.1.tgz#25cd77868f7972b2cd01244fe88f0b4e0d5dd3d7"
-  integrity sha1-Jc13ho95crLNASRP6I8LTg1d09c=
+"@lugia/lugiax-common@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
+  integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
+
+"@lugia/lugiax-core@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.2.tgz#2010d4045085dd8ab13fb333e94d666e1071fa9a"
+  integrity sha1-IBDUBFCF3YqxP7Mz6U1mbhBx+po=
   dependencies:
+    "@lugia/lugiax-common" "^1.0.1"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
@@ -460,6 +466,11 @@ ms@2.0.0:
   resolved "https://registry.npm.taobao.org/ms/download/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
   integrity sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
 
+nanoid@^2.1.0:
+  version "2.1.11"
+  resolved "https://registry.npm.taobao.org/nanoid/download/nanoid-2.1.11.tgz#ec24b8a758d591561531b4176a01e3ab4f0f0280"
+  integrity sha1-7CS4p1jVkVYVMbQXagHjq08PAoA=
+
 nearley@^2.7.10:
   version "2.19.1"
   resolved "https://registry.npm.taobao.org/nearley/download/nearley-2.19.1.tgz#4af4006e16645ff800e9f993c3af039857d9dbdc"
@@ -619,6 +630,13 @@ semver@^5.4.1:
   version "5.7.1"
   resolved "https://registry.npm.taobao.org/semver/download/semver-5.7.1.tgz?cache=0&sync_timestamp=1581458265183&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fsemver%2Fdownload%2Fsemver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha1-qVT5Ma66UI0we78Gnv8MAclhFvc=
+
+shortid@^2.2.15:
+  version "2.2.15"
+  resolved "https://registry.npm.taobao.org/shortid/download/shortid-2.2.15.tgz?cache=0&sync_timestamp=1567753670835&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fshortid%2Fdownload%2Fshortid-2.2.15.tgz#2b902eaa93a69b11120373cd42a1f1fe4437c122"
+  integrity sha1-K5AuqpOmmxESA3PNQqHx/kQ3wSI=
+  dependencies:
+    nanoid "^2.1.0"
 
 source-list-map@^2.0.0:
   version "2.0.1"

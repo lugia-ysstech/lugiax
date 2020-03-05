@@ -6,7 +6,7 @@
  */
 
 import type { OnChangeParam, LugiaxDataParam, LugiaxDataResult, } from '@lugia/lugiax-data';
-
+import shortid from 'shortid';
 import { fromJS, } from 'immutable';
 import createData, { Change, Delete, } from './data';
 
@@ -40,7 +40,7 @@ export default {
 
     let isInnerChange = false;
     const model = lugiax.register({
-      model: modelName,
+      model: shortid.generate(),
       state,
       mutations: {
         sync: {
