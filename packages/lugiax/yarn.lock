@@ -18,10 +18,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@lugia/combine@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/@lugia/combine/download/@lugia/combine-1.0.1.tgz#1b037ea931b358712e144042469a18410a64cbcb"
-  integrity sha1-GwN+qTGzWHEuFEBCRpoYQQpky8s=
+"@lugia/combine@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npm.taobao.org/@lugia/combine/download/@lugia/combine-1.0.2.tgz?cache=0&sync_timestamp=1583825473390&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40lugia%2Fcombine%2Fdownload%2F%40lugia%2Fcombine-1.0.2.tgz#f1f83ce6e474f612a1a55989dadccab75d0f788f"
+  integrity sha1-8fg85uR09hKhpVmJ2tzKt10PeI8=
 
 "@lugia/lugiax-common@^1.0.1":
   version "1.0.1"
@@ -40,13 +40,14 @@
     redux-immutable "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.0.tgz#ca8200779b30a57e6c5cbfe9371de8313cc7eac6"
-  integrity sha1-yoIAd5swpX5sXL/pNx3oMTzH6sY=
+"@lugia/lugiax-data@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.1.tgz#19058dbf04d9f80eabc7380ddcba94d229a765c6"
+  integrity sha1-GQWNvwTZ+A6rxzgN3LqU0imnZcY=
   dependencies:
     "@lugia/lugiax-common" "^1.0.1"
     is-plain-object "^3.0.0"
+    shortid "^2.2.15"
 
 "@lugia/type-utils@^1.0.6":
   version "1.0.6"
@@ -1186,6 +1187,11 @@ nan@^2.12.1:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
 
+nanoid@^2.1.0:
+  version "2.1.11"
+  resolved "https://registry.npm.taobao.org/nanoid/download/nanoid-2.1.11.tgz#ec24b8a758d591561531b4176a01e3ab4f0f0280"
+  integrity sha1-7CS4p1jVkVYVMbQXagHjq08PAoA=
+
 nanomatch@^1.2.9:
   version "1.2.13"
   resolved "https://registry.yarnpkg.com/nanomatch/-/nanomatch-1.2.13.tgz#b87a8aa4fc0de8fe6be88895b38983ff265bd119"
@@ -1635,6 +1641,13 @@ shell-quote@1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.2.tgz#67a7d02c76c9da24f99d20808fcaded0e0e04be2"
   integrity sha512-mRz/m/JVscCrkMyPqHc/bczi3OQHkLTqXHEFu0zDhK/qfv3UcOA4SVmRCLmos4bhjr9ekVQubj/R7waKapmiQg==
+
+shortid@^2.2.15:
+  version "2.2.15"
+  resolved "https://registry.npm.taobao.org/shortid/download/shortid-2.2.15.tgz?cache=0&sync_timestamp=1567753623963&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fshortid%2Fdownload%2Fshortid-2.2.15.tgz#2b902eaa93a69b11120373cd42a1f1fe4437c122"
+  integrity sha1-K5AuqpOmmxESA3PNQqHx/kQ3wSI=
+  dependencies:
+    nanoid "^2.1.0"
 
 signal-exit@^3.0.2:
   version "3.0.2"

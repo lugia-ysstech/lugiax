@@ -9,12 +9,7 @@ import type { RegisterResult, } from '@lugia/lugiax-core';
 import lugiax from '@lugia/lugiax-core';
 
 import * as React from 'react';
-import {
-  getDisplayName,
-  combineFunction,
-  withRef,
-  isShouldRender,
-} from './utils';
+import { getDisplayName, combineFunction, withRef, isShouldRender, } from './utils';
 import hoistStatics from 'hoist-non-react-statics';
 import { BatchModels, } from './connect';
 
@@ -22,7 +17,7 @@ export default function(
   modelData: RegisterResult,
   mapValue: (state: Object) => { [valueName: string]: any },
   trigger: {
-    [eventName: string]: (mutations: Object, ...args: any) => any
+    [eventName: string]: (mutations: Object, ...args: any) => any,
   } = {},
   opt: ?ConnectOptionType = {}
 ) {
@@ -84,11 +79,10 @@ export default function(
       }
 
       render() {
-        const eventMethod = combineFunction(
-          this.props,
-          this.eventHandler,
-          eventHandle
-        );
+        const eventMethod = combineFunction({
+          targets: [this.props, this.eventHandler, eventHandle,],
+          option: { returned: this.props, },
+        });
         return (
           <Target
             {...this.state}

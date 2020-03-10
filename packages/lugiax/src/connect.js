@@ -9,12 +9,7 @@ import type { RegisterResult, } from '@lugia/lugiax-core';
 import lugiax from '@lugia/lugiax-core';
 import hoistStatics from 'hoist-non-react-statics';
 import * as React from 'react';
-import {
-  getDisplayName,
-  withRef,
-  combineFunction,
-  isShouldRender,
-} from './utils';
+import { getDisplayName, withRef, combineFunction, isShouldRender, } from './utils';
 export const BatchModels = 'batchModels';
 const Noop = () => ({});
 export default function(
@@ -42,9 +37,7 @@ export default function(
 
   function isValidModel(modelName: string, modelObject: Object): boolean {
     if (!modelObject.getState) {
-      console.error(
-        `mode(modelName = ${modelName}) is error, mode value is (${modelObject}).`
-      );
+      console.error(`mode(modelName = ${modelName}) is error, mode value is (${modelObject}).`);
       return false;
     }
     return true;
@@ -81,7 +74,6 @@ export default function(
 
         this.unSubscribe = [];
         const { unSubscribe, } = lugiax.onRender(BatchModels, renderModels => {
-          
           const modelData = this.state.modelData;
           if (!renderModels || Object.keys(renderModels).length <= 0) {
             return;
@@ -139,12 +131,11 @@ export default function(
       target: any;
       render() {
         const { props, mutations, } = this.state;
-        const {
-          withRef: withRefEnable = false,
-          props: topProps = {},
-          eventHandle = {},
-        } = opt;
-        const eventMethod = combineFunction(this.props, eventHandle);
+        const { withRef: withRefEnable = false, props: topProps = {}, eventHandle = {}, } = opt;
+        const eventMethod = combineFunction({
+          targets: [this.props, eventHandle,],
+          option: { returned: this.props, },
+        });
         return (
           <Target
             {...props}

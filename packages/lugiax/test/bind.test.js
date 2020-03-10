@@ -418,10 +418,7 @@ describe('lugiax.bind', () => {
         static displayName = DisplayName;
 
         render() {
-          return [
-            <input {...this.props} />,
-            <input value={this.props.title} />,
-          ];
+          return [<input {...this.props} />, <input value={this.props.title} />,];
         }
       }
     );
@@ -455,10 +452,7 @@ describe('lugiax.bind', () => {
         static displayName = DisplayName;
 
         render() {
-          return [
-            <input {...this.props} />,
-            <input value={this.props.title} />,
-          ];
+          return [<input {...this.props} />, <input value={this.props.title} />,];
         }
       }
     );
@@ -490,10 +484,7 @@ describe('lugiax.bind', () => {
         static displayName = DisplayName;
 
         render() {
-          return [
-            <input {...this.props} />,
-            <input value={this.props.title} />,
-          ];
+          return [<input {...this.props} />, <input value={this.props.title} />,];
         }
       }
     );
@@ -525,10 +516,7 @@ describe('lugiax.bind', () => {
         static displayName = DisplayName;
 
         render() {
-          return [
-            <input {...this.props} />,
-            <input value={this.props.title} />,
-          ];
+          return [<input {...this.props} />, <input value={this.props.title} />,];
         }
       }
     );
@@ -560,10 +548,7 @@ describe('lugiax.bind', () => {
         static displayName = DisplayName;
 
         render() {
-          return [
-            <input {...this.props} />,
-            <input value={this.props.title} />,
-          ];
+          return [<input {...this.props} />, <input value={this.props.title} />,];
         }
       }
     );
@@ -602,10 +587,7 @@ describe('lugiax.bind', () => {
         }
 
         render() {
-          return [
-            <input {...this.props} />,
-            <input value={this.props.title} />,
-          ];
+          return [<input {...this.props} />, <input value={this.props.title} />,];
         }
       }
     );
@@ -642,9 +624,7 @@ describe('lugiax.bind', () => {
         areStateEqual(oldModel, newModel) {
           callCount++;
 
-          return (
-            oldModel.getIn(['form', 'name',]) === newModel.get(['form', 'name',])
-          );
+          return oldModel.getIn(['form', 'name',]) === newModel.get(['form', 'name',]);
         },
       }
     )(Input);
@@ -1250,11 +1230,7 @@ describe('lugiax.bind', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const newState = {
@@ -1298,11 +1274,7 @@ describe('lugiax.bind', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const newState = {
@@ -1346,11 +1318,7 @@ describe('lugiax.bind', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const newState = {
@@ -1393,11 +1361,7 @@ describe('lugiax.bind', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const newState = {
@@ -1488,11 +1452,7 @@ describe('lugiax.bind', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = bind(userModel, (user: Object) => {
@@ -1592,11 +1552,7 @@ describe('lugiax.bind', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = bind(userModel, (user: Object) => {
@@ -1702,11 +1658,7 @@ describe('lugiax.bind', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = bind(userModel, (user: Object) => {
@@ -1742,5 +1694,45 @@ describe('lugiax.bind', () => {
         .get('info')
     ).toBe(newInfo);
     expect(renderCount).toEqual(2);
+  });
+
+  it('bind(Test)  Test.props.onChange is Promise', async () => {
+    await new Promise(resolve => {
+      const name = 'ligx';
+      const pwd = '123456';
+      const userModel = createUserModel(name, pwd);
+
+      class Test extends React.Component {
+        displayName: 'TestInput';
+        handleChange = e => {
+          console.info(e.target.value);
+          this.props.onChange().then(res => {
+            expect(res).toBe(100);
+            resolve(100);
+            console.info(res);
+          });
+        };
+        render() {
+          return <input onChange={this.handleChange}></input>;
+        }
+      }
+      const ConnectTest = bind(userModel, model => {
+        const result = { value: model.get('name'), pwd: model.get('pwd'), };
+        return result;
+      })(Test);
+      const onChange = async () => {
+        return new Promise(res => {
+          setTimeout(() => {
+            res(100);
+          }, 10);
+        });
+      };
+
+      const target = mount(<ConnectTest onChange={onChange} />);
+      target
+        .find('input')
+        .at(0)
+        .simulate('change', { target: { value: 'hello', }, });
+    });
   });
 });

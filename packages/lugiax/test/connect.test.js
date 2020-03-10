@@ -81,9 +81,7 @@ describe('lugiax.connect', () => {
       withRef: true,
     });
 
-    expect(
-      target.instance().getWrappedInstance() instanceof Input
-    ).toBeTruthy();
+    expect(target.instance().getWrappedInstance() instanceof Input).toBeTruthy();
   });
 
   it('connect withRef false', () => {
@@ -143,10 +141,7 @@ describe('lugiax.connect', () => {
       class extends React.Component<any> {
         render() {
           renderCnt++;
-          return [
-            <input value={this.props.name} />,
-            <input value={this.props.pwd} />,
-          ];
+          return [<input value={this.props.name} />, <input value={this.props.pwd} />,];
         }
       }
     );
@@ -329,12 +324,8 @@ describe('lugiax.connect', () => {
     const newName = 'world';
     changeName({ name: newName, });
     expect(getInputValue(target.find('input').at(0))).toBe(newName);
-    expect(
-      Object.prototype.toString.call(oldModelState) === '[object Object]'
-    ).toBe(true);
-    expect(
-      Object.prototype.toString.call(newModelState) === '[object Object]'
-    ).toBe(true);
+    expect(Object.prototype.toString.call(oldModelState) === '[object Object]').toBe(true);
+    expect(Object.prototype.toString.call(newModelState) === '[object Object]').toBe(true);
     const afterChangeData = oldModelState.toJS();
     afterChangeData.name = newName;
     expect(afterChangeData).toEqual(newModelState.toJS());
@@ -389,12 +380,8 @@ describe('lugiax.connect', () => {
     changeName({ name: newName, });
     expect(getInputValue(target.find('input').at(0))).toBe(name);
 
-    expect(
-      Object.prototype.toString.call(oldModelState) === '[object Object]'
-    ).toBe(true);
-    expect(
-      Object.prototype.toString.call(newModelState) === '[object Object]'
-    ).toBe(true);
+    expect(Object.prototype.toString.call(oldModelState) === '[object Object]').toBe(true);
+    expect(Object.prototype.toString.call(newModelState) === '[object Object]').toBe(true);
     expect(oldModelState.toJS()).not.toEqual(newModelState.toJS());
   });
 
@@ -699,9 +686,7 @@ describe('lugiax.connect', () => {
       {
         areStatePropsEqual(oldStateProps, newStateProps) {
           callCount++;
-          return (
-            oldStateProps.info === 'ligx' && newStateProps.info === 'world'
-          );
+          return oldStateProps.info === 'ligx' && newStateProps.info === 'world';
         },
       }
     )(
@@ -753,9 +738,7 @@ describe('lugiax.connect', () => {
       {
         areStatePropsEqual(oldStateProps, newStateProps) {
           callCount++;
-          return !(
-            oldStateProps.info === 'ligx' && newStateProps.info === 'world'
-          );
+          return !(oldStateProps.info === 'ligx' && newStateProps.info === 'world');
         },
       }
     )(
@@ -1186,11 +1169,7 @@ describe('lugiax.connect', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = connect(userModel, (user: Object) => {
@@ -1266,11 +1245,7 @@ describe('lugiax.connect', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = connect(userModel, (user: Object) => {
@@ -1346,11 +1321,7 @@ describe('lugiax.connect', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = connect(userModel, (user: Object) => {
@@ -1417,11 +1388,7 @@ describe('lugiax.connect', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = connect(userModel, (user: Object) => {
@@ -1491,11 +1458,7 @@ describe('lugiax.connect', () => {
       render() {
         renderCount++;
         const { name, pwd, age, } = this.props;
-        return [
-          <input value={name} />,
-          <input value={pwd} />,
-          <input value={age} />,
-        ];
+        return [<input value={name} />, <input value={pwd} />, <input value={age} />,];
       }
     }
     const MyInput = connect(userModel, (user: Object) => {
@@ -1829,5 +1792,39 @@ describe('lugiax.connect', () => {
     expect(getInputValue(target.find('input').at(2))).toEqual(newAge);
     expect(getInputValue(target.find('input').at(3))).toEqual(newInfo);
     expect(renderCount).toEqual(2);
+  });
+
+  it('bind(Test)  Test.props.onChange is Promise', async () => {
+
+    await new Promise(resolve => {
+      class Test extends React.Component {
+        displayName: 'TestInput';
+        handleChange = e => {
+          console.info(e.target.value);
+          this.props.onChange().then(res => {
+            expect(res).toBe(100);
+            resolve(100);
+            console.info(res);
+          });
+        };
+        render() {
+          return <input onChange={this.handleChange}></input>;
+        }
+      }
+      const ConnectTest = connect([])(Test);
+      const onChange = async () => {
+        return new Promise(res => {
+          setTimeout(() => {
+            res(100);
+          }, 10);
+        });
+      };
+
+      const target = mount(<ConnectTest onChange={onChange} />);
+      target
+        .find('input')
+        .at(0)
+        .simulate('change', { target: { value: 'hello', }, });
+    });
   });
 });
