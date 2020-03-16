@@ -56,6 +56,7 @@ declare module '@lugia/lugiax-core' {
     getState: () => Object,
     model: string,
     mutations: Mutation,
+    destroy: () => boolean;
     addMutation: (mutationName: string, func: SyncMutationFunction) => void,
     addAsyncMutation: (
       mutationName: string,

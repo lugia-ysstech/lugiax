@@ -22,7 +22,7 @@ import { fromJS, } from 'immutable';
 import { take, takeEvery, } from 'redux-saga/effects';
 
 import { applyMiddleware, compose, createStore, } from 'redux';
-import { combineReducers, } from 'redux-immutable';
+import combineReducers from './combineReducers';
 import createSagaMiddleware from 'redux-saga';
 
 import { ObjectUtils, } from '@lugia/type-utils';
@@ -32,6 +32,7 @@ import render from './render';
 const ReloadAction = '@lugiax/reload';
 const All = '@lugia/msg/All';
 const ChangeModel = '@lugiax/changeModel';
+const DestroyModel = '@lugiax/destroyModel';
 const Loading = '@lugiax/Loading';
 const LoadFinished = '@lugiax/LoadFinished';
 const RegisterTopic = 'register';
@@ -108,25 +109,48 @@ class LugiaxImpl implements LugiaxType {
       isExist,
       state: initState,
     });
-    if (!mutations) {
-      return {
-        mutations: {},
+    const destroy = (target: Object) => () => {
+      const modelName = target.model;
+      delete target.model;
+      const { mutations, } = target;
+      if (mutations) {
+        Object.keys(mutations).forEach(key => {
+          mutations[key] = () => {};
+        });
+      }
+
+      delete target.mutations;
+      delete target.addMutation;
+      delete target.addAsyncMutation;
+      delete target.getState;
+      delete target.destroy;
+
+      target.isDestroy = true;
+      this.store.dispatch({ type: DestroyModel, model: modelName, });
+      delete existModel[modelName];
+      this.replaceReducers(existModel);
+    };
+
+    function packModel(mutations: Object) {
+      const result = {
+        mutations,
         model,
         ...mutaionAddor,
         getState,
       };
+      result.destroy = destroy(result);
+      return result;
+    }
+
+    if (!mutations) {
+      return packModel({});
     }
 
     const sync = this.generateMutation(mutations, model, 'sync');
     const async = this.generateMutation(mutations, model, 'async');
 
-    const result = Object.assign({}, sync, async);
-    return {
-      mutations: (this.modelName2Mutations[model] = result),
-      model,
-      ...mutaionAddor,
-      getState,
-    };
+    this.modelName2Mutations[model] = Object.assign({}, sync, async);
+    return packModel(this.modelName2Mutations[model]);
   }
 
   replaceReducers(existModel: Object) {
@@ -142,6 +166,8 @@ class LugiaxImpl implements LugiaxType {
             }
             return state;
           }
+          case DestroyModel:
+            return undefined;
           default:
             return state;
         }

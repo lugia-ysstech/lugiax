@@ -622,11 +622,7 @@ describe('lugiax', () => {
           },
         },
         async: {
-          async waitHello(
-            modelData: Object,
-            inParam: Object,
-            { mutations, wait, }
-          ) {
+          async waitHello(modelData: Object, inParam: Object, { mutations, wait, }) {
             expectEmptyObject();
             const { asyncHello, } = mutations;
             actualFlow.push(await wait(asyncHello));
@@ -719,11 +715,7 @@ describe('lugiax', () => {
       state: {},
       mutations: {
         async: {
-          async waitHello(
-            modelData: Object,
-            inParam: Object,
-            { mutations, wait, }
-          ) {
+          async waitHello(modelData: Object, inParam: Object, { mutations, wait, }) {
             const {
               mutations: { asyncHello, },
             } = hello;
@@ -810,30 +802,28 @@ describe('lugiax', () => {
     let onHandle;
     const waitResult = new Promise((res, reject) => {
       const result = [];
-      onHandle = lugiax.on(
-        async (mutation: Object, param: Object, { mutations, wait, }) => {
-          result.push(param);
-          switch (result.length) {
-            case 1:
-              expect(mutation).toBe(asyncLoginSuccess);
-              expect(mutations).toBe(loginModel.mutations);
-              break;
-            case 2:
-              expect(mutations).toBe(menuModel.mutations);
-              expect(mutation).toBe(asyncFetchMenus);
-              break;
-            default:
-          }
-
-          if (result.length === 2) {
-            await wait(ok);
-            res(result);
-          }
-          if (result.length > 3) {
-            throw new Error('消息过多错误');
-          }
+      onHandle = lugiax.on(async (mutation: Object, param: Object, { mutations, wait, }) => {
+        result.push(param);
+        switch (result.length) {
+          case 1:
+            expect(mutation).toBe(asyncLoginSuccess);
+            expect(mutations).toBe(loginModel.mutations);
+            break;
+          case 2:
+            expect(mutations).toBe(menuModel.mutations);
+            expect(mutation).toBe(asyncFetchMenus);
+            break;
+          default:
         }
-      );
+
+        if (result.length === 2) {
+          await wait(ok);
+          res(result);
+        }
+        if (result.length > 3) {
+          throw new Error('消息过多错误');
+        }
+      });
     });
     const okParam = { ok: 'ok', };
     await asyncLoginSuccess(loginParam);
@@ -1054,12 +1044,9 @@ describe('lugiax', () => {
 
     const targetAttr = 'name';
     const newValue = '寄蜉蝣于天地';
-    lugiaxModel.addAsyncMutation(
-      mutationName,
-      async (data: Object, inParam: Object) => {
-        return data.set(targetAttr, newValue);
-      }
-    );
+    lugiaxModel.addAsyncMutation(mutationName, async (data: Object, inParam: Object) => {
+      return data.set(targetAttr, newValue);
+    });
     const {
       mutations: { asyncSdp, },
     } = lugiaxModel;
@@ -1076,12 +1063,9 @@ describe('lugiax', () => {
     const mutationName = 'changePwd';
     const { model, lugiaxModel, } = createTestModel();
     expect(() =>
-      lugiaxModel.addAsyncMutation(
-        mutationName,
-        (data: Object, inParam: Object) => {
-          return data.set('name', inParam.name);
-        }
-      )
+      lugiaxModel.addAsyncMutation(mutationName, (data: Object, inParam: Object) => {
+        return data.set('name', inParam.name);
+      })
     ).toThrow(`The async [${model}.${mutationName}] is exist model!`);
   });
 
@@ -1174,7 +1158,6 @@ describe('lugiax', () => {
       pwd: 'hello',
     });
   });
-
 
   it('register state is undefined', async () => {
     lugiax.register({
@@ -1325,5 +1308,72 @@ describe('lugiax', () => {
     });
     lugiax.emitEvent(topic, paramObj);
     expect(await clearPromise).toEqual(paramObj);
+  });
+
+  it('destroy not mutations', () => {
+    const state = {
+      name: 'ligx',
+      age: 15,
+    };
+    const modelName = 'lgxaaa';
+    const model = lugiax.register({
+      model: modelName,
+      state,
+    });
+    model.destroy();
+    expect(Object.keys(model)).toEqual(['isDestroy',]);
+    expect(model.isDestroy).toBeTruthy();
+    expect(lugiax.existModel[modelName]).toBeUndefined();
+    expect(lugiax.getState().get(modelName)).toBeUndefined();
+  });
+  it('destroy has mutations', () => {
+    const state = {
+      name: 'ligx',
+      age: 15,
+    };
+    const modelName = 'lgxaaa';
+    const model = lugiax.register({
+      model: modelName,
+      state,
+      mutations: {
+        sync: {
+          hello(state) {
+            return state.set('name', 'lgx');
+          },
+        },
+      },
+    });
+    const {
+      mutations: { hello, },
+    } = model;
+
+    const {mutations,} = model;
+    expect(
+      lugiax
+        .getState()
+        .get(modelName)
+        .toJS()
+    ).toEqual({
+      age: 15,
+      name: 'ligx',
+    });
+    hello();
+
+    expect(
+      lugiax
+        .getState()
+        .get(modelName)
+        .toJS()
+    ).toEqual({
+      age: 15,
+      name: 'lgx',
+    });
+    model.destroy();
+    expect(Object.keys(model)).toEqual(['isDestroy',]);
+    expect(model.isDestroy).toBeTruthy();
+    expect(lugiax.existModel[modelName]).toBeUndefined();
+    expect(lugiax.getState().get(modelName)).toBeUndefined();
+    mutations.hello();
+    expect(Object.keys(model)).toEqual(['isDestroy',]);
   });
 });
