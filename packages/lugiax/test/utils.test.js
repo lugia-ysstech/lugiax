@@ -25,7 +25,7 @@ describe('lugiax.bind', () => {
       },
     };
 
-    const result = combineFunction(eventA, eventB, eventC);
+    const result = combineFunction({ targets: [eventA, eventB, eventC,], });
     result.onChange('hello');
     expect(res).toEqual(['changeAhello', 'changeBhello', 'changeChello',]);
   });
@@ -49,7 +49,7 @@ describe('lugiax.bind', () => {
       },
     };
 
-    const result = combineFunction(eventA, eventB, eventC);
+    const result = combineFunction({ targets: [eventA, eventB, eventC,], });
     result.onChange('hello');
     expect(changeRes).toEqual(['changeAhello', 'changeChello',]);
     result.onClick('clk');

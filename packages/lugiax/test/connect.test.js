@@ -1813,11 +1813,7 @@ describe('lugiax.connect', () => {
       }
       const ConnectTest = connect([])(Test);
       const onChange = async () => {
-        return new Promise(res => {
-          setTimeout(() => {
-            res(100);
-          }, 10);
-        });
+        return 100;
       };
 
       const target = mount(<ConnectTest onChange={onChange} />);
