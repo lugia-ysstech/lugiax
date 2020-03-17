@@ -28,22 +28,21 @@
   resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
   integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
 
-"@lugia/lugiax-core@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.2.tgz#2010d4045085dd8ab13fb333e94d666e1071fa9a"
-  integrity sha1-IBDUBFCF3YqxP7Mz6U1mbhBx+po=
+"@lugia/lugiax-core@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.1.3.tgz#870ba2f6aa103bc712064fb82dfd87432d8ce1bf"
+  integrity sha512-zJx91g3c5fM1n0ChM3MO7w86H01dar2C/9AMfm7gVpCZwCQw7fEvftwoATtWf2uKKkdzQ6r53ltrYTHBdd+i4g==
   dependencies:
     "@lugia/lugiax-common" "^1.0.1"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
-    redux-immutable "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.1.tgz#19058dbf04d9f80eabc7380ddcba94d229a765c6"
-  integrity sha1-GQWNvwTZ+A6rxzgN3LqU0imnZcY=
+"@lugia/lugiax-data@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.0.2.tgz#863ce005cb90952b38d5e0a1644a0b078923cb80"
+  integrity sha512-Y05piMxwWPSa2vpeRKUls60+iSgqAzlgC+5XbyodrjaCI8xyIPSJ3kg4I14v685kidUzrc9Vf0Wcx7QMxE3b9A==
   dependencies:
     "@lugia/lugiax-common" "^1.0.1"
     is-plain-object "^3.0.0"
@@ -1155,9 +1154,9 @@ minimatch@3.0.4, minimatch@^3.0.4:
     brace-expansion "^1.1.7"
 
 minimist@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
-  integrity sha1-o1AIsg9BOD7sH7kU9M1d95omQoQ=
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
+  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
 
 mixin-deep@^1.2.0:
   version "1.3.2"
@@ -1499,11 +1498,6 @@ recursive-readdir@2.2.2:
   integrity sha512-nRCcW9Sj7NuZwa2XvH9co8NPeXUBhZP7CRKJtU+cS6PW9FpCIFoI5ib0NT1ZrbNuPoRy0ylyCaUL8Gih4LSyFg==
   dependencies:
     minimatch "3.0.4"
-
-redux-immutable@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npm.taobao.org/redux-immutable/download/redux-immutable-4.0.0.tgz#3a1a32df66366462b63691f0e1dc35e472bbc9f3"
-  integrity sha1-Ohoy32Y2ZGK2NpHw4dw15HK7yfM=
 
 redux-saga@^0.16.0:
   version "0.16.2"
