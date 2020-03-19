@@ -13,8 +13,8 @@
     "prettier": "prettier --trailing-comma all --single-quote --write",
     "postinstall": "yarn bootstrap",
     "stylelint": "stylelint",
-    "lint": "eslint --ext .js packages/**/src packages/**/test",
-    "lint:fix": "eslint --fix --ext .js packages/**/src packages/**/test",
+    "lint": "eslint --ext .js packages/**/src/**/*.js packages/**/test/**/*.js",
+    "lint:fix": "eslint --fix --ext .js packages/**/src/**/*.js packages/**/test/**/*.js",
     "lint:css": "stylelint  packages/**/src/*.js packages/**/test/*.js",
     "publish": "node ./scripts/publish.js"
   },
