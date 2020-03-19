@@ -6,7 +6,7 @@
  */
 import React, { Component, } from 'react';
 
-import styled, { keyframes, } from 'styled-components';
+import styled, { keyframes, css, } from 'styled-components';
 
 const spotLeft = keyframes`
   0% {
@@ -83,27 +83,35 @@ export const LoadingSpot = styled.div`
   border-radius: 50%;
   background: #4d63ff;
   margin: 0 3px;
-  transform:
-    ${({ index, }) => {
-      return index === 1 ? 'translateX(-40px)' : 'translateX(0)';
-    }};
-  animation:
-    ${({ index, }) => {
-      switch (index) {
-        case 1:
-          return `${spotLeft} cubic-bezier(0.33, -0.07, 0.07, 0.9) 2.5s`;
-        case 2:
-          return `${spot} linear 2.5s`;
-        case 3:
-          return `${spot2} linear 2.5s`;
-        case 4:
-          return `${spot3} linear 2.5s`;
-        case 5:
-          return `${spotRight} cubic-bezier(0.33, -0.07, 0.07, 0.9) 2.5s`;
-        default:
-          return '';
-      }
-    }};
+  transform: ${({ index, }) => {
+    return index === 1 ? 'translateX(-40px)' : 'translateX(0)';
+  }};
+  animation: ${({ index, }) => {
+    switch (index) {
+      case 1:
+        return css`
+          ${spotLeft} cubic-bezier(0.33, -0.07, 0.07, 0.9) 2.5s
+        `;
+      case 2:
+        return css`
+          ${spot} linear 2.5s
+        `;
+      case 3:
+        return css`
+          ${spot2} linear 2.5s
+        `;
+      case 4:
+        return css`
+          ${spot3} linear 2.5s
+        `;
+      case 5:
+        return css`
+          ${spotRight} cubic-bezier(0.33, -0.07, 0.07, 0.9) 2.5s
+        `;
+      default:
+        return css``;
+    }
+  }};
   animation-iteration-count: infinite;
 `;
 
