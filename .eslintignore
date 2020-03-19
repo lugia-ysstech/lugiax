@@ -1,2 +1,3 @@
-packages/lugiax-core/flow-typed
-packages/lugiax-router/flow-typed
+packages/**/flow-typed
+packages/**/node_modules
+packages/**/lib
