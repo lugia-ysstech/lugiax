@@ -7,8 +7,7 @@
     "@lugia/lugiax": "^1.1.7",
     "@lugia/lugiax-router": "^1.1.9",
     "history": "^4.7.2",
-    "react-scripts": "1.1.5",
-    "styled-components": "^3.4.5"
+    "react-scripts": "1.1.5"
   },
   "scripts": {
     "start": "react-app-rewired start",
