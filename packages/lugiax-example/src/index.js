@@ -1,6 +1,6 @@
 import React from 'react';
-import { createBrowserHistory } from 'history';
-import { createApp, go, goBack, goForward, render, replace } from '@lugia/lugiax-router';
+import { createBrowserHistory, } from 'history';
+import { createApp, go, goBack, goForward, render, replace, } from '@lugia/lugiax-router';
 import registerServiceWorker from './registerServiceWorker';
 import Main from './App';
 
@@ -58,7 +58,7 @@ render(() => {
     },
     history,
     {
-      async onBeforeGo({ url }) {
+      async onBeforeGo({ url, }) {
         // 测试loading动画必须的代码 start
         await new Promise(resolve => {
           setTimeout(() => {
@@ -70,11 +70,11 @@ render(() => {
           return false;
         }
         if (url === '/news') {
-          replace({ url: '/403' });
+          replace({ url: '/403', });
           return false;
         }
         if (url === '/games') {
-          replace({ url: '/403' });
+          replace({ url: '/403', });
           return false;
         }
         return true;

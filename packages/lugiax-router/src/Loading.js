@@ -4,9 +4,9 @@
  *
  * @flow
  */
-import React, { Component } from 'react';
+import React, { Component, } from 'react';
 
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes, css, } from 'styled-components';
 
 const spotLeft = keyframes`
   0% {
@@ -83,10 +83,10 @@ export const LoadingSpot = styled.div`
   border-radius: 50%;
   background: #4d63ff;
   margin: 0 3px;
-  transform: ${({ index }) => {
+  transform: ${({ index, }) => {
     return index === 1 ? 'translateX(-40px)' : 'translateX(0)';
   }};
-  animation: ${({ index }) => {
+  animation: ${({ index, }) => {
     switch (index) {
       case 1:
         return css`
@@ -115,7 +115,7 @@ export const LoadingSpot = styled.div`
   animation-iteration-count: infinite;
 `;
 
-const spotCountArray = [1, 2, 3, 4, 5];
+const spotCountArray = [1, 2, 3, 4, 5,];
 export default class Loading extends Component<any, any> {
   render() {
     return (
