@@ -141,9 +141,9 @@ class LugiaxImpl implements LugiaxType {
       result.destroy = destroy(result);
       return result;
     }
-
+    this.modelName2Mutations[model] = {};
     if (!mutations) {
-      return packModel({});
+      return packModel(this.modelName2Mutations[model]);
     }
 
     const sync = this.generateMutation(mutations, model, 'sync');
