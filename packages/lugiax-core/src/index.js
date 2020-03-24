@@ -131,6 +131,7 @@ class LugiaxImpl implements LugiaxType {
       this.replaceReducers(existModel);
     };
 
+    this.modelName2Mutations[model] = {};
     function packModel(mutations: Object) {
       const result = {
         mutations,
@@ -141,12 +142,15 @@ class LugiaxImpl implements LugiaxType {
       result.destroy = destroy(result);
       return result;
     }
-    this.modelName2Mutations[model] = {};
-    if (mutations) {
-      const sync = this.generateMutation(mutations, model, 'sync');
-      const async = this.generateMutation(mutations, model, 'async');
-      this.modelName2Mutations[model] = Object.assign({}, sync, async);
+
+    if (!mutations) {
+      return packModel({});
     }
+
+    const sync = this.generateMutation(mutations, model, 'sync');
+    const async = this.generateMutation(mutations, model, 'async');
+
+    this.modelName2Mutations[model] = Object.assign({}, sync, async);
     return packModel(this.modelName2Mutations[model]);
   }
 
