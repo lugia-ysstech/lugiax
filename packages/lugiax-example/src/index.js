@@ -17,43 +17,40 @@ window.mountCount = 0;
 render(() => {
   const App = createApp(
     {
-      // '/login': {
-      //   verify() {
-      //     return true;
-      //   },
-      //   component: () => {
-      //     return (
-      //       <button
-      //         id="login"
-      //         onClick={() => {
-      //           window.login = true;
-      //           history.replace('/');
-      //         }}
-      //       >
-      //         登录
-      //       </button>
-      //     );
-      //   },
-      // },
-      // '/': {
-      //   redirect: {
-      //     to: '/login',
-      //     verify: () => {
-      //       return window.login;
-      //     },
-      //   },
-      //   onPageLoad() {
-      //     document.title = 'onPageLoad';
-      //   },
-
-      //   verify() {
-      //     return true;
-      //   },
-      //   render: type === 'render' ? () => import('./App') : undefined,
-      //   component: type !== 'render' ? Main : undefined,
-      // },
+      '/login': {
+        verify() {
+          return true;
+        },
+        component: () => {
+          return (
+            <button
+              id="login"
+              onClick={() => {
+                window.login = true;
+                history.replace('/');
+              }}
+            >
+              登录
+            </button>
+          );
+        },
+      },
       '/': {
-        component: BindTo,
+        redirect: {
+          to: '/login',
+          verify: () => {
+            return window.login;
+          },
+        },
+        onPageLoad() {
+          document.title = 'onPageLoad';
+        },
+
+        verify() {
+          return true;
+        },
+        render: type === 'render' ? () => import('./App') : undefined,
+        component: type !== 'render' ? Main : undefined,
       },
     },
     history,
