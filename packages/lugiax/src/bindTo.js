@@ -54,7 +54,7 @@ export default function(
 ) {
   const field2Props = getFieldProps(bindConfig);
   const fieldNames = getFieldNames(field2Props);
-
+  
   const field2AutoMutationName = generateAutoMutations(modelData, fieldNames);
 
   const eventHandle = {};

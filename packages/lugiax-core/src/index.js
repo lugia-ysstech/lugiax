@@ -141,15 +141,12 @@ class LugiaxImpl implements LugiaxType {
       result.destroy = destroy(result);
       return result;
     }
-
-    if (!mutations) {
-      return packModel({});
+    this.modelName2Mutations[model] = {};
+    if (mutations) {
+      const sync = this.generateMutation(mutations, model, 'sync');
+      const async = this.generateMutation(mutations, model, 'async');
+      this.modelName2Mutations[model] = Object.assign({}, sync, async);
     }
-
-    const sync = this.generateMutation(mutations, model, 'sync');
-    const async = this.generateMutation(mutations, model, 'async');
-
-    this.modelName2Mutations[model] = Object.assign({}, sync, async);
     return packModel(this.modelName2Mutations[model]);
   }
 
@@ -284,7 +281,6 @@ class LugiaxImpl implements LugiaxType {
 
   doSyncMutation(action: MutationID, param: ?Object): any {
     const { name, } = action;
-
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
     render.beginCall(model);
     const modelData = this.getModelData(model);

@@ -110,6 +110,7 @@ describe('lugiax.bindTo', () => {
     ).toBe(pwd);
     expect(getInputValue(target.find('input').at(0))).toBe(pwd);
   });
+
   it('bindTo Repeat', () => {
     const name = 'ligx';
     const pwd = '123456';
@@ -134,6 +135,7 @@ describe('lugiax.bindTo', () => {
     ).toBe(pwd);
     expect(getInputValue(target.find('input').at(0))).toBe(pwd);
   });
+
   it('bindTo has props ', () => {
     const name = 'ligx';
     const pwd = '123456';
@@ -252,9 +254,7 @@ describe('lugiax.bindTo', () => {
 
     target.simulate('change', { target: { value: newValue, }, });
 
-    expect(getInputValue(target.find('input').at(0))).toBe(
-      newValue + 'is value'
-    );
+    expect(getInputValue(target.find('input').at(0))).toBe(newValue + 'is value');
     expect(
       lugiax
         .getState()
@@ -337,9 +337,7 @@ describe('lugiax.bindTo', () => {
         .get(model)
         .get('pwd')
     ).toBe(newValue + 'is value');
-    expect(getInputValue(target.find('input').at(0))).toBe(
-      newValue + 'is value'
-    );
+    expect(getInputValue(target.find('input').at(0))).toBe(newValue + 'is value');
   });
 
   it('gettor', () => {
@@ -434,15 +432,7 @@ describe('lugiax.bindTo', () => {
     expect(getPathArray('data')).toEqual(['data',]);
     expect(getPathArray('data.a.b.c')).toEqual(['data', 'a', 'b', 'c',]);
     expect(getPathArray('data[0].a.b.c')).toEqual(['data', '0', 'a', 'b', 'c',]);
-    expect(getPathArray('data[0].a[1].b.c[3]')).toEqual([
-      'data',
-      '0',
-      'a',
-      '1',
-      'b',
-      'c',
-      '3',
-    ]);
+    expect(getPathArray('data[0].a[1].b.c[3]')).toEqual(['data', '0', 'a', '1', 'b', 'c', '3',]);
     expect(getPathArray('data[111]')).toEqual(['data', '111',]);
   });
 
@@ -608,9 +598,7 @@ describe('lugiax.bindTo', () => {
 
     target.simulate('change', { target: { value: newValue, }, });
 
-    expect(getInputValue(target.find('input').at(0))).toBe(
-      newValue + 'is value'
-    );
+    expect(getInputValue(target.find('input').at(0))).toBe(newValue + 'is value');
     expect(
       lugiax
         .getState()
@@ -704,9 +692,7 @@ describe('lugiax.bindTo', () => {
         .get('form')
         .get('pwd')
     ).toBe(newValue + 'is value');
-    expect(getInputValue(target.find('input').at(0))).toBe(
-      newValue + 'is value'
-    );
+    expect(getInputValue(target.find('input').at(0))).toBe(newValue + 'is value');
   });
 
   it('EventHandle onClick', async () => {
@@ -1471,5 +1457,145 @@ describe('lugiax.bindTo', () => {
     expect(statistics.name2).toBe(2);
     expect(statistics.name3).toBe(1);
     expect(statistics.name4).toBe(1);
+  });
+
+  it('bindTo register no mutations in Model', () => {
+    const modelName = 'user';
+    const pwd = '123456';
+    const userName = 'admin';
+    const state = {
+      pwd,
+      userName,
+    };
+    const userModel = lugiax.register({
+      model: modelName,
+      state,
+    });
+    const BindInputA = bindTo(userModel, { pwd: 'value', userName, })(Input);
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInputA />;
+      }
+    }
+    const target = mount(<App />);
+    const { model, mutations, } = userModel;
+    const keys = Object.keys(state);
+    expect(
+      lugiax
+        .getState()
+        .get(modelName)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+    const newValueObject = {
+      pwd: 'pwd新值',
+      userName: 'name新值',
+    };
+    // 查看mutations有没有自动注入mutations；调用和是否修改lugaix中的值
+    for (let i = 0; i < keys.length; i++) {
+      mutations[`_alugiax_change${keys[i]}`]({ value: newValueObject[keys[i]], });
+      expect(
+        lugiax
+          .getState()
+          .get(modelName)
+          .get(keys[i])
+      ).toBe(newValueObject[keys[i]]);
+    }
+    target.simulate('change', { target: { value: newValueObject.pwd, }, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newValueObject.pwd);
+  });
+
+  it('bindTo register mutations is null in  Model', () => {
+    const modelName = 'user';
+    const pwd = '123456';
+    const userName = 'admin';
+    const state = {
+      pwd,
+      userName,
+    };
+    const userModel = lugiax.register({
+      model: modelName,
+      state,
+      mutations: null,
+    });
+    const BindInputA = bindTo(userModel, { pwd: 'value', userName, })(Input);
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInputA />;
+      }
+    }
+    const target = mount(<App />);
+    const { model, mutations, } = userModel;
+    const keys = Object.keys(state);
+    expect(
+      lugiax
+        .getState()
+        .get(modelName)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+    const newValueObject = {
+      pwd: 'pwd新值',
+      userName: 'name新值',
+    };
+    // 查看mutations有没有自动注入mutations；调用和是否修改lugaix中的值
+    for (let i = 0; i < keys.length; i++) {
+      mutations[`_alugiax_change${keys[i]}`]({ value: newValueObject[keys[i]], });
+      expect(
+        lugiax
+          .getState()
+          .get(modelName)
+          .get(keys[i])
+      ).toBe(newValueObject[keys[i]]);
+    }
+    target.simulate('change', { target: { value: newValueObject.pwd, }, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newValueObject.pwd);
+  });
+
+  it('bindTo register mutations is undefined in  Model', () => {
+    const modelName = 'user';
+    const pwd = '123456';
+    const userName = 'admin';
+    const state = {
+      pwd,
+      userName,
+    };
+    const userModel = lugiax.register({
+      model: modelName,
+      state,
+      mutations: undefined,
+    });
+    const BindInputA = bindTo(userModel, { pwd: 'value', userName, })(Input);
+    class App extends React.Component<any, any> {
+      render() {
+        return <BindInputA />;
+      }
+    }
+    const target = mount(<App />);
+    const { model, mutations, } = userModel;
+    const keys = Object.keys(state);
+    expect(
+      lugiax
+        .getState()
+        .get(modelName)
+        .get('pwd')
+    ).toBe(pwd);
+    expect(getInputValue(target.find('input').at(0))).toBe(pwd);
+    const newValueObject = {
+      pwd: 'pwd新值',
+      userName: 'name新值',
+    };
+    // 查看mutations有没有自动注入mutations；调用和是否修改lugaix中的值
+    for (let i = 0; i < keys.length; i++) {
+      mutations[`_alugiax_change${keys[i]}`]({ value: newValueObject[keys[i]], });
+      expect(
+        lugiax
+          .getState()
+          .get(modelName)
+          .get(keys[i])
+      ).toBe(newValueObject[keys[i]]);
+    }
+    target.simulate('change', { target: { value: newValueObject.pwd, }, });
+    expect(getInputValue(target.find('input').at(0))).toBe(newValueObject.pwd);
   });
 });
