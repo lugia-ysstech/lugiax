@@ -47,7 +47,7 @@ class Render {
     this.willRenderModules = {};
   }
   autoRender(): void {
-    const oldWillRenderModules = JSON.parse(JSON.stringify(this.willRenderModules));
+    const oldWillRenderModules = this.willRenderModules;
     this.clearRenderModules();
     this.trigger(oldWillRenderModules);
   }
