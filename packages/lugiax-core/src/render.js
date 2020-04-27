@@ -12,7 +12,7 @@ const BatchModels = 'batchModels';
 class Render {
   renderEvent: Subscribe;
   renderCollector: Stack;
-  willRenderModules: Object;
+  willRenderModules: Object = {};
   constructor() {
     this.clear();
   }
@@ -42,13 +42,14 @@ class Render {
   };
   onAfterPop = () => {
     this.autoRender();
-    this.clearRenderModules();
   };
   clearRenderModules() {
     this.willRenderModules = {};
   }
   autoRender(): void {
-    this.trigger(this.willRenderModules);
+    const oldWillRenderModules = JSON.parse(JSON.stringify(this.willRenderModules));
+    this.clearRenderModules();
+    this.trigger(oldWillRenderModules);
   }
   trigger(willRenderModules: object): void {
     this.renderEvent.trigger(BatchModels, willRenderModules);
