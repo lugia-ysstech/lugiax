@@ -153,47 +153,6 @@ class LugiaxImpl implements LugiaxType {
     return packModel(this.modelName2Mutations[model]);
   }
 
-  registerGetPersistDataFn(getPersistData: function) {
-    console.log(getPersistData.toString());
-    this.getPersistData = typeof getPersistData == 'function' ? getPersistData : () => {};
-  }
-
-  registerSavePersistDataFn(savePersistData: function) {
-    this.savePersistData = typeof savePersistData == 'function' ? savePersistData : () => {};
-  }
-
-  persistStoreRegister(param: RegisterParam, option: Option): RegisterResult {
-    const { model: modelName, } = param;
-    const persistData = this.getPersistData && this.getPersistData(modelName);
-    if (persistData) {
-      param.state = persistData;
-    }
-    const { async = {}, sync = {}, } = param.mutations;
-    const newAsyncFn = this.generatePersistMutation(async, true, modelName);
-    const newSyncFn = this.generatePersistMutation(sync, false, modelName);
-    param.mutations = { async: newAsyncFn, sync: newSyncFn, };
-    return this.register(param, option);
-  }
-
-  generatePersistMutation(mutations: Mutation, isAsync: Boolean, modelName: string) {
-    const result = {};
-    Object.keys(mutations).forEach(key => {
-      const newMutation = isAsync
-        ? async (...param: Object) => {
-            const mutationData = await mutations[key](...param);
-            this.savePersistData && this.savePersistData(modelName, mutationData);
-            return mutationData;
-          }
-        : (...param: Object) => {
-            const mutationData = mutations[key](...param);
-            this.savePersistData && this.savePersistData(modelName, mutationData);
-            return mutationData;
-          };
-      result[key] = newMutation;
-    });
-    return result;
-  }
-
   replaceReducers(existModel: Object) {
     const generateReducers = (targetModel: string): Function => {
       return (state = fromJS(existModel[targetModel].state), action) => {
