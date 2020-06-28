@@ -6,6 +6,7 @@
  */
 import lugiax from '../src/index';
 import { delay, } from '@lugia/react-test-utils';
+const EventEmitter = require('events').EventEmitter;
 
 describe('lugiax', () => {
   beforeEach(() => {
@@ -56,6 +57,190 @@ describe('lugiax', () => {
         .get('data')
         .toJS()
     ).toEqual(state.data);
+  });
+
+  it('register  GetPersistDataFn', () => {
+    const saveInfo = {};
+    const getFn = name => {
+      return saveInfo[name];
+    };
+    lugiax.registerGetPersistDataFn(getFn);
+    expect(lugiax.getPersistData.toString()).toEqual(getFn.toString());
+  });
+
+  it('register  GetPersistDataFn is undefined', () => {
+    const getFn = undefined;
+    const emptyFn = () => {};
+    lugiax.registerGetPersistDataFn(getFn);
+    expect(lugiax.getPersistData.toString()).toEqual(emptyFn.toString());
+  });
+
+  it('register  GetPersistDataFn is null', () => {
+    const getFn = null;
+    const emptyFn = () => {};
+    lugiax.registerGetPersistDataFn(getFn);
+    expect(lugiax.getPersistData.toString()).toEqual(emptyFn.toString());
+  });
+
+  it('register  GetPersistDataFn is object', () => {
+    const getFn = { a: 2, };
+    const emptyFn = () => {};
+    lugiax.registerGetPersistDataFn(getFn);
+    expect(lugiax.getPersistData.toString()).toEqual(emptyFn.toString());
+  });
+
+  it('register  SavePersistDataFn', () => {
+    const saveInfo = {};
+    const saveFn = name => {
+      return saveInfo[name];
+    };
+    lugiax.registerSavePersistDataFn(saveFn);
+    expect(lugiax.savePersistData.toString()).toEqual(saveFn.toString());
+  });
+
+  it('register  SavePersistDataFn is undefined', () => {
+    const saveFn = undefined;
+    const emptyFn = () => {};
+    lugiax.registerSavePersistDataFn(saveFn);
+    expect(lugiax.savePersistData.toString()).toEqual(emptyFn.toString());
+  });
+
+  it('register  SavePersistDataFn is null', () => {
+    const saveFn = null;
+    const emptyFn = () => {};
+    lugiax.registerSavePersistDataFn(saveFn);
+    expect(lugiax.savePersistData.toString()).toEqual(emptyFn.toString());
+  });
+
+  it('register  SavePersistDataFn is object', () => {
+    const saveFn = { a: 1, };
+    const emptyFn = () => {};
+    lugiax.registerSavePersistDataFn(saveFn);
+    expect(lugiax.savePersistData.toString()).toEqual(emptyFn.toString());
+  });
+
+  it('registerPersistStore normal', () => {
+    const state = {
+      name: 'ligx',
+      pwd: '1',
+    };
+    const model = 'user';
+    lugiax.registerPersistStore({
+      model,
+      state,
+    });
+    lugiax._microfe_ = true;
+    expect(lugiax.getState().toJS()).toEqual({
+      [model]: state,
+      lugia: {
+        loading: { user: false, },
+      },
+    });
+  });
+
+  it('registerPersistStore mutil level state', () => {
+    const state = {
+      data: [
+        {
+          title: 'hello',
+          value: 1,
+        },
+        {
+          title: 'hello2',
+          value: 2,
+        },
+      ],
+    };
+    const model = 'user';
+    lugiax.registerPersistStore({
+      model,
+      state,
+    });
+    expect(
+      lugiax
+        .getState()
+        .get(model)
+        .get('data')
+        .toJS()
+    ).toEqual(state.data);
+  });
+
+  it('registerPersistStore state is undefined', async () => {
+    lugiax.registerPersistStore({
+      model: 'lgx',
+    });
+  });
+
+  it('registerPersistStore use sync mutations', () => {
+    const state = {
+      name: 'ligx',
+      pwd: '9',
+    };
+    const model = 'user';
+    const obj = lugiax.registerPersistStore({
+      model,
+      state,
+      mutations: {
+        sync: {
+          changeName: (state, inpar, { mutations, getState, }) => {
+            state = getState();
+            return state.set('name', inpar);
+          },
+        },
+      },
+    });
+    const newName = 'www';
+    const { mutations, } = obj;
+    mutations.changeName(newName);
+    expect(obj.getState().toJS().name).toEqual(newName);
+  });
+
+  it('registerPersistStore use async mutations', async () => {
+    const promiseEvent = new EventEmitter();
+    const state = {
+      name: 'ligx',
+      pwd: '9',
+    };
+    const model = 'user';
+    const obj = lugiax.registerPersistStore({
+      model,
+      state,
+      mutations: {
+        async: {
+          changeName: async (state, inpar, { mutations, getState, }) => {
+            const list = await new Promise(res => {
+              setTimeout(() => {
+                res(inpar);
+              }, 200);
+            }).then(data => {
+              promiseEvent.emit('update');
+              return data;
+            });
+            state = getState();
+            return state.set('name', list);
+          },
+        },
+      },
+    });
+    const newName = 'www';
+    const { mutations, } = obj;
+    mutations.asyncChangeName(newName).then(() => {
+      promiseEvent.emit('update');
+    });
+    const promise = new Promise(res => {
+      let count = 0;
+      const countFn = () => {
+        if (count === 1) {
+          res('ok');
+        }
+        count++;
+      };
+      promiseEvent.on('update', () => {
+        countFn();
+      });
+    });
+    await promise;
+    expect(obj.getState().toJS().name).toEqual(newName);
   });
 
   it('subscribeAll for force register', async () => {
@@ -1347,7 +1532,7 @@ describe('lugiax', () => {
       mutations: { hello, },
     } = model;
 
-    const {mutations,} = model;
+    const { mutations, } = model;
     expect(
       lugiax
         .getState()
