@@ -154,7 +154,6 @@ class LugiaxImpl implements LugiaxType {
   }
 
   registerGetPersistDataFn(getPersistData: function) {
-    console.log(getPersistData.toString());
     this.getPersistData = typeof getPersistData == 'function' ? getPersistData : () => {};
   }
 
@@ -162,13 +161,13 @@ class LugiaxImpl implements LugiaxType {
     this.savePersistData = typeof savePersistData == 'function' ? savePersistData : () => {};
   }
 
-  persistStoreRegister(param: RegisterParam, option: Option): RegisterResult {
-    const { model: modelName, } = param;
+  registerPersistStore(param: RegisterParam, option: Option): RegisterResult {
+    const { model: modelName, mutations = {}, } = param;
     const persistData = this.getPersistData && this.getPersistData(modelName);
     if (persistData) {
       param.state = persistData;
     }
-    const { async = {}, sync = {}, } = param.mutations;
+    const { async = {}, sync = {}, } = mutations;
     const newAsyncFn = this.generatePersistMutation(async, true, modelName);
     const newSyncFn = this.generatePersistMutation(sync, false, modelName);
     param.mutations = { async: newAsyncFn, sync: newSyncFn, };
