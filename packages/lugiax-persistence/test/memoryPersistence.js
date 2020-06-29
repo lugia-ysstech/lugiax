@@ -1,5 +1,5 @@
 let currentMemory: { [name: string]: Object } = {};
-let memoryArray: [Object] = [];
+let memoryArray: Object[] = [];
 
 export const setItem = (name, state) => {
   memoryArray.push(state);

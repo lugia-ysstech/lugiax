@@ -50,8 +50,9 @@ export default function(
   param: RegisterParam,
   option: PersistenceOption = { name: 'default', }
 ): RegisterParam {
-  const { name = 'default', } = option;
+  let { name = 'default', } = option;
   if (name === 'default' || !name2Persistence[name]) {
+    name = 'default';
     initLocalStore();
   }
   const persistController = name2Persistence[name];
