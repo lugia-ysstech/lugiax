@@ -52,11 +52,9 @@ export default function(
 ): RegisterParam {
   const { name = 'default', } = option;
   if (name === 'default' || !name2Persistence[name]) {
-    option.name = 'default';
     initLocalStore();
   }
-  const { name: persistenceName, } = option;
-  const persistController = name2Persistence[persistenceName];
+  const persistController = name2Persistence[name];
   const { model: modelName, } = param;
   const persistData =
     persistController && persistController.getStore && persistController.getStore(modelName);
@@ -92,16 +90,12 @@ function generatePersistMutation(
     const newMutation = isAsync
       ? async (...param: Object) => {
           const mutationData = await mutations[key](...param);
-          persistController &&
-            persistController.saveStore &&
-            persistController.saveStore(modelName, mutationData);
+          useSaveStore(persistController, modelName, mutationData);
           return mutationData;
         }
       : (...param: Object) => {
           const mutationData = mutations[key](...param);
-          persistController &&
-            persistController.saveStore &&
-            persistController.saveStore(modelName, mutationData);
+          useSaveStore(persistController, modelName, mutationData);
           return mutationData;
         };
     result[key] = newMutation;
@@ -111,17 +105,20 @@ function generatePersistMutation(
 
 const LugiaxPersistence = '__lugiax__persistence__';
 
+function useSaveStore(persistController: Persistence, modelName: string, mutationData: Object) {
+  persistController &&
+    persistController.saveStore &&
+    persistController.saveStore(modelName, mutationData);
+}
+
 function getDataByLocalStorage(model: string): Object {
-  let persistData = objectStringToJson(window.localStorage.getItem(LugiaxPersistence));
-  if (!persistData) {
-    persistData = {};
-  }
+  const persistData = getLocalStorage();
   return persistData[model];
 }
 
 function saveDataInLocalStorage(model: string, state: object): Boolean {
   try {
-    const persistData = objectStringToJson(window.localStorage.getItem(LugiaxPersistence)) || {};
+    const persistData = getLocalStorage();
     persistData[model] = state.toJS() || {};
     window.localStorage.setItem(LugiaxPersistence, JSON.stringify(persistData));
     return true;
@@ -129,6 +126,10 @@ function saveDataInLocalStorage(model: string, state: object): Boolean {
     console.warn('持久化数据保存失败！', ex.message);
     return false;
   }
+}
+
+function getLocalStorage() {
+  return objectStringToJson(window.localStorage.getItem(LugiaxPersistence)) || {};
 }
 
 function objectStringToJson(str: string) {
