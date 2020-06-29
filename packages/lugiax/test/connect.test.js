@@ -397,8 +397,7 @@ describe('lugiax.connect', () => {
     let callCount = 0;
     const MyInput = connect(
       [userModel, infoModel,],
-      (state: Object) => {
-        const [user, info,] = state;
+      ([user, info]) => {
         return {
           name: user.get('name'),
           pwd: user.get('pwd'),
