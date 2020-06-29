@@ -12,12 +12,15 @@ import {
   default as wrapPersistence,
   clearPersistence,
 } from '../src';
+import { setItem, getItem, getMemoryArray, clearMemory, } from './memoryPersistence';
+
 const EventEmitter = require('events').EventEmitter;
 
 describe('lugiax-persistence', () => {
   beforeEach(() => {
     lugiax.clear();
     clearPersistence();
+    clearMemory();
   });
 
   it('registerPersistence is undefined', () => {
@@ -153,6 +156,7 @@ describe('lugiax-persistence', () => {
       pwd: '9',
     };
     const model = 'user';
+
     const obj = lugiax.register(
       wrapPersistence({
         model,
@@ -221,5 +225,135 @@ describe('lugiax-persistence', () => {
     });
     await promise;
     expect(obj.getState().toJS().name).toEqual(newName);
+  });
+
+  it('wrapPersistence use sync mutations check by memoryPersistence', () => {
+    const state = {
+      name: 'ligx',
+      pwd: '9',
+    };
+    const model = 'user';
+    registerPersistence(
+      {
+        getStore: name => {
+          getItem(name);
+        },
+        saveStore: (name, data) => {
+          setItem(name, data.toJS ? data.toJS() : {});
+        },
+      },
+      'memoryPersistence'
+    );
+    const obj = lugiax.register(
+      wrapPersistence(
+        {
+          model,
+          state,
+          mutations: {
+            sync: {
+              changeName: (state, inpar, { mutations, getState, }) => {
+                state = getState();
+                return state.set('name', inpar);
+              },
+            },
+          },
+        },
+        { name: 'memoryPersistence', }
+      )
+    );
+    const newName = 'newName';
+    const newOtherName = 'newOtherName';
+    const { mutations, } = obj;
+    mutations.changeName(newName);
+    expect(obj.getState().toJS().name).toEqual(newName);
+    mutations.changeName(newOtherName);
+    expect(obj.getState().toJS().name).toEqual(newOtherName);
+    const [history1, history2,] = getMemoryArray();
+    expect(history1).toEqual({
+      name: 'newName',
+      pwd: '9',
+    });
+    expect(history2).toEqual({
+      name: 'newOtherName',
+      pwd: '9',
+    });
+  });
+  it('wrapPersistence use async mutations  check by memoryPersistence', async () => {
+    const promiseEvent = new EventEmitter();
+    const state = {
+      name: 'ligx',
+      pwd: '9',
+    };
+    const model = 'user';
+    registerPersistence(
+      {
+        getStore: name => {
+          getItem(name);
+        },
+        saveStore: (name, data) => {
+          setItem(name, data.toJS ? data.toJS() : {});
+        },
+      },
+      'memoryPersistence'
+    );
+    const obj = lugiax.register(
+      wrapPersistence(
+        {
+          model,
+          state,
+          mutations: {
+            async: {
+              changeName: async (state, inpar, { mutations, getState, }) => {
+                const list = await new Promise(res => {
+                  setTimeout(() => {
+                    res(inpar);
+                  }, 200);
+                }).then(data => {
+                  promiseEvent.emit('update');
+                  return data;
+                });
+                state = getState();
+                return state.set('name', list);
+              },
+            },
+          },
+        },
+        { name: 'memoryPersistence', }
+      )
+    );
+    const newName = 'newName';
+    const newOtherName = 'newOtherName';
+    const { mutations, } = obj;
+    mutations.asyncChangeName(newName).then(() => {
+      promiseEvent.emit('update');
+    });
+
+    mutations.asyncChangeName(newOtherName).then(() => {
+      promiseEvent.emit('update');
+    });
+    const promise = new Promise(res => {
+      let count = 0;
+      const countFn = () => {
+        if (count === 2) {
+          res('ok');
+        }
+        count++;
+      };
+      promiseEvent.on('update', () => {
+        countFn();
+      });
+    });
+    await promise;
+    expect(obj.getState().toJS().name).toEqual(newOtherName);
+
+    const [history1, history2,] = getMemoryArray();
+    expect(history1).toEqual({
+      name: 'newName',
+      pwd: '9',
+    });
+    expect(history2).toEqual({
+      name: 'newOtherName',
+      pwd: '9',
+    });
   });
 });

@@ -8,6 +8,15 @@
     "lugiax-persistence"
   ],
   "author": "ysstech",
+  "scripts": {
+    "build": "lugia-complie lint && lugia-complie build",
+    "dist": " npm run build && npm publish",
+    "test": "./tasks/test.sh",
+    "dev": "./tasks/dev.sh",
+    "cov": "lugia-complie cov",
+    "start": "node scripts/start.js",
+    "flow": "flow"
+  },
   "devDependencies": {
     "@lugia/lugiax": "^1.1.9",
     "@lugia/jverify": "^1.0.1",
