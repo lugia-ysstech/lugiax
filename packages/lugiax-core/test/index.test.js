@@ -1347,7 +1347,7 @@ describe('lugiax', () => {
       mutations: { hello, },
     } = model;
 
-    const {mutations,} = model;
+    const { mutations, } = model;
     expect(
       lugiax
         .getState()
@@ -1375,5 +1375,52 @@ describe('lugiax', () => {
     expect(lugiax.getState().get(modelName)).toBeUndefined();
     mutations.hello();
     expect(Object.keys(model)).toEqual(['isDestroy',]);
+  });
+
+  it('destroy influence other model state', async () => {
+    const state = {
+      name: 'ligx',
+      age: 15,
+    };
+    const modelName = 'lgxaaa';
+    const model = lugiax.register({
+      model: modelName,
+      state,
+    });
+    const otherState = {
+      value: 222,
+    };
+    const other = 'other';
+    const otherModel = lugiax.register({
+      model: other,
+      state: otherState,
+      mutations: {
+        async: {
+          async setRecord(state, param) {
+            return state.set('value', param);
+          },
+        },
+      },
+    });
+    const updateValue = '333';
+    await otherModel.mutations.asyncSetRecord(updateValue);
+    expect(
+      lugiax
+        .getState()
+        .get(other)
+        .toJS().value
+    ).toEqual(updateValue);
+
+    model.destroy();
+    expect(Object.keys(model)).toEqual(['isDestroy',]);
+    expect(model.isDestroy).toBeTruthy();
+    expect(lugiax.existModel[modelName]).toBeUndefined();
+    expect(lugiax.getState().get(modelName)).toBeUndefined();
+    expect(
+      lugiax
+        .getState()
+        .get(other)
+        .toJS().value
+    ).toEqual(updateValue);
   });
 });
