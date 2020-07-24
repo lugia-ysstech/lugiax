@@ -1,6 +1,6 @@
 import lugaix from '@lugia/lugiax';
 import { go, goBack, } from '@lugia/lugiax-router';
-import inputsModel from './model2';
+import inputsModel from './otherModel';
 const inputsState = {
   value: 1212,
 };
