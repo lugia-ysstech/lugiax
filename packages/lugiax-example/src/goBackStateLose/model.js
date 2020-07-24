@@ -1,6 +1,6 @@
 import lugaix from '@lugia/lugiax';
 import { go, goBack, } from '@lugia/lugiax-router';
-import inputsModel1 from './model2';
+import inputsModel1 from './otherModel';
 const inputsState = {
   value: 0,
 };
@@ -18,7 +18,7 @@ const inputsModel = lugaix.register({
       },
       async goBack() {
         inputsModel1.destroy();
-        // goBack();
+        goBack();
       },
     },
   },
