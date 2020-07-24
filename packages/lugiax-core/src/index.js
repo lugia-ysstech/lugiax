@@ -167,7 +167,11 @@ class LugiaxImpl implements LugiaxType {
             return state;
           }
           case DestroyModel:
-            return undefined;
+            const { model, } = action;
+            if (model === targetModel) {
+              return undefined;
+            }
+            return state;
           default:
             return state;
         }
