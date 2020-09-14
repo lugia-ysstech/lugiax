@@ -36,7 +36,7 @@ export function computeState(state: Object, param: OnChangeParam): Object {
 
 export default {
   createData(param: LugiaxDataParam): LugiaxDataResult {
-    const { model: modelName, state = {}, } = param;
+    const { state = {}, } = param;
 
     let isInnerChange = false;
     const model = lugiax.register({
