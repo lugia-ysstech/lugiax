@@ -26,7 +26,8 @@ declare module "@lugia/lugiax" {
       preStateProps: Object,
       nextStateProps: Object
     ) => boolean,
-    areOwnPropsEqual?: (preOwnProps: Object, nextOwnProps: Object) => boolean
+    areOwnPropsEqual?: (preOwnProps: Object, nextOwnProps: Object) => boolean,
+    getterParse?: (stateName: any) => any
   };
 
   declare export function connect(
