@@ -1,12 +1,12 @@
 {
   "name": "lugiax-example",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "private": true,
   "dependencies": {
     "@lugia/lugia-web": "^1.1.9",
-    "@lugia/lugiax": "^1.1.11",
-    "@lugia/lugiax-persistence": "^1.0.2",
-    "@lugia/lugiax-router": "^1.1.14",
+    "@lugia/lugiax": "^1.1.12",
+    "@lugia/lugiax-persistence": "^1.0.3",
+    "@lugia/lugiax-router": "^1.1.15",
     "history": "^4.7.2",
     "react-scripts": "1.1.5",
     "styled-components": "4.2.0"

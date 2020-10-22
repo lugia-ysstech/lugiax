@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax-data",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "dependencies": {
     "@lugia/lugiax-common": "^1.0.2",
     "is-plain-object": "^3.0.0",
