@@ -75,7 +75,7 @@ export default function(
   });
   const areStateEqual = autoCreateAreStateEqual(fieldNames);
   return (Target: React.ComponentType<any>) => {
-    return bind(modelData, generateMode2Props(fieldNames, field2Props), eventHandle, {
+    return bind(modelData, generateMode2Props(fieldNames, field2Props, opt), eventHandle, {
       areStateEqual,
       ...opt,
     })(Target);
@@ -170,18 +170,20 @@ function getFieldProps(bindConfig: BindConfig) {
   return field2Props;
 }
 
-function generateMode2Props(fieldNames: string[], field2Props: Field2Props): Function {
+function generateMode2Props(fieldNames: string[], field2Props: Field2Props, opt: ?ConnectOptionType = {}): Function {
   return model => {
     const result = {};
+    const { getterParse, } = opt;
     fieldNames.forEach((field: string) => {
       const get = gettor(model, field);
+      const value = getterParse ? getterParse(get()) : get();
       const field2Prop = field2Props[field];
       if (Array.isArray(field2Prop)) {
         field2Prop.forEach(prop => {
-          result[prop] = get();
+          result[prop] = value;
         });
       } else {
-        result[field2Prop] = get();
+        result[field2Prop] = value;
       }
     });
     return result;
