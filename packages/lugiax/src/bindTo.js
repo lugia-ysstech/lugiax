@@ -5,7 +5,7 @@
  * @flow
  */
 import type { Mutation, RegisterResult, } from '@lugia/lugiax-core';
-import type { BindConfig, EventHandle, EventMuationConfig, Field2Props, } from '@lugia/lugiax';
+import type { BindConfig, EventMuationConfig, Field2Props, ConnectOptionType, } from '@lugia/lugiax';
 
 import * as React from 'react';
 import bind from './bind';
@@ -170,13 +170,17 @@ function getFieldProps(bindConfig: BindConfig) {
   return field2Props;
 }
 
-function generateMode2Props(fieldNames: string[], field2Props: Field2Props, opt: ?ConnectOptionType = {}): Function {
+function generateMode2Props(
+  fieldNames: string[],
+  field2Props: Field2Props,
+  opt: ?ConnectOptionType = {}
+): Function {
   return model => {
     const result = {};
     const { getterParse, } = opt;
     fieldNames.forEach((field: string) => {
       const get = gettor(model, field);
-      const value = getterParse ? getterParse(get()) : get();
+      const value = typeof getterParse === 'function' ? getterParse(get()) : get();
       const field2Prop = field2Props[field];
       if (Array.isArray(field2Prop)) {
         field2Prop.forEach(prop => {
