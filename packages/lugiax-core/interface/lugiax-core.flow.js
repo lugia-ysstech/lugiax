@@ -6,25 +6,21 @@
 declare module '@lugia/lugiax-core' {
   declare type Handler = {
     mutations: Mutation,
-    getState(): Object
+    getState(): Object,
   };
 
   declare type AsyncHandler = Handler & {
-    wait: MutationFunction => Promise<Object>
+    wait: MutationFunction => Promise<Object>,
   };
 
-  declare type SyncMutationFunction = (
-    data: Object,
-    param: Object,
-    handle: AsyncHandler
-  ) => any;
+  declare type SyncMutationFunction = (data: Object, param: Object, handle: AsyncHandler) => any;
   declare type SyncMutation = {
-    [key: string]: SyncMutationFunction
+    [key: string]: SyncMutationFunction,
   };
 
   declare type StackConstructorOption = {
     onStackEmpty: function,
-    onPushItem: function
+    onPushItem: function,
   };
 
   declare type AsyncMutationFunction = (
@@ -34,44 +30,53 @@ declare module '@lugia/lugiax-core' {
   ) => Promise<any>;
 
   declare type AsyncMutation = {
-    [key: string]: AsyncMutationFunction
+    [key: string]: AsyncMutationFunction,
+  };
+
+  declare type InTimeHandler =
+    | AsyncHandler
+    | {
+        updateModel: (state: Object) => void,
+      };
+
+  declare type InTimeMutation = {
+    [key: string]: (param: Object, handler: InTimeHandler) => any,
   };
 
   declare type Mutations = {
     sync?: SyncMutation,
-    async?: AsyncMutation
+    async?: AsyncMutation,
+    inTime?: InTimeMutation,
   };
-  declare type MutationType = "async" | "sync";
+
+  declare type MutationType = 'async' | 'sync';
 
   declare type MutationID = { name: string };
   declare type MutationFunction = {
     mutationType: MutationType,
     mutationId: string,
-    model: string
+    model: string,
   } & ((param?: Object) => any);
   declare type Mutation = {
-    [key: string]: MutationFunction
+    [key: string]: MutationFunction,
   };
   declare type RegisterResult = {
     getState: () => Object,
     model: string,
     mutations: Mutation,
-    destroy: () => boolean;
+    destroy: () => boolean,
     addMutation: (mutationName: string, func: SyncMutationFunction) => void,
-    addAsyncMutation: (
-      mutationName: string,
-      func: AsyncMutationFunction
-    ) => void
+    addAsyncMutation: (mutationName: string, func: AsyncMutationFunction) => void,
   };
 
   declare type RegisterParam = {
     model: string,
     state: Object,
-    mutations?: Mutations
+    mutations?: Mutations,
   };
 
   declare type Option = {
-    force: boolean // 是否强制注册 默认为false
+    force: boolean, // 是否强制注册 默认为false
   };
   declare type WaitHandler = (
     mutation: MutationFunction,
@@ -80,11 +85,11 @@ declare module '@lugia/lugiax-core' {
   ) => Promise<any>;
 
   declare type SubscribeResult = {
-    unSubscribe: Function
+    unSubscribe: Function,
   };
 
   declare type EventResult = {
-    unSubscribe: Function
+    unSubscribe: Function,
   };
   declare export interface LugiaxType {
     register(param: RegisterParam, option?: Option): RegisterResult;
