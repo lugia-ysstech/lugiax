@@ -301,12 +301,11 @@ class LugiaxImpl implements LugiaxType {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
-    render.beginCall(model);
     const modelData = this.getModelData(model);
     if (body) {
       this.store.dispatch({ type: Loading, model, });
 
-      const result =  await body(param, {
+      const result = await body(param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
           return this.wait(mutation);
@@ -316,10 +315,8 @@ class LugiaxImpl implements LugiaxType {
         },
         getState: () => this.getModelData(model),
       });
-      render.endCall();
       return result;
     }
-    render.endCall();
     return modelData;
   }
 
@@ -389,7 +386,11 @@ class LugiaxImpl implements LugiaxType {
       mutationType,
       param,
     });
-    render.endCall();
+    if (mutationType === 'inTime') {
+      render.trigger({ [model]: true, });
+    }else{
+      render.endCall();
+    }
     return state;
   }
 

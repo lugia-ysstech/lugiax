@@ -49,7 +49,7 @@ declare module '@lugia/lugiax-core' {
     inTime?: InTimeMutation,
   };
 
-  declare type MutationType = 'async' | 'sync';
+  declare type MutationType = 'async' | 'sync' | 'inTime';
 
   declare type MutationID = { name: string };
   declare type MutationFunction = {

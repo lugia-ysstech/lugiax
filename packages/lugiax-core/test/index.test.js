@@ -1471,7 +1471,26 @@ describe('lugiax', () => {
         res(true);
       }, 1000);
     });
-    expect(batchModels).toEqual([{ lgx: true, },]);
+    expect(batchModels).toEqual([
+      {
+        lgx: true,
+      },
+      {
+        lgx: true,
+      },
+      {
+        lgx: true,
+      },
+      {
+        lgx: true,
+      },
+      {
+        lgx: true,
+      },
+      {
+        lgx: true,
+      },
+    ]);
   });
 
   it('inTimeMutation await', async () => {
@@ -1515,5 +1534,49 @@ describe('lugiax', () => {
     await doSomethingInTime({});
     expect(getState().toJS()).toEqual({ yellow: true, red: true, green: true, });
     expect(batchModels).toEqual([{ lgx: true, }, { lgx: true, }, { lgx: true, }, { lgx: true, },]);
+  });
+
+  it('inTimeMutation doIn AsyncMutation', async () => {
+    const {
+      mutations: { asyncDoSomething, },
+      getState,
+    } = lugiax.register({
+      model: 'lgx',
+      state: {
+        loading: false,
+        data: '111',
+      },
+      mutations: {
+        async: {
+          async doSomething(state: any, param: any, handle: any) {
+            const {
+              mutations: { changeLoadingInTime, },
+            } = handle;
+
+            await changeLoadingInTime(true);
+            const data = await new Promise(res => {
+              // 模拟Ajax请求三秒后返回数据
+              setTimeout(() => {
+                res('hello lugiax!');
+              }, 50);
+            });
+            await changeLoadingInTime(false);
+            return state.set('data', data);
+          },
+        },
+        inTime: {
+          async changeLoading(param: any, handle: any) {
+            handle.updateModel(handle.getState().set('loading', param));
+          },
+        },
+      },
+    });
+    const batchModels = [];
+    lugiax.onRender('batchModels', state => {
+      batchModels.push(state);
+    });
+    await asyncDoSomething({});
+    expect(getState().toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
+    expect(batchModels).toEqual([{ lgx: true, }, { lgx: true, }, { lgx: true, },]);
   });
 });
