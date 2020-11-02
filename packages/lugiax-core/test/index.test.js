@@ -1444,6 +1444,9 @@ describe('lugiax', () => {
             redInTime(true);
             yellowInTime(true);
             greenInTime(true);
+            greenInTime(true);
+            greenInTime(true);
+            greenInTime(true);
           },
           async red(param: any, handle: any) {
             handle.updateModel(handle.getState().set('red', param));
@@ -1457,6 +1460,10 @@ describe('lugiax', () => {
         },
       },
     });
+    const batchModels = [];
+    lugiax.onRender('batchModels', state => {
+      batchModels.push(state);
+    });
     await doSomethingInTime({});
     await new Promise(res => {
       setTimeout(() => {
@@ -1464,6 +1471,7 @@ describe('lugiax', () => {
         res(true);
       }, 1000);
     });
+    expect(batchModels).toEqual([{ lgx: true, },]);
   });
 
   it('inTimeMutation await', async () => {
@@ -1485,6 +1493,7 @@ describe('lugiax', () => {
             } = handle;
             await redInTime(true);
             await yellowInTime(true);
+            await yellowInTime(true);
             await greenInTime(true);
           },
           async red(param: any, handle: any) {
@@ -1499,7 +1508,12 @@ describe('lugiax', () => {
         },
       },
     });
+    const batchModels = [];
+    lugiax.onRender('batchModels', state => {
+      batchModels.push(state);
+    });
     await doSomethingInTime({});
     expect(getState().toJS()).toEqual({ yellow: true, red: true, green: true, });
+    expect(batchModels).toEqual([{ lgx: true, }, { lgx: true, }, { lgx: true, }, { lgx: true, },]);
   });
 });

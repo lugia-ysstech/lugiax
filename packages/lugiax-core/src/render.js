@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import { Subscribe, } from '@lugia/lugiax-common';
+import { Subscribe } from '@lugia/lugiax-common';
 import Stack from './stack';
 
 const BatchModels = 'batchModels';
@@ -52,6 +52,9 @@ class Render {
     this.trigger(oldWillRenderModules);
   }
   trigger(willRenderModules: object): void {
+    if (!willRenderModules || Object.keys(willRenderModules).length <= 0) {
+      return;
+    }
     this.renderEvent.trigger(BatchModels, willRenderModules);
   }
 }

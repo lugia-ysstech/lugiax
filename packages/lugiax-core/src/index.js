@@ -306,7 +306,7 @@ class LugiaxImpl implements LugiaxType {
     if (body) {
       this.store.dispatch({ type: Loading, model, });
 
-      return await body(param, {
+      const result =  await body(param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
           return this.wait(mutation);
@@ -316,6 +316,8 @@ class LugiaxImpl implements LugiaxType {
         },
         getState: () => this.getModelData(model),
       });
+      render.endCall();
+      return result;
     }
     render.endCall();
     return modelData;
