@@ -204,7 +204,7 @@ class LugiaxImpl implements LugiaxType {
     const modelMutation = this.modelName2Mutations[model];
     const innerMutationName = type === 'sync' ? mutationName : this.addAsyncPrefix(mutationName);
     if (modelMutation && modelMutation[innerMutationName]) {
-      throw new Error(`The ${type} [${model}.${mutationName}] is exist model!`);
+      console.warn(`The ${type} [${model}.${mutationName}] is exist model!`);
     }
   }
 
