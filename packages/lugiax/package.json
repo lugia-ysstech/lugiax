@@ -1,10 +1,10 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "dependencies": {
     "@lugia/combine": "^1.0.2",
-    "@lugia/lugiax-core": "^1.2.2",
-    "@lugia/lugiax-data": "^1.1.1",
+    "@lugia/lugiax-core": "^1.2.3",
+    "@lugia/lugiax-data": "^1.1.2",
     "hoist-non-react-statics": "^3.3.2",
     "immutable": "^3.8.2"
   },
