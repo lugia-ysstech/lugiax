@@ -90,11 +90,15 @@ function transform(opts = {}) {
   const { content, path } = opts;
   const winPath = slash(path);
   const isBrowser = isBrowserTransform(winPath);
+  const isNeedTransformByBabel = !path.endsWith('.d.ts');
   console.log(
     chalk[isBrowser ? 'yellow' : 'green'](
       `[TRANSFORM] ${winPath.replace(`${cwd}/`, '')}`,
     ),
   );
+  if(!isNeedTransformByBabel){
+    return content;
+  }
   const config = isBrowser ? browserBabelConfig : nodeBabelConfig;
   return babel.transform(content, config).code;
 }
@@ -131,6 +135,10 @@ function buildPkg(pkg, minify = false) {
       }),
     )
     .pipe(vfs.dest(join('./', packagesDirName, pkg, './lib')));
+  vfs.src([
+    `./${packagesDirName}/${pkg}/src/**/*.ts`,
+  ]).pipe(vfs.dest(join('./', packagesDirName, pkg, './lib')));
+
 }
 
 function watch(pkg) {
