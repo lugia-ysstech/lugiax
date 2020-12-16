@@ -73,6 +73,7 @@
     ]
   },
   "main": "./lib/index.js",
+  "type": "./lib/index.d.ts",
   "engines": {
     "node": ">=8.0.0",
     "npm": ">=5.2.0"
