@@ -116,48 +116,53 @@
     react-error-overlay "1.0.9"
     warning "3.0.0"
 
-"@lugia/lugiax-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
-  integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha512-8R1hw+B5pt9xQS5uv8RI9cinXS/96oUAT0wf7w31hTntm0gJ86QVgnOlhbsGChrtQv+qEMLgVSVn1kRWeV6O8A==
 
-"@lugia/lugiax-core@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.4.tgz#e778d372493d089467a11b75a2e41bb1790e6da6"
-  integrity sha1-53jTckk9CJRnoRt1ouQbsXkObaY=
+"@lugia/lugiax-core@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.2.4.tgz#71daf57a5841dc3c3ea3eb8442adbfcfe9352a82"
+  integrity sha512-WQIHXGwZtUon8HNgkyU2a+ztyWpqKfrKfyRHIsqJDPKGux3nKTxwSmNG+t6uWQy7rxLvnuF56fhcY9ez/GETnQ==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.3.tgz#3b40c2b01476f99f710090ddc932a0857e5f0234"
-  integrity sha1-O0DCsBR2+Z9xAJDdyTKghX5fAjQ=
+"@lugia/lugiax-data@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.1.3.tgz#ab8cc385d2783547bebf1d906fba052e95c6e736"
+  integrity sha512-A8yC8jU1g1R291xc4SE2bEOxZ6a+NIh9OEuv5r4kP26zo80MpHY4EMQn3GJLEt6xJq0mWLNoXh/7MgV8P+OgRQ==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     is-plain-object "^3.0.0"
     shortid "^2.2.15"
 
-"@lugia/lugiax-router@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-router/download/@lugia/lugiax-router-1.1.10.tgz#ad9c6a075c12359f919723c0f40dad251f7cdcd2"
-  integrity sha1-rZxqB1wSNZ+RlyPA9A2tJR983NI=
+"@lugia/lugiax-persistence@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-persistence/-/lugiax-persistence-1.1.3.tgz#7508f37af9c731a79ff5757efd7c30676b471f3b"
+  integrity sha512-RY/lkwNg4Nxu0z+hA0C3qgVgYh5jfe0pPBzQz/JKxRi6WPaO305stvjyyRGjGKc3RktqJUDHrA5eI2jV2n+rfg==
+
+"@lugia/lugiax-router@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-router/-/lugiax-router-1.2.3.tgz#445a6a59fc0c082c9ace8d7f9fd22cf819de1ac3"
+  integrity sha512-VjdNhTX3FenOkhrMslaRoHcbogL5rKhqkq7jXvAmtDh7VLj0dYD7ZCq2DQuBTsLpyCu/mdljQMrRIRtn/q6cGg==
   dependencies:
-    "@lugia/lugiax" "^1.1.8"
+    "@lugia/lugiax" "^1.2.4"
     react-loadable "^5.5.0"
     react-router "^4.3.1"
 
-"@lugia/lugiax@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax/download/@lugia/lugiax-1.1.8.tgz#658cb981f2c080daed333cb10e2cf689a894e12d"
-  integrity sha1-ZYy5gfLAgNrtMzyxDiz2iaiU4S0=
+"@lugia/lugiax@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax/-/lugiax-1.2.4.tgz#cdcf343c9131f9ece7b6ff6836dbe11574028c77"
+  integrity sha512-WIjEGY/Yox+HzMb93/8aaIgKCCKzTFOCwFMTeHJAxHBFrd9KBxM7hXD4wfn41C5SYSRhYwIIbYyxM3VKABUeAA==
   dependencies:
     "@lugia/combine" "^1.0.2"
-    "@lugia/lugiax-core" "^1.1.4"
-    "@lugia/lugiax-data" "^1.0.3"
+    "@lugia/lugiax-core" "^1.2.4"
+    "@lugia/lugiax-data" "^1.1.3"
     hoist-non-react-statics "^3.3.2"
     immutable "^3.8.2"
 
@@ -2503,8 +2508,9 @@ domutils@1.5.1:
     domelementtype "1"
 
 dot-prop@^4.1.0:
-  version "4.2.0"
-  resolved "http://registry.npm.taobao.org/dot-prop/download/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.1.tgz#45884194a71fc2cda71cbb4bceb3a4dd2f433ba4"
+  integrity sha512-l0p4+mIuJIua0mhxGoh4a+iNL9bmeK5DvnSVQa6T0OhrVmaEa1XScX5Etc673FePCJOArq/4Pa2cLGODUWTPOQ==
   dependencies:
     is-obj "^1.0.0"
 
@@ -4028,7 +4034,8 @@ is-number@^4.0.0:
 
 is-obj@^1.0.0:
   version "1.0.1"
-  resolved "http://registry.npm.taobao.org/is-obj/download/is-obj-1.0.1.tgz#3e4729ac1f5fde025cd7d83a896dab9f4f67db0f"
+  resolved "https://registry.yarnpkg.com/is-obj/-/is-obj-1.0.1.tgz#3e4729ac1f5fde025cd7d83a896dab9f4f67db0f"
+  integrity sha1-PkcprB9f3gJc19g6iW2rn09n2w8=
 
 is-path-cwd@^1.0.0:
   version "1.0.0"
