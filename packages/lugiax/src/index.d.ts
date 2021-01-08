@@ -47,5 +47,6 @@ export function bindTo(
   opt?: ConnectOptionType,
 ): any;
 
-export default LugiaxType;
+declare const Default: LugiaxType;
+export default Default;
 

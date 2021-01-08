@@ -88,6 +88,9 @@ export type EventResult = {
 };
 
 export interface LugiaxType {
+
+  store: any;
+
   register(param: RegisterParam, option?: Option): RegisterResult;
 
   getState(): Object;
