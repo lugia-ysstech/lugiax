@@ -69,7 +69,8 @@ class LugiaxImpl implements LugiaxType {
       console.error('lugiax.register param must be not undefined!');
       return;
     }
-    const { model, } = param;
+    const { model: name, module,} = param;
+    const model = module ? `${module}_${name}` : name;
     const { force, } = option;
     const { existModel, } = this;
     const isExist = !!existModel[model];
@@ -137,6 +138,7 @@ class LugiaxImpl implements LugiaxType {
       const result = {
         mutations,
         model,
+        module,
         ...mutaionAddor,
         getState,
       };
