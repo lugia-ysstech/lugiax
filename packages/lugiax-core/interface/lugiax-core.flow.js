@@ -63,6 +63,7 @@ declare module '@lugia/lugiax-core' {
   declare type RegisterResult = {
     getState: () => Object,
     model: string,
+    module?: string,
     mutations: Mutation,
     destroy: () => boolean,
     addMutation: (mutationName: string, func: SyncMutationFunction) => void,
@@ -73,6 +74,7 @@ declare module '@lugia/lugiax-core' {
     model: string,
     state: Object,
     mutations?: Mutations,
+    module?: string
   };
 
   declare type Option = {
