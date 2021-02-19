@@ -24,6 +24,11 @@ export default class Stack {
       throw new Error('Stack init error:' + e.message);
     }
   }
+
+  clearStack(){
+    this.data = [];
+  }
+
   push(item) {
     this.data.push(item);
     this.onPushItem(item);
