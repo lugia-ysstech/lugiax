@@ -59,6 +59,13 @@ describe('Stack test', () => {
     expect(stack.data).toEqual([]);
   });
 
+  it('Stack clearStack function is work', () => {
+    const stack = new Stack();
+    stack.push('22');
+    stack.clearStack();
+    expect(stack.data).toEqual([]);
+  });
+
   it('Stack push function is work', () => {
     const stack = new Stack();
     stack.push('22');

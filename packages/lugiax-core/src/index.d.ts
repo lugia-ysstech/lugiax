@@ -72,6 +72,7 @@ export type RegisterParam = {
 
 export type Option = {
   force: boolean,
+  modelMutationTimeOut: number,
 };
 export type WaitHandler = (
   mutation: MutationFunction,
@@ -116,4 +117,7 @@ export interface LugiaxType {
   removeAllEvent(): boolean;
 
   onRender(event: string, cb: Function): SubscribeResult;
+
+  setMutationTimeOut(timer: number): void;
+  clearRenderQueue(): void;
 }

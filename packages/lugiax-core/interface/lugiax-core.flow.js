@@ -47,6 +47,7 @@ declare module '@lugia/lugiax-core' {
     sync?: SyncMutation,
     async?: AsyncMutation,
     inTime?: InTimeMutation,
+    asyncTimeoutConfig?: { [key:string]: number }
   };
 
   declare type MutationType = 'async' | 'sync' | 'inTime';
@@ -77,6 +78,7 @@ declare module '@lugia/lugiax-core' {
 
   declare type Option = {
     force: boolean, // 是否强制注册 默认为false
+    modelMutationTimeOut?: number,
   };
   declare type WaitHandler = (
     mutation: MutationFunction,
@@ -121,6 +123,9 @@ declare module '@lugia/lugiax-core' {
     onceEvent(event: string, cb: Function): EventResult;
     removeAllEvent(): boolean;
     onRender(event: string, cb: Function): SubscribeResult;
+
+    setMutationTimeOut(timer: number): void;
+    clearRenderQueue(): void;
   }
 
   declare module.exports: LugiaxType;
