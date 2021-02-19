@@ -53,10 +53,17 @@ class LugiaxImpl implements LugiaxType {
   sagaMiddleware: Object;
   storeEvent: Subscribe;
   lugiaxEvent: Subscribe;
+  globalMutationTimeOut: number;
+  modelName2MutationTimeOut: { [key: string]: number };
+  mutationCancel: { [key: string]: Function }
 
   constructor() {
     this.clear();
     this.lugiaxEvent = new Subscribe();
+    this.globalMutationTimeOut = 10000;
+    this.modelMutationTimeOut = {};
+    this.modelName2MutationTimeOut = {};
+    this.mutationCancel = {};
   }
 
   trigger(topic: string, newState: Object, oldState: Object) {
@@ -71,9 +78,12 @@ class LugiaxImpl implements LugiaxType {
     }
     const { model: name, module,} = param;
     const model = module ? `${module}_${name}` : name;
-    const { force, } = option;
+    const { force, modelMutationTimeOut,} = option;
     const { existModel, } = this;
     const isExist = !!existModel[model];
+    if (modelMutationTimeOut) {
+      this.modelName2MutationTimeOut[model] = modelMutationTimeOut;
+    }
     if (!force && isExist) {
       console.error(`${model} is exist!`);
     }
@@ -238,9 +248,11 @@ class LugiaxImpl implements LugiaxType {
         let mutation;
         switch (type) {
           case 'async':
+            const mutationTimeout = mutations && mutations.asyncTimeoutConfig && mutations.asyncTimeoutConfig[key];
+            const currentMutationTimeout = mutationTimeout || this.modelName2MutationTimeOut[model] || this.globalMutationTimeOut;
             mutationName = this.addAsyncPrefix(key);
             mutation = async (param?: Object) => {
-              return await this.doAsyncMutation(mutationId, param);
+              return await this.doAsyncMutation(mutationId, param, currentMutationTimeout, mutationName);
             };
             break;
           case 'sync':
@@ -276,7 +288,7 @@ class LugiaxImpl implements LugiaxType {
     return `${key}InTime`;
   }
 
-  async doAsyncMutation(action: MutationID, param: ?Object): Promise<any> {
+  async doAsyncMutation(action: MutationID, param: ?Object, currentMutationTimeout?: number, mutationName?: string): Promise<any> {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
@@ -284,15 +296,22 @@ class LugiaxImpl implements LugiaxType {
     const modelData = this.getModelData(model);
     if (body) {
       this.store.dispatch({ type: Loading, model, });
-
-      const newState = await body(modelData, param, {
+      const bodyPromiseFn = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
           return this.wait(mutation);
         },
         getState: () => this.getModelData(model),
       });
-
+      const timeOUtPromise = new Promise(resolve => {
+        this.mutationCancel[mutationName] = () => resolve() ;
+        setTimeout(() => resolve(''), currentMutationTimeout);
+      });
+      const newState = await Promise.race([bodyPromiseFn, timeOUtPromise,]);
+      delete this.mutationCancel[mutationName];
+      if (!newState) {
+        console.error(`mutation ${mutationName} 等待时间超过设置的的等待时间!!`);
+      }
       return this.updateModel(model, newState, mutationId, param, 'async');
     }
     render.endCall();
@@ -465,6 +484,9 @@ class LugiaxImpl implements LugiaxType {
     this.modelName2Mutations = {};
     this.mutationId2Mutaions = { async: {}, sync: {}, inTime: {}, };
     this.mutationId2MutationInfo = {};
+    this.mutationCancel= {};
+    this.modelMutationTimeOut = {};
+    this.modelName2MutationTimeOut = {};
     this.createStore();
     render.clear();
   }
@@ -555,6 +577,22 @@ class LugiaxImpl implements LugiaxType {
 
   getStore() {
     return this.store;
+  }
+
+  clearRenderQueue() {
+    render.clearRenderQueue();
+    this.cancelMutations();
+  }
+
+  cancelMutations(){
+    for(const key  in this.mutationCancel){
+      const cancelFn =  this.mutationCancel[key];
+      typeof cancelFn === 'function' &&  cancelFn();
+    }
+  }
+
+  setMutationTimeOut(timer) {
+    this.globalMutationTimeOut = timer;
   }
 }
 
