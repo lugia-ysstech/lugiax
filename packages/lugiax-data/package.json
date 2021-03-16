@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax-data",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "dependencies": {
     "@lugia/lugiax-common": "^1.0.2",
     "is-plain-object": "^3.0.0",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@lugia/jverify": "^1.0.1",
-    "@lugia/lugiax-core": "^1.2.5",
+    "@lugia/lugiax-core": "^1.2.6",
     "@lugia/react-test-utils": "^1.0.2",
     "debug": "2.6.9",
     "dotenv": "4.0.0",

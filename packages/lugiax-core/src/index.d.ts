@@ -58,6 +58,7 @@ export type Mutation = {
 export type RegisterResult = {
   getState: () => Object,
   model: string,
+  module?: string,
   mutations: Mutation,
   destroy: () => boolean,
   addMutation: (mutationName: string, func: SyncMutationFunction) => void,
