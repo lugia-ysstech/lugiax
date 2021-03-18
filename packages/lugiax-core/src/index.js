@@ -37,6 +37,8 @@ const DestroyModel = '@lugiax/destroyModel';
 const Loading = '@lugiax/Loading';
 const LoadFinished = '@lugiax/LoadFinished';
 const RegisterTopic = 'register';
+const MutationTimeOut = 'MutationTimeOut';
+const UserCancelMutation = 'CustomCancelMutation';
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
   mutationId2Mutaions: {
@@ -258,7 +260,7 @@ class LugiaxImpl implements LugiaxType {
           case 'sync':
             mutationName = key;
             mutation = (param?: Object) => {
-              return this.doSyncMutation(mutationId, param);
+              return this.doSyncMutation(mutationId, param, mutationName);
             };
             break;
           case 'inTime':
@@ -304,13 +306,18 @@ class LugiaxImpl implements LugiaxType {
         getState: () => this.getModelData(model),
       });
       const timeOUtPromise = new Promise(resolve => {
-        this.mutationCancel[mutationName] = () => resolve() ;
-        setTimeout(() => resolve(''), currentMutationTimeout);
+        this.mutationCancel[mutationName] = () => resolve(UserCancelMutation) ;
+        setTimeout(() => resolve(MutationTimeOut), currentMutationTimeout);
       });
       const newState = await Promise.race([bodyPromiseFn, timeOUtPromise,]);
       delete this.mutationCancel[mutationName];
-      if (!newState) {
+      if (newState === MutationTimeOut) {
         console.error(`mutation ${mutationName} 等待时间超过设置的的等待时间!!`);
+        return;
+      }
+      if (newState === UserCancelMutation) {
+        console.warn(`用户取消了 mutation ${mutationName} !!`);
+        return;
       }
       return this.updateModel(model, newState, mutationId, param, 'async');
     }
@@ -351,7 +358,7 @@ class LugiaxImpl implements LugiaxType {
     });
   }
 
-  doSyncMutation(action: MutationID, param: ?Object): any {
+  doSyncMutation(action: MutationID, param: ?Object, mutationName): any {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
@@ -367,7 +374,6 @@ class LugiaxImpl implements LugiaxType {
       if (ObjectUtils.isPromise(newState)) {
         throw new Error('state can not be a Promise Object ! ');
       }
-
       return this.updateModel(model, newState, mutationId, param, 'sync');
     }
     render.endCall();
