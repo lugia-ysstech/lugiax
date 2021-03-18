@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect, } from '@lugia/lugiax';
 import { userModel, } from './model';
+import lugaix from '@lugia/lugiax';
+
 class UserList extends React.Component {
   state = { loading: false, };
   constructor(props) {
@@ -13,7 +15,7 @@ class UserList extends React.Component {
   }
 
   render() {
-    const { list, removePeopleById, asyncRemovePeopleById , asyncGetPeoples,} = this.props;
+    const { list, removePeopleById, asyncRemovePeopleById ,} = this.props;
     return (
       <div>
         {list.map(item => {
@@ -24,6 +26,7 @@ class UserList extends React.Component {
               <span>&nbsp;爱好：{item.hobby}</span>
               <span
                 onClick={() => {
+                  lugaix.clearRenderQueue();
                   asyncRemovePeopleById(item);
                 }}
               >
@@ -31,6 +34,7 @@ class UserList extends React.Component {
               </span>
               <span
                 onClick={() => {
+                  lugaix.clearRenderQueue();
                   removePeopleById(item);
                 }}
               >
