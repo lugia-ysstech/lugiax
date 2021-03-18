@@ -260,7 +260,7 @@ class LugiaxImpl implements LugiaxType {
           case 'sync':
             mutationName = key;
             mutation = (param?: Object) => {
-              return this.doSyncMutation(mutationId, param, mutationName);
+              return this.doSyncMutation(mutationId, param);
             };
             break;
           case 'inTime':
@@ -358,7 +358,7 @@ class LugiaxImpl implements LugiaxType {
     });
   }
 
-  doSyncMutation(action: MutationID, param: ?Object, mutationName): any {
+  doSyncMutation(action: MutationID, param: ?Object): any {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
