@@ -279,7 +279,6 @@ describe('lugiax-persistence', () => {
     });
   });
   it('wrapPersistence use async mutations  check by memoryPersistence', async () => {
-    const promiseEvent = new EventEmitter();
     const state = {
       name: 'ligx',
       pwd: '9',
@@ -308,9 +307,6 @@ describe('lugiax-persistence', () => {
                   setTimeout(() => {
                     res(inpar);
                   }, 200);
-                }).then(data => {
-                  promiseEvent.emit('update');
-                  return data;
                 });
                 state = getState();
                 return state.set('name', list);
@@ -324,28 +320,9 @@ describe('lugiax-persistence', () => {
     const newName = 'newName';
     const newOtherName = 'newOtherName';
     const { mutations, } = obj;
-    mutations.asyncChangeName(newName).then(() => {
-      promiseEvent.emit('update');
-    });
-
-    mutations.asyncChangeName(newOtherName).then(() => {
-      promiseEvent.emit('update');
-    });
-    const promise = new Promise(res => {
-      let count = 0;
-      const countFn = () => {
-        if (count === 2) {
-          res('ok');
-        }
-        count++;
-      };
-      promiseEvent.on('update', () => {
-        countFn();
-      });
-    });
-    await promise;
+    await mutations.asyncChangeName(newName);
+    await mutations.asyncChangeName(newOtherName);
     expect(obj.getState().toJS().name).toEqual(newOtherName);
-
     const [history1, history2,] = getMemoryArray();
     expect(history1).toEqual({
       name: 'newName',
