@@ -11,18 +11,26 @@ const userState = {
 };
 const modelName = 'userInfo';
 
+lugaix.setMutationTimeOut (2000);
+
 export const userModel = lugaix.register({
   model: modelName,
   state: userState,
   mutations: {
     sync: {
-      removePeopleById(state, inpar, { mutations, }) {
-        lugaix.clearRenderQueue();
+      removePeopleById(state, inpar, { mutations, getState, }) {
+        mutations.removePeopleByIndex(1);
+        state = getState();
         const list = state.get('peoples');
         const newList = list.filter(item => {
           return item.get('id') != inpar.id;
         });
+        console.log('====?newList',newList.toJS());
         return state.set('peoples', newList);
+      },
+      removePeopleByIndex(state, inpar, { mutations, }) {
+        const list = state.get('peoples');
+        return state.set('peoples', list.splice(inpar,1));
       },
     },
     async: {
@@ -37,13 +45,20 @@ export const userModel = lugaix.register({
                 { id: '4', name: '小李', age: 18, hobby: '看小说11', },
               ],
             });
-          }, 6000);
+          }, 61000);
         });
         if (data.result === 'ok') {
           const s = getState().set('peoples', fromJS(data.data));
-          console.log('s=====>', s.get('peoples').toJS());
           return s;
         }
+      },
+      async  removePeopleById(state, inpar, { mutations, }) {
+        lugaix.clearRenderQueue();
+        const list = state.get('peoples');
+        const newList = list.filter(item => {
+          return item.get('id') != inpar.id;
+        });
+        return state.set('peoples', newList);
       },
     },
   },
