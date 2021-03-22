@@ -62,7 +62,7 @@ class LugiaxImpl implements LugiaxType {
   constructor() {
     this.clear();
     this.lugiaxEvent = new Subscribe();
-    this.globalMutationTimeOut = 60000;
+    this.globalMutationTimeOut = 5 * 60 * 1000;
     this.modelMutationTimeOut = {};
     this.modelName2MutationTimeOut = {};
     this.mutationCancel = {};
