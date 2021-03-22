@@ -305,18 +305,19 @@ class LugiaxImpl implements LugiaxType {
         },
         getState: () => this.getModelData(model),
       });
+      const mutationCancelName = `${model}-${mutationName}`;
       const timeOUtPromise = new Promise(resolve => {
-        this.mutationCancel[mutationName] = () => resolve(UserCancelMutation) ;
+        this.mutationCancel[mutationCancelName] = () => resolve(UserCancelMutation) ;
         setTimeout(() => resolve(MutationTimeOut), currentMutationTimeout);
       });
       const newState = await Promise.race([bodyPromiseFn, timeOUtPromise,]);
-      delete this.mutationCancel[mutationName];
+      delete this.mutationCancel[mutationCancelName];
       if (newState === MutationTimeOut) {
-        console.error(`mutation ${mutationName} 等待时间超过设置的的等待时间!!`);
+        console.error(`模型 ${model} 的mutation ${mutationName} 等待时间超过设置的的等待时间!!`);
         return;
       }
       if (newState === UserCancelMutation) {
-        console.warn(`用户取消了 mutation ${mutationName} !!`);
+        console.warn(`用户取消了模型 ${model} 的 mutation ${mutationName} !!`);
         return;
       }
       return this.updateModel(model, newState, mutationId, param, 'async');
