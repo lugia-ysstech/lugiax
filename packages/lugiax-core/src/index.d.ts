@@ -69,6 +69,7 @@ export type RegisterParam = {
   model: string,
   state: Object,
   mutations?: Mutations,
+  module?: string
 };
 
 export type Option = {
