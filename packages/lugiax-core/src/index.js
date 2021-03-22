@@ -254,7 +254,7 @@ class LugiaxImpl implements LugiaxType {
             const currentMutationTimeout = mutationTimeout || this.modelName2MutationTimeOut[model] || this.globalMutationTimeOut;
             mutationName = this.addAsyncPrefix(key);
             mutation = async (param?: Object) => {
-              return await this.doAsyncMutation(mutationId, param, currentMutationTimeout, mutationName);
+              return await this.doAsyncMutation(mutationId, param, currentMutationTimeout);
             };
             break;
           case 'sync':
@@ -290,7 +290,7 @@ class LugiaxImpl implements LugiaxType {
     return `${key}InTime`;
   }
 
-  async doAsyncMutation(action: MutationID, param: ?Object, currentMutationTimeout?: number, mutationName?: string): Promise<any> {
+  async doAsyncMutation(action: MutationID, param: ?Object, currentMutationTimeout?: number): Promise<any> {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
@@ -305,20 +305,19 @@ class LugiaxImpl implements LugiaxType {
         },
         getState: () => this.getModelData(model),
       });
-      const mutationCancelName = `${model}-${mutationName}`;
       const timeOUtPromise = new Promise(resolve => {
-        this.mutationCancel[mutationCancelName] = () => resolve(UserCancelMutation) ;
+        this.mutationCancel[mutationId] = () => resolve(UserCancelMutation) ;
         setTimeout(() => resolve(MutationTimeOut), currentMutationTimeout);
       });
       const newState = await Promise.race([bodyPromiseFn, timeOUtPromise,]);
-      delete this.mutationCancel[mutationCancelName];
+      delete this.mutationCancel[mutationId];
       if (newState === MutationTimeOut) {
-        console.error(`模型 ${model} 的mutation ${mutationName} 等待时间超过设置的的等待时间!!`);
-        return;
+        console.error(` ${mutationId} 等待时间超过设置的的等待时间!!`);
+        return modelData;
       }
       if (newState === UserCancelMutation) {
-        console.warn(`用户取消了模型 ${model} 的 mutation ${mutationName} !!`);
-        return;
+        console.warn(`用户取消了 ${mutationId} !!`);
+        return modelData;
       }
       return this.updateModel(model, newState, mutationId, param, 'async');
     }
@@ -587,8 +586,8 @@ class LugiaxImpl implements LugiaxType {
   }
 
   clearRenderQueue() {
-    render.clearRenderQueue();
     this.cancelMutations();
+    render.clearRenderQueue();
   }
 
   cancelMutations(){
