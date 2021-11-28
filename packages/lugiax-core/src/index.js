@@ -138,6 +138,7 @@ class LugiaxImpl implements LugiaxType {
       delete target.addMutation;
       delete target.addAsyncMutation;
       delete target.getState;
+      delete target.module;
       delete target.destroy;
 
       target.isDestroy = true;
