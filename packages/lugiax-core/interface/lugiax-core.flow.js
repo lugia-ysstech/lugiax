@@ -47,7 +47,7 @@ declare module '@lugia/lugiax-core' {
     sync?: SyncMutation,
     async?: AsyncMutation,
     inTime?: InTimeMutation,
-    asyncTimeoutConfig?: { [key:string]: number }
+    asyncTimeoutConfig?: { [key: string]: number },
   };
 
   declare type MutationType = 'async' | 'sync' | 'inTime';
@@ -71,11 +71,30 @@ declare module '@lugia/lugiax-core' {
     addAsyncMutation: (mutationName: string, func: AsyncMutationFunction) => void,
   };
 
+  declare type AopHandleParam = { getState: () => Object };
+  declare type AopMethod = (param: AopHandleParam) => void;
+
+  declare interface AopHandle {
+    before?: AopMethod;
+    after?: AopMethod;
+  }
+
+  declare type MutationAop = {
+    [mutationName: string]: AopHandle,
+  };
+
+  declare interface MutationName2Aop {
+    async?: MutationAop;
+    sync?: MutationAop;
+    inTime?: MutationAop;
+  }
+
   declare type RegisterParam = {
     model: string,
     state: Object,
     mutations?: Mutations,
-    module?: string
+    module?: string,
+    aopConfig?: MutationName2Aop,
   };
 
   declare type Option = {

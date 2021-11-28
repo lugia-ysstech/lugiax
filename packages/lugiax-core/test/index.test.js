@@ -1560,4 +1560,108 @@ describe('lugiax', () => {
     expect(getState().toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
     expect(batchModels).toEqual([{ lgx: true, }, { lgx: true, }, { lgx: true, },]);
   });
+
+  it('aopConfig', async () => {
+    let doSomethingBefore;
+    let doSomethingAfter;
+    let changeLoadingBefore;
+    let changeLoadingAfter;
+    let testBefore;
+    let testAfter;
+    const {
+      mutations: { asyncDoSomething, test: doTest, },
+      getState,
+    } = lugiax.register({
+      model: 'lgx',
+      state: {
+        loading: false,
+        data: '111',
+      },
+      aopConfig: {
+        async: {
+          doSomething: {
+            before({ getState, }) {
+              doSomethingBefore = getState();
+            },
+            after({ getState, }) {
+              doSomethingAfter = getState();
+            },
+          },
+        },
+        inTime: {
+          changeLoading: {
+            before({ getState, }) {
+              changeLoadingBefore = getState();
+            },
+            after({ getState, }) {
+              changeLoadingAfter = getState();
+            },
+          },
+        },
+        sync: {
+          test: {
+            after({ getState, }) {
+              testAfter = getState();
+            },
+            before({ getState, }) {
+              testBefore = getState();
+            },
+          },
+        },
+      },
+      mutations: {
+        async: {
+          async doSomething(state: any, param: any, handle: any) {
+            const {
+              mutations: { changeLoadingInTime, },
+            } = handle;
+
+            await changeLoadingInTime(true);
+            const data = await new Promise(res => {
+              // 模拟Ajax请求三秒后返回数据
+              setTimeout(() => {
+                res('hello lugiax!');
+              }, 50);
+            });
+            await changeLoadingInTime(false);
+            return state.set('data', data);
+          },
+        },
+        sync: {
+          test(state: any, param: any) {
+            return state.set('test', param);
+          },
+        },
+        inTime: {
+          async changeLoading(param: any, handle: any) {
+            handle.updateModel(handle.getState().set('loading', param));
+          },
+        },
+      },
+    });
+
+    const batchModels = [];
+    lugiax.onRender('batchModels', state => {
+      batchModels.push(state);
+    });
+    await asyncDoSomething({});
+    expect(getState().toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
+    expect(batchModels).toEqual([{ lgx: true, }, { lgx: true, }, { lgx: true, },]);
+
+    expect(doSomethingBefore.toJS()).toEqual({
+      loading: false,
+      data: '111',
+    });
+    expect(doSomethingAfter.toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
+
+    expect(changeLoadingBefore.toJS()).toEqual({
+      loading: true,
+      data: '111',
+    });
+    expect(changeLoadingAfter.toJS()).toEqual({ loading: false, data: '111', });
+
+    doTest({ name: 'ligx', });
+    expect(testBefore.toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
+    expect(testAfter.toJS()).toEqual({ loading: false, data: 'hello lugiax!', test: {name: 'ligx',},});
+  });
 });

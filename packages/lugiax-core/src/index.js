@@ -18,6 +18,8 @@ import type {
   SyncMutationFunction,
   WaitHandler,
   InTimeMutation,
+  AopHandle,
+  MutationName2Aop,
 } from '@lugia/lugiax-core';
 import { fromJS, } from 'immutable';
 import { take, takeEvery, } from 'redux-saga/effects';
@@ -29,6 +31,7 @@ import createSagaMiddleware from 'redux-saga';
 import { ObjectUtils, } from '@lugia/type-utils';
 import { Subscribe, } from '@lugia/lugiax-common';
 import render from './render';
+import { getAopHandle, } from './utils';
 
 const ReloadAction = '@lugiax/reload';
 const All = '@lugia/msg/All';
@@ -57,7 +60,7 @@ class LugiaxImpl implements LugiaxType {
   lugiaxEvent: Subscribe;
   globalMutationTimeOut: number;
   modelName2MutationTimeOut: { [key: string]: number };
-  mutationCancel: { [key: string]: Function }
+  mutationCancel: { [key: string]: Function };
 
   constructor() {
     this.clear();
@@ -78,9 +81,9 @@ class LugiaxImpl implements LugiaxType {
       console.error('lugiax.register param must be not undefined!');
       return;
     }
-    const { model: name, module,} = param;
+    const { model: name, module, } = param;
     const model = module ? `${module}_${name}` : name;
-    const { force, modelMutationTimeOut,} = option;
+    const { force, modelMutationTimeOut, } = option;
     const { existModel, } = this;
     const isExist = !!existModel[model];
     if (modelMutationTimeOut) {
@@ -163,9 +166,10 @@ class LugiaxImpl implements LugiaxType {
       return packModel(this.modelName2Mutations[model]);
     }
 
-    const sync = this.generateMutation(mutations, model, 'sync');
-    const async = this.generateMutation(mutations, model, 'async');
-    const inTime = this.generateMutation(mutations, model, 'inTime');
+    const { aopConfig = {}, } = param;
+    const sync = this.generateMutation(mutations, model, 'sync', aopConfig);
+    const async = this.generateMutation(mutations, model, 'async', aopConfig);
+    const inTime = this.generateMutation(mutations, model, 'inTime', aopConfig);
 
     this.modelName2Mutations[model] = Object.assign({}, sync, async, inTime);
     return packModel(this.modelName2Mutations[model]);
@@ -232,7 +236,12 @@ class LugiaxImpl implements LugiaxType {
     }
   }
 
-  generateMutation(mutations: Mutations, model: string, type: MutationType): Mutation {
+  generateMutation(
+    mutations: Mutations,
+    model: string,
+    type: MutationType,
+    aopConfig: MutationName2Aop = {}
+  ): Mutation {
     const result = {};
     const targetMutations = mutations[type];
     targetMutations &&
@@ -249,25 +258,36 @@ class LugiaxImpl implements LugiaxType {
 
         let mutationName;
         let mutation;
+        const aopHandle = getAopHandle(type, key, aopConfig);
+
         switch (type) {
           case 'async':
-            const mutationTimeout = mutations && mutations.asyncTimeoutConfig && mutations.asyncTimeoutConfig[key];
-            const currentMutationTimeout = mutationTimeout || this.modelName2MutationTimeOut[model] || this.globalMutationTimeOut;
+            const mutationTimeout =
+              mutations && mutations.asyncTimeoutConfig && mutations.asyncTimeoutConfig[key];
+            const currentMutationTimeout =
+              mutationTimeout ||
+              this.modelName2MutationTimeOut[model] ||
+              this.globalMutationTimeOut;
             mutationName = this.addAsyncPrefix(key);
             mutation = async (param?: Object) => {
-              return await this.doAsyncMutation(mutationId, param, currentMutationTimeout);
+              return await this.doAsyncMutation(
+                mutationId,
+                param,
+                currentMutationTimeout,
+                aopHandle
+              );
             };
             break;
           case 'sync':
             mutationName = key;
             mutation = (param?: Object) => {
-              return this.doSyncMutation(mutationId, param);
+              return this.doSyncMutation(mutationId, param, aopHandle);
             };
             break;
           case 'inTime':
             mutationName = this.addInTimeSuffix(key);
             mutation = async (param?: Object) => {
-              return this.doInTimeMutation(mutationId, param);
+              return this.doInTimeMutation(mutationId, param, aopHandle);
             };
             break;
           default:
@@ -291,23 +311,32 @@ class LugiaxImpl implements LugiaxType {
     return `${key}InTime`;
   }
 
-  async doAsyncMutation(action: MutationID, param: ?Object, currentMutationTimeout?: number): Promise<any> {
+  async doAsyncMutation(
+    action: MutationID,
+    param: ?Object,
+    currentMutationTimeout?: number,
+    aopHandle: AopHandle
+  ): Promise<any> {
     const { name, } = action;
 
+    const { before, } = aopHandle;
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
     render.beginCall(model);
     const modelData = this.getModelData(model);
     if (body) {
       this.store.dispatch({ type: Loading, model, });
+      const getState = () => this.getModelData(model);
+      const aopParam = { getState, };
+      before && before(aopParam);
       const bodyPromiseFn = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
           return this.wait(mutation);
         },
-        getState: () => this.getModelData(model),
+        getState,
       });
       const timeOUtPromise = new Promise(resolve => {
-        this.mutationCancel[mutationId] = () => resolve(UserCancelMutation) ;
+        this.mutationCancel[mutationId] = () => resolve(UserCancelMutation);
         setTimeout(() => resolve(MutationTimeOut), currentMutationTimeout);
       });
       const newState = await Promise.race([bodyPromiseFn, timeOUtPromise,]);
@@ -320,13 +349,16 @@ class LugiaxImpl implements LugiaxType {
         console.warn(`用户取消了 ${mutationId} !!`);
         return modelData;
       }
-      return this.updateModel(model, newState, mutationId, param, 'async');
+      const updateResult = await this.updateModel(model, newState, mutationId, param, 'async');
+      const { after, } = aopHandle;
+      after && after(aopParam);
+      return updateResult;
     }
     render.endCall();
     return modelData;
   }
 
-  async doInTimeMutation(action: MutationID, param: ?Object): Promise<any> {
+  async doInTimeMutation(action: MutationID, param: ?Object, aopHandle: AopHandle): Promise<any> {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
@@ -334,6 +366,10 @@ class LugiaxImpl implements LugiaxType {
     if (body) {
       this.store.dispatch({ type: Loading, model, });
 
+      const getState = () => this.getModelData(model);
+      const aopParam = { getState, };
+      const { before, } = aopHandle;
+      before && before(aopParam);
       const result = await body(param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
@@ -342,8 +378,11 @@ class LugiaxImpl implements LugiaxType {
         updateModel: state => {
           this.updateModel(model, state, mutationId, param, 'inTime');
         },
-        getState: () => this.getModelData(model),
+        getState,
       });
+
+      const { after, } = aopHandle;
+      after && after(aopParam);
       return result;
     }
     return modelData;
@@ -359,23 +398,30 @@ class LugiaxImpl implements LugiaxType {
     });
   }
 
-  doSyncMutation(action: MutationID, param: ?Object): any {
+  doSyncMutation(action: MutationID, param: ?Object, aopHandle: AopHandle): any {
     const { name, } = action;
 
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
     render.beginCall(model);
     const modelData = this.getModelData(model);
     if (body) {
+      const { before, } = aopHandle;
       this.store.dispatch({ type: Loading, model, });
 
+      const getState = () => this.getModelData(model);
+      const aopParam = { getState, };
+      before && before(aopParam);
       const newState = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
-        getState: () => this.getModelData(model),
+        getState,
       });
       if (ObjectUtils.isPromise(newState)) {
         throw new Error('state can not be a Promise Object ! ');
       }
-      return this.updateModel(model, newState, mutationId, param, 'sync');
+      const result = this.updateModel(model, newState, mutationId, param, 'sync');
+      const { after, } = aopHandle;
+      after && after(aopParam);
+      return result;
     }
     render.endCall();
     return modelData;
@@ -416,7 +462,7 @@ class LugiaxImpl implements LugiaxType {
     });
     if (mutationType === 'inTime') {
       render.trigger({ [model]: true, });
-    }else{
+    } else {
       render.endCall();
     }
     return state;
@@ -491,7 +537,7 @@ class LugiaxImpl implements LugiaxType {
     this.modelName2Mutations = {};
     this.mutationId2Mutaions = { async: {}, sync: {}, inTime: {}, };
     this.mutationId2MutationInfo = {};
-    this.mutationCancel= {};
+    this.mutationCancel = {};
     this.modelMutationTimeOut = {};
     this.modelName2MutationTimeOut = {};
     this.createStore();
@@ -591,10 +637,10 @@ class LugiaxImpl implements LugiaxType {
     render.clearRenderQueue();
   }
 
-  cancelMutations(){
-    for(const key  in this.mutationCancel){
-      const cancelFn =  this.mutationCancel[key];
-      typeof cancelFn === 'function' &&  cancelFn();
+  cancelMutations() {
+    for (const key in this.mutationCancel) {
+      const cancelFn = this.mutationCancel[key];
+      typeof cancelFn === 'function' && cancelFn();
     }
   }
 
