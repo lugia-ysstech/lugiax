@@ -44,6 +44,14 @@ export default function(
   }
 
   const { areStateEqual, areStatePropsEqual, areOwnPropsEqual, } = opt;
+
+  function getModel(modelName: string) {
+    const model = name2Model[modelName];
+    if (!isValidModel(modelName, model)) {
+      return;
+    }
+    return model;
+  }
   return (Target: React.ComponentType<any>) => {
     const widgetName = getDisplayName(Target);
 
@@ -58,10 +66,11 @@ export default function(
         const model2Index = {};
         modelNames.forEach((modelName: string, index: number) => {
           model2Index[modelName] = index;
-          const model = name2Model[modelName];
-          if (!isValidModel(modelName, model)) {
+          const model = getModel(modelName);
+          if (!model) {
             return;
           }
+          model.incBindCount();
           modelData.push(model.getState());
         });
 
@@ -80,6 +89,7 @@ export default function(
           }
           let isIgnoreRender = true;
           let oldModelData = [];
+          const renderFormModels: Object[] = [];
           for (let i = 0; i < modelNames.length; i++) {
             const modelName = modelNames[i];
             const isModelInRenderModel = renderModels[modelName];
@@ -94,6 +104,13 @@ export default function(
             const modelIndex = model2Index[modelName];
             const newState = model.getState();
             modelData[modelIndex] = newState;
+            renderFormModels.push(model);
+          }
+
+          function triggerRender() {
+            for (const triggerRenderModel of renderFormModels) {
+              triggerRenderModel.triggerRender();
+            }
           }
           if (
             isIgnoreRender === true ||
@@ -103,9 +120,12 @@ export default function(
                 modelData.length === 1 ? modelData[0] : modelData
               ))
           ) {
+            triggerRender();
             return;
           }
-          this.setState({ modelData, });
+          this.setState({ modelData, }, () => {
+            triggerRender();
+          });
         });
         this.unSubscribe.push(unSubscribe);
       }
@@ -166,6 +186,14 @@ export default function(
 
       componentWillUnmount() {
         this.unSubscribe.forEach(cb => cb());
+        modelNames.forEach((modelName: string) => {
+          const model = getModel(modelName);
+          if (!model) {
+            return;
+          }
+          model.reduceBindCount();
+        });
+
         delete this.unSubscribe;
       }
     }

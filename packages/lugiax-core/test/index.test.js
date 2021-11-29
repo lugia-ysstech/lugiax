@@ -1571,6 +1571,8 @@ describe('lugiax', () => {
     const {
       mutations: { asyncDoSomething, test: doTest, },
       getState,
+      incBindCount,
+      triggerRender,
     } = lugiax.register({
       model: 'lgx',
       state: {
@@ -1644,24 +1646,48 @@ describe('lugiax', () => {
     lugiax.onRender('batchModels', state => {
       batchModels.push(state);
     });
+    incBindCount();
     await asyncDoSomething({});
+
     expect(getState().toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
     expect(batchModels).toEqual([{ lgx: true, }, { lgx: true, }, { lgx: true, },]);
-
     expect(doSomethingBefore.toJS()).toEqual({
       loading: false,
       data: '111',
     });
+    triggerRender();
     expect(doSomethingAfter.toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
 
     expect(changeLoadingBefore.toJS()).toEqual({
-      loading: true,
+      loading: false,
       data: '111',
     });
-    expect(changeLoadingAfter.toJS()).toEqual({ loading: false, data: '111', });
+    expect(changeLoadingAfter.toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
 
     doTest({ name: 'ligx', });
+
+    triggerRender();
+
     expect(testBefore.toJS()).toEqual({ loading: false, data: 'hello lugiax!', });
-    expect(testAfter.toJS()).toEqual({ loading: false, data: 'hello lugiax!', test: {name: 'ligx',},});
+    expect(testAfter.toJS()).toEqual({
+      loading: false,
+      data: 'hello lugiax!',
+      test: { name: 'ligx', },
+    });
+
+    doTest({ name: 'abcd', });
+
+    triggerRender();
+
+    expect(testBefore.toJS()).toEqual({
+      loading: false,
+      data: 'hello lugiax!',
+      test: { name: 'ligx', },
+    });
+    expect(testAfter.toJS()).toEqual({
+      loading: false,
+      data: 'hello lugiax!',
+      test: { name: 'abcd', },
+    });
   });
 });

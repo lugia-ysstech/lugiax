@@ -5,10 +5,14 @@
  * @flow
  */
 import type {
+  AopHandle,
+  AopHandleParam,
+  InTimeMutation,
   LugiaxType,
   Mutation,
   MutationFunction,
   MutationID,
+  MutationName2Aop,
   Mutations,
   MutationType,
   Option,
@@ -17,9 +21,6 @@ import type {
   SubscribeResult,
   SyncMutationFunction,
   WaitHandler,
-  InTimeMutation,
-  AopHandle,
-  MutationName2Aop,
 } from '@lugia/lugiax-core';
 import { fromJS, } from 'immutable';
 import { take, takeEvery, } from 'redux-saga/effects';
@@ -42,8 +43,20 @@ const LoadFinished = '@lugiax/LoadFinished';
 const RegisterTopic = 'register';
 const MutationTimeOut = 'MutationTimeOut';
 const UserCancelMutation = 'CustomCancelMutation';
+
+interface RunningAop {
+  [runningId: string]: { triggerRender: () => void };
+}
+
+interface AopRender {
+  total: number;
+  now: number;
+  runningAop: RunningAop;
+}
+
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
+  modelName2AopRender: { [key: string]: AopRender };
   mutationId2Mutaions: {
     async: { [key: string]: MutationFunction },
     sync: { [key: string]: MutationFunction },
@@ -69,6 +82,7 @@ class LugiaxImpl implements LugiaxType {
     this.modelMutationTimeOut = {};
     this.modelName2MutationTimeOut = {};
     this.mutationCancel = {};
+    this.modelName2AopRender = {};
   }
 
   trigger(topic: string, newState: Object, oldState: Object) {
@@ -143,6 +157,10 @@ class LugiaxImpl implements LugiaxType {
       delete target.getState;
       delete target.module;
       delete target.destroy;
+      delete target.modelName2AopRender;
+      delete target.incBindCount;
+      delete target.reduceBindCount;
+      delete target.triggerRender;
 
       target.isDestroy = true;
       this.store.dispatch({ type: DestroyModel, model: modelName, });
@@ -150,17 +168,40 @@ class LugiaxImpl implements LugiaxType {
       this.replaceReducers(existModel);
     };
 
-    function packModel(mutations: Object) {
+    this.modelName2AopRender[name] = { total: 0, now: 0, runningAop: {}, };
+
+    const packModel = (mutations: Object) => {
+      const addBindCount = (target: number) => {
+        const { total = 0, } = this.modelName2AopRender[name];
+        this.modelName2AopRender[name].total = total + target;
+      };
       const result = {
         mutations,
         model,
         module,
         ...mutaionAddor,
         getState,
+        incBindCount: () => {
+          return addBindCount(1);
+        },
+        reduceBindCount: () => {
+          return addBindCount(-1);
+        },
+        triggerRender: () => {
+          const { runningAop, } = this.modelName2AopRender[name];
+          for (const id of Object.keys(runningAop)) {
+            const running = runningAop[id];
+            if (!running) {
+              continue;
+            }
+            const { triggerRender, } = running;
+            triggerRender && triggerRender();
+          }
+        },
       };
       result.destroy = destroy(result);
       return result;
-    }
+    };
     this.modelName2Mutations[model] = {};
     if (!mutations) {
       return packModel(this.modelName2Mutations[model]);
@@ -319,15 +360,15 @@ class LugiaxImpl implements LugiaxType {
   ): Promise<any> {
     const { name, } = action;
 
-    const { before, } = aopHandle;
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
     render.beginCall(model);
     const modelData = this.getModelData(model);
+    let aopParam;
     if (body) {
       this.store.dispatch({ type: Loading, model, });
       const getState = () => this.getModelData(model);
-      const aopParam = { getState, };
-      before && before(aopParam);
+      aopParam = { getState, };
+      this.doBefore(model, aopHandle, aopParam);
       const bodyPromiseFn = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
@@ -350,12 +391,19 @@ class LugiaxImpl implements LugiaxType {
         return modelData;
       }
       const updateResult = await this.updateModel(model, newState, mutationId, param, 'async');
-      const { after, } = aopHandle;
-      after && after(aopParam);
       return updateResult;
     }
+
     render.endCall();
     return modelData;
+  }
+
+  doBefore(modelName: string, aopHandle: AopHandle, aopParam: AopHandleParam) {
+    const { before, } = aopHandle;
+    if (before) {
+      this.createRunningAop(modelName, aopHandle, aopParam);
+      before(aopParam);
+    }
   }
 
   async doInTimeMutation(action: MutationID, param: ?Object, aopHandle: AopHandle): Promise<any> {
@@ -368,8 +416,7 @@ class LugiaxImpl implements LugiaxType {
 
       const getState = () => this.getModelData(model);
       const aopParam = { getState, };
-      const { before, } = aopHandle;
-      before && before(aopParam);
+      this.doBefore(model, aopHandle, aopParam);
       const result = await body(param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
@@ -381,8 +428,7 @@ class LugiaxImpl implements LugiaxType {
         getState,
       });
 
-      const { after, } = aopHandle;
-      after && after(aopParam);
+      this.doBefore(model, aopHandle, aopParam);
       return result;
     }
     return modelData;
@@ -404,13 +450,14 @@ class LugiaxImpl implements LugiaxType {
     const { body, model, mutationId, } = this.mutationId2MutationInfo[name];
     render.beginCall(model);
     const modelData = this.getModelData(model);
+    let aopParam;
     if (body) {
-      const { before, } = aopHandle;
       this.store.dispatch({ type: Loading, model, });
 
       const getState = () => this.getModelData(model);
-      const aopParam = { getState, };
-      before && before(aopParam);
+      aopParam = { getState, };
+      this.doBefore(model, aopHandle, aopParam);
+      this.modelName2AopRender[model].now = 0;
       const newState = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         getState,
@@ -418,10 +465,7 @@ class LugiaxImpl implements LugiaxType {
       if (ObjectUtils.isPromise(newState)) {
         throw new Error('state can not be a Promise Object ! ');
       }
-      const result = this.updateModel(model, newState, mutationId, param, 'sync');
-      const { after, } = aopHandle;
-      after && after(aopParam);
-      return result;
+      return this.updateModel(model, newState, mutationId, param, 'sync');
     }
     render.endCall();
     return modelData;
@@ -646,6 +690,29 @@ class LugiaxImpl implements LugiaxType {
 
   setMutationTimeOut(timer) {
     this.globalMutationTimeOut = timer;
+  }
+
+  createRunningAop(model: string, aopHandle: AopHandle, aopParam: AopHandleParam): void {
+    if (!aopParam) {
+      return;
+    }
+    const { after, } = aopHandle;
+    if (!after) {
+      return;
+    }
+    const runningId = `${model}_${String(Math.random())}`;
+    const { runningAop, } = this.modelName2AopRender[model];
+    let now = 0;
+    runningAop[runningId] = {
+      triggerRender: () => {
+        now++;
+        const { total, } = this.modelName2AopRender[model];
+        if (now === total) {
+          after(aopParam);
+          delete runningAop[runningId];
+        }
+      },
+    };
   }
 }
 

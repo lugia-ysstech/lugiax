@@ -69,6 +69,8 @@ declare module '@lugia/lugiax-core' {
     destroy: () => boolean,
     addMutation: (mutationName: string, func: SyncMutationFunction) => void,
     addAsyncMutation: (mutationName: string, func: AsyncMutationFunction) => void,
+    incBindCount: () => void,
+    triggerRender: () => void,
   };
 
   declare type AopHandleParam = { getState: () => Object };
@@ -95,6 +97,7 @@ declare module '@lugia/lugiax-core' {
     mutations?: Mutations,
     module?: string,
     aopConfig?: MutationName2Aop,
+    afterRender?: ()=>void;
   };
 
   declare type Option = {
