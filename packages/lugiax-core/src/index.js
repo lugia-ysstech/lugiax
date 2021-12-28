@@ -178,7 +178,11 @@ class LugiaxImpl implements LugiaxType {
     const packModel = (mutations: Object) => {
       const addBindCount = (target: number) => {
         const { total = 0, } = this.modelName2AopRender[name];
-        this.modelName2AopRender[name].total = total + target;
+        const newTotal = total + target;
+        this.modelName2AopRender[name].total = newTotal;
+        if (newTotal === 0) {
+          this.modelName2AopRender[name].runningAop = {};
+        }
       };
       const result = {
         mutations,
