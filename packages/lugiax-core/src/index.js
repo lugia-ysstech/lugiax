@@ -57,6 +57,7 @@ interface AopRender {
 
 export interface AopResult {
   after?: AopMethod;
+  noBind?: boolean;
 }
 
 class LugiaxImpl implements LugiaxType {
@@ -388,7 +389,7 @@ class LugiaxImpl implements LugiaxType {
       this.store.dispatch({ type: Loading, model, });
       const getState = () => this.getModelData(model);
       aopParam = { getState, };
-      const { after: doAfter, } = this.doBefore(model, aopHandle, aopParam);
+      const { after: doAfter, noBind = false, } = this.doBefore(model, aopHandle, aopParam);
       const bodyPromiseFn = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
@@ -403,6 +404,9 @@ class LugiaxImpl implements LugiaxType {
       let newState = getState();
       try {
         newState = await Promise.race([bodyPromiseFn, timeOUtPromise,]);
+        if (noBind && doAfter) {
+          doAfter();
+        }
       } catch (error) {
         this.consoleMutationMessageError(model, name, error);
         if (doAfter) {
@@ -446,7 +450,7 @@ class LugiaxImpl implements LugiaxType {
 
       const getState = () => this.getModelData(model);
       const aopParam = { getState, };
-      const { after: doAfter, } = this.doBefore(model, aopHandle, aopParam);
+      const { after: doAfter, noBind = false, } = this.doBefore(model, aopHandle, aopParam);
       let result = getState();
       try {
         result = await body(param, {
@@ -459,6 +463,9 @@ class LugiaxImpl implements LugiaxType {
           },
           getState,
         });
+        if (noBind && doAfter) {
+          doAfter();
+        }
       } catch (error) {
         this.consoleMutationMessageError(model, name, error);
         if (doAfter) {
@@ -494,7 +501,7 @@ class LugiaxImpl implements LugiaxType {
 
       const getState = () => this.getModelData(model);
       aopParam = { getState, };
-      const { after: doAfter, } = this.doBefore(model, aopHandle, aopParam);
+      const { after: doAfter, noBind = false,} = this.doBefore(model, aopHandle, aopParam);
       this.modelName2AopRender[model].now = 0;
       let newState = getState();
       try {
@@ -502,6 +509,9 @@ class LugiaxImpl implements LugiaxType {
           mutations: this.modelName2Mutations[model],
           getState,
         });
+        if (noBind && doAfter) {
+          doAfter();
+        }
       } catch (error) {
         this.consoleMutationMessageError(model, name, error);
         if (doAfter) {
@@ -756,7 +766,10 @@ class LugiaxImpl implements LugiaxType {
       return {};
     }
     const runningId = `${model}_${String(Math.random())}`;
-    const { runningAop, } = this.modelName2AopRender[model];
+    const { runningAop, total: nowTotal, } = this.modelName2AopRender[model];
+    if (nowTotal === 0) {
+      return { after, noBind: true, };
+    }
     let now = 0;
     runningAop[runningId] = {
       triggerRender: () => {
