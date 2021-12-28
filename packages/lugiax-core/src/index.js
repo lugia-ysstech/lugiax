@@ -176,14 +176,30 @@ class LugiaxImpl implements LugiaxType {
     this.modelName2AopRender[name] = { total: 0, now: 0, runningAop: {}, };
 
     const packModel = (mutations: Object) => {
+      const forEachRunningAop = (
+        cb: (runningAopConfig: { triggerRender: () => void, doAfter: () => void }) => void
+      ) => {
+        const { runningAop, } = this.modelName2AopRender[name];
+        for (const id of Object.keys(runningAop)) {
+          const running = runningAop[id];
+          if (!running) {
+            continue;
+          }
+          cb(running);
+        }
+      };
       const addBindCount = (target: number) => {
         const { total = 0, } = this.modelName2AopRender[name];
         const newTotal = total + target;
         this.modelName2AopRender[name].total = newTotal;
         if (newTotal === 0) {
-          this.modelName2AopRender[name].runningAop = {};
+          forEachRunningAop(running => {
+            const { triggerRender, } = running;
+            triggerRender && triggerRender();
+          });
         }
       };
+
       const result = {
         mutations,
         model,
@@ -197,15 +213,10 @@ class LugiaxImpl implements LugiaxType {
           return addBindCount(-1);
         },
         triggerRender: () => {
-          const { runningAop, } = this.modelName2AopRender[name];
-          for (const id of Object.keys(runningAop)) {
-            const running = runningAop[id];
-            if (!running) {
-              continue;
-            }
+          forEachRunningAop(running => {
             const { triggerRender, } = running;
             triggerRender && triggerRender();
-          }
+          });
         },
       };
       result.destroy = destroy(result);
@@ -751,7 +762,7 @@ class LugiaxImpl implements LugiaxType {
       triggerRender: () => {
         now++;
         const { total, } = this.modelName2AopRender[model];
-        if (now === total) {
+        if (total === 0 || now === total) {
           after(aopParam);
           delete runningAop[runningId];
         }
