@@ -132,39 +132,39 @@
   resolved "https://registry.yarnpkg.com/@lugia/combine/-/combine-1.0.2.tgz#f1f83ce6e474f612a1a55989dadccab75d0f788f"
   integrity sha512-ReN0VvXoDAy5E9k0VcxgwpyTCEIT2ao2bmj8yYzNOxkgGpJRqLnzw8xb9fRMXwvB1O+RSPjy+6W6z49yB1Ts3w==
 
-"@lugia/lugiax-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
-  integrity sha512-rOpYqHo+acSgLNzWb31mlIWtd/Mlbog1Y6dUm2FbkyLELGvTyCW1pD8Iy7gi/ytX0PGCVtrFKryU3m4F2RCOtA==
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "http://192.168.102.79:5001/@lugia%2flugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha1-5tdmCawHHzRRieYy50YztP/bYMc=
 
-"@lugia/lugiax-core@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.1.4.tgz#e778d372493d089467a11b75a2e41bb1790e6da6"
-  integrity sha512-Z2V9QBokiP3V7up3geCK4YZ9KOE+yiQcL8BrVGo2T1RFmhPcT2iOC7rsh6GnOoaPadLnLG45E8SMq380GuW5jQ==
+"@lugia/lugiax-core@^1.2.10":
+  version "1.2.10"
+  resolved "http://192.168.102.79:5001/@lugia%2flugiax-core/-/lugiax-core-1.2.10.tgz#9a2fbb25b9c11c78efd7492d5170909a8f4cf32d"
+  integrity sha512-zBLpVZ5NbKTVKWUPGq1G9eeapALlUf9O0Q1gSS2S3/hQeBD7XMDN6yj4mGvrdcylFTaTioMpKmxI5MyYxktXjQ==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.0.3.tgz#3b40c2b01476f99f710090ddc932a0857e5f0234"
-  integrity sha512-41olLKilx3A7iDnuS7uXnlsSZQ/CKf2/Oqu2BwKBI/GrJmRg/4A+LDGfAUQzSzHLGl+2/miFTHeh3/ogS/ogJg==
+"@lugia/lugiax-data@^1.1.9":
+  version "1.1.9"
+  resolved "http://192.168.102.79:5001/@lugia%2flugiax-data/-/lugiax-data-1.1.9.tgz#d4d9a424a7f730ea7355d798ce13fccc89587974"
+  integrity sha512-nBjURgmc6PjBsu3cxpNxa+DJ27Wa0dEmpmnH//6mDLGNr46LfD0hnR6WSWZNaIviS6sPUua6QV/M8egMwDtjLQ==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     is-plain-object "^3.0.0"
     shortid "^2.2.15"
 
-"@lugia/lugiax@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax/-/lugiax-1.1.8.tgz#658cb981f2c080daed333cb10e2cf689a894e12d"
-  integrity sha512-k0B3FT3edDaW55tIRaj1ro/iM6asaqzTY6RA3eolEZCJCBL7leOXCutG80kqZ3qY+yeZtOwMVrQ85xRz8sitSw==
+"@lugia/lugiax@^1.2.10":
+  version "1.2.10"
+  resolved "http://192.168.102.79:5001/@lugia%2flugiax/-/lugiax-1.2.10.tgz#97e0fad215e1adff3707841d0870e26e97f72353"
+  integrity sha512-x/2zU5qL6lW9bAQzbw6jfbajArpV2uz336OroKl+K3rnAW1ESxGd6e21AWkkEvNcbcSpVNGm/x6neFnufXzdcA==
   dependencies:
     "@lugia/combine" "^1.0.2"
-    "@lugia/lugiax-core" "^1.1.4"
-    "@lugia/lugiax-data" "^1.0.3"
+    "@lugia/lugiax-core" "^1.2.10"
+    "@lugia/lugiax-data" "^1.1.9"
     hoist-non-react-statics "^3.3.2"
     immutable "^3.8.2"
 
@@ -809,7 +809,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.0, prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.1:
+prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.1:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -871,13 +871,6 @@ react-is@^16.6.0:
   version "16.13.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.0.tgz#0f37c3613c34fe6b37cd7f763a0d6293ab15c527"
   integrity sha512-GFMtL0vHkiBv9HluwNZTggSn/sCyEt9n02aM0dSAjGGyqyNlAyftYm4phPxdvCigG15JreC5biwxCgTAJZ7yAA==
-
-react-loadable@^5.5.0:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/react-loadable/-/react-loadable-5.5.0.tgz#582251679d3da86c32aae2c8e689c59f1196d8c4"
-  integrity sha512-C8Aui0ZpMd4KokxRdVAm2bQtI03k2RMRNzOB+IipV3yxFTSVICv7WoUr5L9ALB5BmKO1iHgZtWM8EvYG83otdg==
-  dependencies:
-    prop-types "^15.5.0"
 
 react-router@^4.3.1:
   version "4.3.1"

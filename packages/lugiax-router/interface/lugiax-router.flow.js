@@ -12,17 +12,22 @@ declare module '@lugia/lugiax-router' {
     strict?: boolean,
     component?: Function,
     onPageLoad?: Function,
-    onPageUnLoad?: ?Function
+    onPageUnLoad?: ?Function,
   };
 
   declare type RouterMap = {
-    [path: string]: RouterConfig
+    [path: string]: RouterConfig,
   };
   declare type BeforeParam = {
-    url: string
+    url: string,
+  };
+
+  declare type LoadingProps = {
+    color: string,
   };
   declare type CreateAppParam = {
     loading?: React.Component<any>,
-    onBeforeGo?: (param: BeforeParam) => Promise<boolean>
+    loadingProps: LoadingProps,
+    onBeforeGo?: (param: BeforeParam) => Promise<boolean>,
   };
 }

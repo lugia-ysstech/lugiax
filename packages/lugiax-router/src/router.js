@@ -12,8 +12,7 @@ import lugiax from '@lugia/lugiax';
 import go, { GoModel, } from './go';
 import Link from './Link';
 import { Redirect, Route, StaticRouter, Switch, Router, } from 'react-router'; // react-router v4
-import Loadable from 'react-loadable';
-import Loading from './Loading';
+import InSetLoading from './Loading';
 
 export { Route, Switch, StaticRouter, Redirect, go, Link };
 
@@ -72,8 +71,9 @@ const createPowerComponent = (opt: {
   onPageLoad: ?Function,
   onPageUnLoad: ?Function,
   loading: any,
+  loadingProps: Object,
 }) => {
-  const { onPageLoad, onPageUnLoad, render, component, loading, redirect, } = opt;
+  const { onPageLoad, onPageUnLoad, render, component,  redirect, } = opt;
   const createTarget = Target => {
     const needWrap = onPageLoad || onPageUnLoad;
     Target = needWrap
@@ -86,27 +86,62 @@ const createPowerComponent = (opt: {
     return redirect ? WrapRedirect(Target, { redirect, }) : Target;
   };
   if (render) {
-    return Loadable({
-      loader: async () => {
-        try {
-          let Target = component;
-          if (!Target) {
-            Target = await render();
-          }
-          return createTarget(Target.default);
-        } catch (error) {
-          console.error(error);
+    const Target = lazy(async () => {
+      try {
+        let Target = component;
+        if (!Target) {
+          Target = await render();
         }
-      },
-      loading,
+        return { default: createTarget(Target.default), };
+      } catch (error) {
+        console.error(error);
+      }
     });
+    const {loading,loadingProps, } = opt;
+    return props => {
+      const loadingEl = useLoading(props, { loading, loadingProps, });
+      return (
+        <Suspense fallback={loadingEl}>
+          <Target {...props} />
+        </Suspense>
+      );
+    };
   }
   return createTarget(component);
 };
 
+export interface LoadingProps {
+  Loading: Function;
+}
+
+type LoadingOption = { loading: Function, loadingProps: Object };
+
+function useLoading(props: LoadingOption, option: LoadingOption = {}) {
+  const appConfig = useContext(LugiaxContext);
+  const { Loading: propsLoading, loadingProps: propsLoadingProps, } = props;
+  const { loading: appLoading, loadingProps: appLoadingProps, } = appConfig;
+  const { loading: optionLoading, loadingProps: optionLoadingProps, } = option;
+  const Loading = propsLoading
+    ? propsLoading
+    : optionLoading
+    ? optionLoading
+    : appLoading
+    ? appLoading
+    : InSetLoading;
+  const loadingProps = propsLoadingProps
+    ? propsLoadingProps
+    : optionLoadingProps
+    ? optionLoadingProps
+    : appLoadingProps
+    ? appLoadingProps
+    : {};
+  return <Loading {...loadingProps} />;
+}
+
 const PowerRouter = (props: Object) => {
-  const { PowerComponent, notVerify, Loading, verify, } = props;
-  const lugiaxConfig = useContext(LugiaxContext);
+  const { PowerComponent, notVerify, verify, } = props;
+  const routerConfigContext = useContext(LugiaxContext);
+  const loadingEl = useLoading(props);
   const render = (routerProps: Object) => {
     const { location, } = routerProps;
     const { pathname: url, } = location;
@@ -115,7 +150,7 @@ const PowerRouter = (props: Object) => {
         return null;
       }
     } else if (!notVerify) {
-      const { onBeforeGo, verifyUrl, } = lugiaxConfig;
+      const { onBeforeGo, verifyUrl, } = routerConfigContext;
       if (verifyUrl) {
         if (!verifyUrl({ url, })) {
           return null;
@@ -129,7 +164,7 @@ const PowerRouter = (props: Object) => {
         });
 
         return (
-          <Suspense fallback={<Loading />}>
+          <Suspense fallback={loadingEl}>
             <Target {...props} {...routerProps} />
           </Suspense>
         );
@@ -145,10 +180,11 @@ const PowerRouter = (props: Object) => {
   );
 };
 
-export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?Object {
+export function createRoute(routerMap: RouterMap, option: LoadingOption = {}): ?Object {
   if (!routerMap) {
     return null;
   }
+  const { loading, loadingProps, } = option;
   const routes = Object.keys(routerMap).map(path => {
     const config = routerMap[path];
     const { exact, strict, component, onPageLoad, onPageUnLoad, render, verify, redirect, } = config;
@@ -156,6 +192,7 @@ export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?
       redirect,
       onPageLoad,
       loading,
+      loadingProps,
       onPageUnLoad,
       component,
       render,
@@ -172,6 +209,7 @@ export function createRoute(routerMap: RouterMap, loading: ?Object = Loading): ?
           verify={verify}
           notVerify={notFound}
           Loading={loading}
+          loadingProps={loadingProps}
           PowerComponent={PowerComponent}
           path={path}
           exact={exact}
@@ -206,7 +244,7 @@ const {
 } = GoModel;
 
 export function createApp(routerMap: RouterMap, history: Object, param: ?CreateAppParam = {}) {
-  const { loading = Loading, onBeforeGo, verifyUrl, } = param;
+  const { loading = InSetLoading, onBeforeGo, verifyUrl, loadingProps = {}, } = param;
 
   function createHandle(cb) {
     return param => {
@@ -232,8 +270,8 @@ export function createApp(routerMap: RouterMap, history: Object, param: ?CreateA
 
     render() {
       return (
-        <LugiaxContext.Provider value={{ onBeforeGo, verifyUrl, }}>
-          <Router history={history}>{createRoute(routerMap, loading)}</Router>
+        <LugiaxContext.Provider value={{ onBeforeGo, verifyUrl, loading, loadingProps, }}>
+          <Router history={history}>{createRoute(routerMap, { loading, loadingProps, })}</Router>
         </LugiaxContext.Provider>
       );
     }
