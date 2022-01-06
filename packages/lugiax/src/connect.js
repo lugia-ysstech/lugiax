@@ -70,7 +70,6 @@ export default function(
           if (!model) {
             return;
           }
-          model.incBindCount();
           modelData.push(model.getState());
         });
 
@@ -182,6 +181,14 @@ export default function(
       componentDidMount(): void {
         const { lugiaxDidMount, } = this.props;
         lugiaxDidMount && lugiaxDidMount();
+        modelNames.forEach((modelName: string, index: number) => {
+          const model = getModel(modelName);
+          if (!model) {
+            return;
+          }
+          model.incBindCount();
+          model.triggerRender();
+        });
       }
 
       componentWillUnmount() {
