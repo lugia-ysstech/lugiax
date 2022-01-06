@@ -106,10 +106,10 @@ export default function(
             renderFormModels.push(model);
           }
 
-          const { __ignoreLoading__: ignoreLoading, } = renderModels;
+          const { __ignoreAop__: ignoreAop, } = renderModels;
           function triggerRender() {
             for (const triggerRenderModel of renderFormModels) {
-              triggerRenderModel.triggerRender({ ignoreLoading, });
+              triggerRenderModel.triggerRender({ ignoreAop, });
             }
           }
           if (

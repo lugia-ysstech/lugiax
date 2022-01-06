@@ -29,7 +29,7 @@ export type AsyncMutation = {
 };
 
 export interface InTimeMutationOption {
-  ignoreLoading?: boolean;
+  ignoreAop?: boolean;
 }
 export type InTimeHandler =
   | AsyncHandler

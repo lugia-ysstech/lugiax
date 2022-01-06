@@ -61,10 +61,10 @@ export interface AopResult {
 }
 
 export interface InTimeMutationOption {
-  ignoreLoading?: boolean;
+  ignoreAop?: boolean;
 }
 
-export type UpdateModelOption = { ignoreLoading: boolean };
+export type UpdateModelOption = { ignoreAop: boolean };
 
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
@@ -202,7 +202,7 @@ class LugiaxImpl implements LugiaxType {
         if (newTotal === 0) {
           forEachRunningAop(running => {
             const { triggerRender, } = running;
-            triggerRender && triggerRender({ ignoreLoading: false, });
+            triggerRender && triggerRender({ ignoreAop: false, });
           });
         }
       };
@@ -464,8 +464,8 @@ class LugiaxImpl implements LugiaxType {
             return this.wait(mutation);
           },
           updateModel: (state, option: InTimeMutationOption = {}) => {
-            const { ignoreLoading = false, } = option;
-            this.updateModel(model, state, mutationId, param, 'inTime', { ignoreLoading, });
+            const { ignoreAop = false, } = option;
+            this.updateModel(model, state, mutationId, param, 'inTime', { ignoreAop, });
           },
           getState,
         });
@@ -577,8 +577,8 @@ class LugiaxImpl implements LugiaxType {
       param,
     });
     if (mutationType === 'inTime') {
-      const { ignoreLoading, } = updateModelOption;
-      render.trigger({ [model]: true, __ignoreLoading__: ignoreLoading, });
+      const { ignoreAop, } = updateModelOption;
+      render.trigger({ [model]: true, __ignoreAop__: ignoreAop, });
     } else {
       render.endCall();
     }
@@ -781,8 +781,8 @@ class LugiaxImpl implements LugiaxType {
     let now = 0;
     runningAop[runningId] = {
       triggerRender: (param: UpdateModelOption) => {
-        const { ignoreLoading, } = param;
-        if (ignoreLoading) {
+        const { ignoreAop, } = param;
+        if (ignoreAop) {
           return;
         }
         now++;
