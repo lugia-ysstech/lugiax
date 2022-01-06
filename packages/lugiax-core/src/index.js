@@ -46,7 +46,7 @@ const MutationTimeOut = 'MutationTimeOut';
 const UserCancelMutation = 'CustomCancelMutation';
 
 interface RunningAop {
-  [runningId: string]: { triggerRender: () => void };
+  [runningId: string]: { triggerRender: (option: UpdateModelOption) => void };
 }
 
 interface AopRender {
@@ -59,6 +59,12 @@ export interface AopResult {
   after?: AopMethod;
   noBind?: boolean;
 }
+
+export interface InTimeMutationOption {
+  ignoreLoading?: boolean;
+}
+
+export type UpdateModelOption = { ignoreLoading: boolean };
 
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
@@ -196,7 +202,7 @@ class LugiaxImpl implements LugiaxType {
         if (newTotal === 0) {
           forEachRunningAop(running => {
             const { triggerRender, } = running;
-            triggerRender && triggerRender();
+            triggerRender && triggerRender({ ignoreLoading: false, });
           });
         }
       };
@@ -213,10 +219,10 @@ class LugiaxImpl implements LugiaxType {
         reduceBindCount: () => {
           return addBindCount(-1);
         },
-        triggerRender: () => {
+        triggerRender: (option: UpdateModelOption) => {
           forEachRunningAop(running => {
             const { triggerRender, } = running;
-            triggerRender && triggerRender();
+            triggerRender && triggerRender(option);
           });
         },
       };
@@ -422,8 +428,7 @@ class LugiaxImpl implements LugiaxType {
         console.warn(`用户取消了 ${mutationId} !!`);
         return modelData;
       }
-      const updateResult = await this.updateModel(model, newState, mutationId, param, 'async');
-      return updateResult;
+      return this.updateModel(model, newState, mutationId, param, 'async');
     }
 
     render.endCall();
@@ -458,8 +463,9 @@ class LugiaxImpl implements LugiaxType {
           wait: async (mutation: MutationFunction) => {
             return this.wait(mutation);
           },
-          updateModel: state => {
-            this.updateModel(model, state, mutationId, param, 'inTime');
+          updateModel: (state, option: InTimeMutationOption = {}) => {
+            const { ignoreLoading = false, } = option;
+            this.updateModel(model, state, mutationId, param, 'inTime', { ignoreLoading, });
           },
           getState,
         });
@@ -501,7 +507,7 @@ class LugiaxImpl implements LugiaxType {
 
       const getState = () => this.getModelData(model);
       aopParam = { getState, };
-      const { after: doAfter, noBind = false,} = this.doBefore(model, aopHandle, aopParam);
+      const { after: doAfter, noBind = false, } = this.doBefore(model, aopHandle, aopParam);
       this.modelName2AopRender[model].now = 0;
       let newState = getState();
       try {
@@ -546,7 +552,8 @@ class LugiaxImpl implements LugiaxType {
     newState: Object,
     mutationId: string,
     param: ?Object,
-    mutationType: MutationType
+    mutationType: MutationType,
+    updateModelOption: UpdateModelOption
   ) {
     const modelParam = this.existModel[model];
     if (!modelParam) {
@@ -570,7 +577,8 @@ class LugiaxImpl implements LugiaxType {
       param,
     });
     if (mutationType === 'inTime') {
-      render.trigger({ [model]: true, });
+      const { ignoreLoading, } = updateModelOption;
+      render.trigger({ [model]: true, __ignoreLoading__: ignoreLoading, });
     } else {
       render.endCall();
     }
@@ -772,7 +780,11 @@ class LugiaxImpl implements LugiaxType {
     }
     let now = 0;
     runningAop[runningId] = {
-      triggerRender: () => {
+      triggerRender: (param: UpdateModelOption) => {
+        const { ignoreLoading, } = param;
+        if (ignoreLoading) {
+          return;
+        }
         now++;
         const { total, } = this.modelName2AopRender[model];
         if (total === 0 || now === total) {

@@ -28,7 +28,12 @@ export type AsyncMutation = {
   [key: string]: AsyncMutationFunction;
 };
 
-export type InTimeHandler = AsyncHandler | { updateModel: (state: Object) => void };
+export interface InTimeMutationOption {
+  ignoreLoading?: boolean;
+}
+export type InTimeHandler =
+  | AsyncHandler
+  | { updateModel: (state: Object, option: InTimeMutationOption) => void };
 
 export type InTimeMutation = {
   [key: string]: (param: Object, handler: InTimeHandler) => any;

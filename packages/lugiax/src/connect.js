@@ -9,7 +9,8 @@ import type { RegisterResult, } from '@lugia/lugiax-core';
 import lugiax from '@lugia/lugiax-core';
 import hoistStatics from 'hoist-non-react-statics';
 import * as React from 'react';
-import { getDisplayName, withRef, combineFunction, isShouldRender, } from './utils';
+import { combineFunction, getDisplayName, isShouldRender, withRef, } from './utils';
+
 export const BatchModels = 'batchModels';
 const Noop = () => ({});
 export default function(
@@ -101,14 +102,14 @@ export default function(
               oldModelData = [...modelData,];
             }
             const modelIndex = model2Index[modelName];
-            const newState = model.getState();
-            modelData[modelIndex] = newState;
+            modelData[modelIndex] = model.getState();
             renderFormModels.push(model);
           }
 
+          const { __ignoreLoading__: ignoreLoading, } = renderModels;
           function triggerRender() {
             for (const triggerRenderModel of renderFormModels) {
-              triggerRenderModel.triggerRender();
+              triggerRenderModel.triggerRender({ ignoreLoading, });
             }
           }
           if (
