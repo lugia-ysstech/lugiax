@@ -553,7 +553,7 @@ class LugiaxImpl implements LugiaxType {
     mutationId: string,
     param: ?Object,
     mutationType: MutationType,
-    updateModelOption: UpdateModelOption
+    updateModelOption: UpdateModelOption = { ignoreAop: false, }
   ) {
     const modelParam = this.existModel[model];
     if (!modelParam) {
@@ -781,7 +781,7 @@ class LugiaxImpl implements LugiaxType {
     let now = 0;
     runningAop[runningId] = {
       triggerRender: (param: UpdateModelOption) => {
-        const { ignoreAop, } = param;
+        const { ignoreAop, } = param || {};
         if (ignoreAop) {
           return;
         }
