@@ -63,6 +63,8 @@ export default function(
       constructor(props: any) {
         super(props);
 
+        this.key = Symbol(widgetName);
+
         const modelData = [];
         const model2Index = {};
         modelNames.forEach((modelName: string, index: number) => {
@@ -109,7 +111,7 @@ export default function(
           const { __ignoreAop__: ignoreAop, } = renderModels;
           function triggerRender() {
             for (const triggerRenderModel of renderFormModels) {
-              triggerRenderModel.triggerRender({ ignoreAop, });
+              triggerRenderModel.triggerRender({ ignoreAop, key: this.key, });
             }
           }
           if (
@@ -187,8 +189,9 @@ export default function(
           if (!model) {
             return;
           }
-          model.incBindCount();
-          model.triggerRender();
+          const { key, } = this;
+          model.incBindCount(key);
+          model.triggerRender({ key, });
         });
       }
 
@@ -199,7 +202,7 @@ export default function(
           if (!model) {
             return;
           }
-          model.reduceBindCount();
+          model.reduceBindCount({ key: this.key, });
         });
 
         delete this.unSubscribe;

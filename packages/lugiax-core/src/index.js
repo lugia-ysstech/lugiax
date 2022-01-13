@@ -50,21 +50,20 @@ interface RunningAop {
 }
 
 interface AopRender {
-  total: number;
-  now: number;
+  bindWidgetMap: Map<Symbol, boolean>;
   runningAop: RunningAop;
 }
 
 export interface AopResult {
   after?: AopMethod;
-  noBind?: boolean;
+  endingAfter: () => void;
 }
 
 export interface InTimeMutationOption {
   ignoreAop?: boolean;
 }
 
-export type UpdateModelOption = { ignoreAop: boolean };
+export type UpdateModelOption = { ignoreAop: boolean, key: string };
 
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
@@ -180,7 +179,7 @@ class LugiaxImpl implements LugiaxType {
       this.replaceReducers(existModel);
     };
 
-    this.modelName2AopRender[name] = { total: 0, now: 0, runningAop: {}, };
+    this.modelName2AopRender[name] = { bindWidgetMap: new Map(), runningAop: {}, };
 
     const packModel = (mutations: Object) => {
       const forEachRunningAop = (
@@ -195,17 +194,6 @@ class LugiaxImpl implements LugiaxType {
           cb(running);
         }
       };
-      const addBindCount = (target: number) => {
-        const { total = 0, } = this.modelName2AopRender[name];
-        const newTotal = total + target;
-        this.modelName2AopRender[name].total = newTotal;
-        if (newTotal === 0) {
-          forEachRunningAop(running => {
-            const { triggerRender, } = running;
-            triggerRender && triggerRender({ ignoreAop: false, });
-          });
-        }
-      };
 
       const result = {
         mutations,
@@ -213,11 +201,11 @@ class LugiaxImpl implements LugiaxType {
         module,
         ...mutaionAddor,
         getState,
-        incBindCount: () => {
-          return addBindCount(1);
+        incBindCount: (key: Symbol) => {
+          this.modelName2AopRender[name].bindWidgetMap.set(key, false);
         },
-        reduceBindCount: () => {
-          return addBindCount(-1);
+        reduceBindCount: (key: Symbol) => {
+          this.modelName2AopRender[name].bindWidgetMap.delete(key);
         },
         triggerRender: (option: UpdateModelOption) => {
           forEachRunningAop(running => {
@@ -395,7 +383,7 @@ class LugiaxImpl implements LugiaxType {
       this.store.dispatch({ type: Loading, model, });
       const getState = () => this.getModelData(model);
       aopParam = { getState, };
-      const { after: doAfter, noBind = false, } = this.doBefore(model, aopHandle, aopParam);
+      const { after: doAfter, endingAfter, } = this.doBefore(model, aopHandle, aopParam);
       const bodyPromiseFn = body(modelData, param, {
         mutations: this.modelName2Mutations[model],
         wait: async (mutation: MutationFunction) => {
@@ -410,9 +398,7 @@ class LugiaxImpl implements LugiaxType {
       let newState = getState();
       try {
         newState = await Promise.race([bodyPromiseFn, timeOUtPromise,]);
-        if (noBind && doAfter) {
-          doAfter();
-        }
+        endingAfter();
       } catch (error) {
         this.consoleMutationMessageError(model, name, error);
         if (doAfter) {
@@ -437,7 +423,7 @@ class LugiaxImpl implements LugiaxType {
 
   doBefore(modelName: string, aopHandle: AopHandle, aopParam: AopHandleParam): AopResult {
     const { before, } = aopHandle;
-    let aopResult: AopResult = {};
+    let aopResult: AopResult = { endingAfter: () => {}, };
     if (before) {
       aopResult = this.createRunningAop(modelName, aopHandle, aopParam);
       before(aopParam);
@@ -455,7 +441,7 @@ class LugiaxImpl implements LugiaxType {
 
       const getState = () => this.getModelData(model);
       const aopParam = { getState, };
-      const { after: doAfter, noBind = false, } = this.doBefore(model, aopHandle, aopParam);
+      const { after: doAfter, endingAfter, } = this.doBefore(model, aopHandle, aopParam);
       let result = getState();
       try {
         result = await body(param, {
@@ -469,9 +455,7 @@ class LugiaxImpl implements LugiaxType {
           },
           getState,
         });
-        if (noBind && doAfter) {
-          doAfter();
-        }
+        endingAfter();
       } catch (error) {
         this.consoleMutationMessageError(model, name, error);
         if (doAfter) {
@@ -507,17 +491,14 @@ class LugiaxImpl implements LugiaxType {
 
       const getState = () => this.getModelData(model);
       aopParam = { getState, };
-      const { after: doAfter, noBind = false, } = this.doBefore(model, aopHandle, aopParam);
-      this.modelName2AopRender[model].now = 0;
+      const { after: doAfter, endingAfter, } = this.doBefore(model, aopHandle, aopParam);
       let newState = getState();
       try {
         newState = body(modelData, param, {
           mutations: this.modelName2Mutations[model],
           getState,
         });
-        if (noBind && doAfter) {
-          doAfter();
-        }
+        endingAfter();
       } catch (error) {
         this.consoleMutationMessageError(model, name, error);
         if (doAfter) {
@@ -766,34 +747,62 @@ class LugiaxImpl implements LugiaxType {
   }
 
   createRunningAop(model: string, aopHandle: AopHandle, aopParam: AopHandleParam): AopResult {
+    let endingAfter = () => {};
+    const empty = { endingAfter, };
     if (!aopParam) {
-      return {};
+      return empty;
     }
     const { after, } = aopHandle;
     if (!after) {
-      return {};
+      return empty;
     }
     const runningId = `${model}_${String(Math.random())}`;
-    const { runningAop, total: nowTotal, } = this.modelName2AopRender[model];
-    if (nowTotal === 0) {
-      return { after, noBind: true, };
-    }
-    let now = 0;
-    runningAop[runningId] = {
+    const { runningAop, } = this.modelName2AopRender[model];
+    const finishedRenderWidgetMap = new Map();
+    let mutationEnding = false;
+
+    const isFinishedRender = () => {
+      const { bindWidgetMap, } = this.modelName2AopRender[model];
+      for (const key of bindWidgetMap.keys()) {
+        if (!finishedRenderWidgetMap.get(key)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const finishAop = () => {
+      after(aopParam);
+      finishedRenderWidgetMap.clear();
+      delete runningAop[runningId];
+    };
+    const aop = {
       triggerRender: (param: UpdateModelOption) => {
-        const { ignoreAop, } = param || {};
+        const { ignoreAop, key, } = param || {};
         if (ignoreAop) {
           return;
         }
-        now++;
-        const { total, } = this.modelName2AopRender[model];
-        if (total === 0 || now === total) {
-          after(aopParam);
-          delete runningAop[runningId];
+        finishedRenderWidgetMap.set(key, true);
+        if (mutationEnding) {
+          if (isFinishedRender()) {
+            finishAop();
+          }
         }
       },
     };
-    return { after, };
+    runningAop[runningId] = aop;
+
+    endingAfter = () => {
+      if (!isFinishedRender()) {
+        mutationEnding = true;
+        return;
+      }
+      finishAop();
+    };
+    return {
+      after: finishAop,
+      endingAfter,
+    };
   }
 }
 
