@@ -1,6 +1,6 @@
 {
   "name": "@lugia/lugiax",
-  "version": "1.2.14",
+  "version": "1.2.15",
   "dependencies": {
     "@lugia/combine": "^1.0.2",
     "@lugia/lugiax-core": "^1.2.14",
