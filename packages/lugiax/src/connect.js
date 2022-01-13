@@ -109,11 +109,11 @@ export default function(
           }
 
           const { __ignoreAop__: ignoreAop, } = renderModels;
-          function triggerRender() {
+          const triggerRender = () => {
             for (const triggerRenderModel of renderFormModels) {
               triggerRenderModel.triggerRender({ ignoreAop, key: this.key, });
             }
-          }
+          };
           if (
             isIgnoreRender === true ||
             (areStateEqual &&
