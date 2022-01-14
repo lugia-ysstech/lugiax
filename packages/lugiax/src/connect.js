@@ -190,7 +190,7 @@ export default function(
             return;
           }
           const { key, } = this;
-          model.incBindCount(key);
+          model.incBindCount({ key, });
           model.triggerRender({ key, });
         });
       }

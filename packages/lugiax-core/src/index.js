@@ -65,6 +65,8 @@ export interface InTimeMutationOption {
 
 export type UpdateModelOption = { ignoreAop: boolean, key: string };
 
+type KeyParam = { key: Symbol };
+
 class LugiaxImpl implements LugiaxType {
   modelName2Mutations: { [key: string]: Mutation };
   modelName2AopRender: { [key: string]: AopRender };
@@ -201,10 +203,10 @@ class LugiaxImpl implements LugiaxType {
         module,
         ...mutaionAddor,
         getState,
-        incBindCount: (key: Symbol) => {
+        incBindCount: ({ key, }: KeyParam) => {
           this.modelName2AopRender[name].bindWidgetMap.set(key, false);
         },
-        reduceBindCount: (key: Symbol) => {
+        reduceBindCount: ({ key, }: KeyParam) => {
           this.modelName2AopRender[name].bindWidgetMap.delete(key);
         },
         triggerRender: (option: UpdateModelOption) => {
