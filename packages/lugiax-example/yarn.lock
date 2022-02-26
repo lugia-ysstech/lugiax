@@ -116,48 +116,52 @@
     react-error-overlay "1.0.9"
     warning "3.0.0"
 
-"@lugia/lugiax-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
-  integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha512-8R1hw+B5pt9xQS5uv8RI9cinXS/96oUAT0wf7w31hTntm0gJ86QVgnOlhbsGChrtQv+qEMLgVSVn1kRWeV6O8A==
 
-"@lugia/lugiax-core@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.4.tgz#e778d372493d089467a11b75a2e41bb1790e6da6"
-  integrity sha1-53jTckk9CJRnoRt1ouQbsXkObaY=
+"@lugia/lugiax-core@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.3.0.tgz#98a3c7228c87882d2197a6adfd01561ae39a3031"
+  integrity sha512-cREetaD3u+K2iWe+0IFx9RJINm0l/gm0P9V/AICMijHNlyhuzWJxk63eEz1urwjX8vOkORXH1KEQQgzrQo0/hQ==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.3.tgz#3b40c2b01476f99f710090ddc932a0857e5f0234"
-  integrity sha1-O0DCsBR2+Z9xAJDdyTKghX5fAjQ=
+"@lugia/lugiax-data@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.2.0.tgz#f4f02efc7d0c655e1a40e682d609d4e0668caa7d"
+  integrity sha512-xFb6y3lX0QZ+OFj7KA+RF2s39KS0PxvrY+W+UWamW8zJf9vH8PxQkLa4dLN8pPE6FFsRX1IQhNiKJ/ewPqoTiw==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     is-plain-object "^3.0.0"
     shortid "^2.2.15"
 
-"@lugia/lugiax-router@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-router/download/@lugia/lugiax-router-1.1.10.tgz#ad9c6a075c12359f919723c0f40dad251f7cdcd2"
-  integrity sha1-rZxqB1wSNZ+RlyPA9A2tJR983NI=
+"@lugia/lugiax-persistence@^1.1.14":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-persistence/-/lugiax-persistence-1.2.0.tgz#93b371256ec3c9a092dbb9e3245f111e3bffecd7"
+  integrity sha512-Gql4MY92ctvZsmQsUTs5QN/Ihw2NiJ9glSpuHtklBvck9VkeBzRi+zxNyBl/ZJWyRZfMhHE87Jd10SiWnGTAIA==
+
+"@lugia/lugiax-router@^1.2.15":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-router/-/lugiax-router-1.3.0.tgz#ac97f565cec937d5d7777c35f89d96a7e177a045"
+  integrity sha512-xp4PNb9YQUmxnyTGvGBEMdVezXQYX4Fg5wMzdsfzn2U61b+2gKrG0DCIAxPlh2ncMgy5PhGOxzC00dd/A6TwiA==
   dependencies:
-    "@lugia/lugiax" "^1.1.8"
-    react-loadable "^5.5.0"
+    "@lugia/lugiax" "^1.3.0"
     react-router "^4.3.1"
 
-"@lugia/lugiax@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax/download/@lugia/lugiax-1.1.8.tgz#658cb981f2c080daed333cb10e2cf689a894e12d"
-  integrity sha1-ZYy5gfLAgNrtMzyxDiz2iaiU4S0=
+"@lugia/lugiax@^1.2.15", "@lugia/lugiax@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax/-/lugiax-1.3.0.tgz#85b8b830de621141da4059f10def6eb4710620c0"
+  integrity sha512-TQNi7Q2ZNx55rvt6gGjKa1xDBcKdbN06EG7V1+M8PPYBmqoN9gjVtkHa3dGlBqfNplYhGI39i+0nP27mWmnd1A==
   dependencies:
     "@lugia/combine" "^1.0.2"
-    "@lugia/lugiax-core" "^1.1.4"
-    "@lugia/lugiax-data" "^1.0.3"
+    "@lugia/lugiax-core" "^1.3.0"
+    "@lugia/lugiax-data" "^1.2.0"
     hoist-non-react-statics "^3.3.2"
     immutable "^3.8.2"
 
@@ -5978,7 +5982,7 @@ prop-types@15.5.10:
     fbjs "^0.8.9"
     loose-envify "^1.3.1"
 
-prop-types@15.x, prop-types@^15.5.0, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.7.2:
+prop-types@15.x, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npm.taobao.org/prop-types/download/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha1-UsQedbjIfnK52TYOAga5ncv/psU=
@@ -6337,13 +6341,6 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npm.taobao.org/react-lifecycles-compat/download/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha1-TxonOv38jzSIqMUWv9p4+HI1I2I=
-
-react-loadable@^5.5.0:
-  version "5.5.0"
-  resolved "https://registry.npm.taobao.org/react-loadable/download/react-loadable-5.5.0.tgz#582251679d3da86c32aae2c8e689c59f1196d8c4"
-  integrity sha1-WCJRZ509qGwyquLI5onFnxGW2MQ=
-  dependencies:
-    prop-types "^15.5.0"
 
 react-router@^4.3.1:
   version "4.3.1"
@@ -7656,8 +7653,9 @@ uri-js@^4.2.2:
     punycode "^2.1.0"
 
 urijs@^1.16.1:
-  version "1.19.1"
-  resolved "http://registry.npm.taobao.org/urijs/download/urijs-1.19.1.tgz#5b0ff530c0cbde8386f6342235ba5ca6e995d25a"
+  version "1.19.8"
+  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.19.8.tgz#ee0407a18528934d3c383e691912f47043a58feb"
+  integrity sha512-iIXHrjomQ0ZCuDRy44wRbyTZVnfVNLVo3Ksz1yxNyE5wV1IDZW2S5Jszy45DTlw/UdsnRT7DyDhIz7Gy+vJumw==
 
 urix@^0.1.0:
   version "0.1.0"
