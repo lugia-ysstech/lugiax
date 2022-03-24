@@ -137,10 +137,10 @@
   resolved "https://registry.npmmirror.com/@lugia%2flugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
   integrity sha1-5tdmCawHHzRRieYy50YztP/bYMc=
 
-"@lugia/lugiax-core@^1.2.10":
-  version "1.2.10"
-  resolved "https://registry.npmmirror.com/@lugia%2flugiax-core/-/lugiax-core-1.2.10.tgz#9a2fbb25b9c11c78efd7492d5170909a8f4cf32d"
-  integrity sha512-zBLpVZ5NbKTVKWUPGq1G9eeapALlUf9O0Q1gSS2S3/hQeBD7XMDN6yj4mGvrdcylFTaTioMpKmxI5MyYxktXjQ==
+"@lugia/lugiax-core@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.3.0.tgz#98a3c7228c87882d2197a6adfd01561ae39a3031"
+  integrity sha512-cREetaD3u+K2iWe+0IFx9RJINm0l/gm0P9V/AICMijHNlyhuzWJxk63eEz1urwjX8vOkORXH1KEQQgzrQo0/hQ==
   dependencies:
     "@lugia/lugiax-common" "^1.0.2"
     "@lugia/type-utils" "^1.0.6"
@@ -148,23 +148,23 @@
     redux "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.1.9":
-  version "1.1.9"
-  resolved "https://registry.npmmirror.com/@lugia%2flugiax-data/-/lugiax-data-1.1.9.tgz#d4d9a424a7f730ea7355d798ce13fccc89587974"
-  integrity sha512-nBjURgmc6PjBsu3cxpNxa+DJ27Wa0dEmpmnH//6mDLGNr46LfD0hnR6WSWZNaIviS6sPUua6QV/M8egMwDtjLQ==
+"@lugia/lugiax-data@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.2.0.tgz#f4f02efc7d0c655e1a40e682d609d4e0668caa7d"
+  integrity sha512-xFb6y3lX0QZ+OFj7KA+RF2s39KS0PxvrY+W+UWamW8zJf9vH8PxQkLa4dLN8pPE6FFsRX1IQhNiKJ/ewPqoTiw==
   dependencies:
     "@lugia/lugiax-common" "^1.0.2"
     is-plain-object "^3.0.0"
     shortid "^2.2.15"
 
-"@lugia/lugiax@^1.2.10":
-  version "1.2.10"
-  resolved "https://registry.npmmirror.com/@lugia%2flugiax/-/lugiax-1.2.10.tgz#97e0fad215e1adff3707841d0870e26e97f72353"
-  integrity sha512-x/2zU5qL6lW9bAQzbw6jfbajArpV2uz336OroKl+K3rnAW1ESxGd6e21AWkkEvNcbcSpVNGm/x6neFnufXzdcA==
+"@lugia/lugiax@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax/-/lugiax-1.3.0.tgz#85b8b830de621141da4059f10def6eb4710620c0"
+  integrity sha512-TQNi7Q2ZNx55rvt6gGjKa1xDBcKdbN06EG7V1+M8PPYBmqoN9gjVtkHa3dGlBqfNplYhGI39i+0nP27mWmnd1A==
   dependencies:
     "@lugia/combine" "^1.0.2"
-    "@lugia/lugiax-core" "^1.2.10"
-    "@lugia/lugiax-data" "^1.1.9"
+    "@lugia/lugiax-core" "^1.3.0"
+    "@lugia/lugiax-data" "^1.2.0"
     hoist-non-react-statics "^3.3.2"
     immutable "^3.8.2"
 
@@ -824,9 +824,9 @@ pseudomap@^1.0.2:
   integrity sha1-8FKijacOYYkX7wqKw0wa5aaChrM=
 
 querystringify@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.1.1.tgz#60e5a5fd64a7f8bfa4d2ab2ed6fdf4c85bad154e"
-  integrity sha512-w7fLxIRCRT7U8Qu53jQnJyPkYZIaR4n5151KMfcJlO/A9397Wxb1amJvROTK6TOnp7PfoAmg/qXiNHI+08jRfA==
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
+  integrity sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==
 
 ramda@0.22.0:
   version "0.22.0"
@@ -1137,9 +1137,9 @@ ua-parser-js@^0.7.18:
   integrity sha512-+O8/qh/Qj8CgC6eYBVBykMrNtp5Gebn4dlGD/kKXVkJNDwyrAwSIqwz8CDf+tsAIWVycKcku6gIXJ0qwx/ZXaQ==
 
 url-parse@^1.1.8, url-parse@^1.4.3:
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.7.tgz#a8a83535e8c00a316e403a5db4ac1b9b853ae278"
-  integrity sha512-d3uaVyzDB9tQoSXFvuSUNFibTd9zxd2bkVrDRvF5TmvWWQwqE4lgYJ5m+x1DbecWkw+LK4RNl2CU1hHuOKPVlg==
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
+  integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==
   dependencies:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
