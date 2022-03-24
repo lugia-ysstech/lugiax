@@ -11,6 +11,11 @@
     clone "^2.1.1"
     deep-equal "^1.0.1"
 
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha512-8R1hw+B5pt9xQS5uv8RI9cinXS/96oUAT0wf7w31hTntm0gJ86QVgnOlhbsGChrtQv+qEMLgVSVn1kRWeV6O8A==
+
 "@lugia/react-test-utils@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@lugia/react-test-utils/-/react-test-utils-1.0.2.tgz#1b1f3c4594118263552d06994f1f551f5ab19b8c"
@@ -411,9 +416,9 @@ lodash.flattendeep@^4.4.0:
   integrity sha1-+wMJF/hqMTTlvJvsDWngAT3f7bI=
 
 lodash@^4.15.0, lodash@^4.17.14, lodash@^4.17.4:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 loose-envify@^1.4.0:
   version "1.4.0"
