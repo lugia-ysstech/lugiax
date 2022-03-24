@@ -134,12 +134,12 @@
 
 "@lugia/lugiax-common@^1.0.2":
   version "1.0.2"
-  resolved "http://192.168.102.79:5001/@lugia%2flugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  resolved "https://registry.npmmirror.com/@lugia%2flugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
   integrity sha1-5tdmCawHHzRRieYy50YztP/bYMc=
 
 "@lugia/lugiax-core@^1.2.10":
   version "1.2.10"
-  resolved "http://192.168.102.79:5001/@lugia%2flugiax-core/-/lugiax-core-1.2.10.tgz#9a2fbb25b9c11c78efd7492d5170909a8f4cf32d"
+  resolved "https://registry.npmmirror.com/@lugia%2flugiax-core/-/lugiax-core-1.2.10.tgz#9a2fbb25b9c11c78efd7492d5170909a8f4cf32d"
   integrity sha512-zBLpVZ5NbKTVKWUPGq1G9eeapALlUf9O0Q1gSS2S3/hQeBD7XMDN6yj4mGvrdcylFTaTioMpKmxI5MyYxktXjQ==
   dependencies:
     "@lugia/lugiax-common" "^1.0.2"
@@ -150,7 +150,7 @@
 
 "@lugia/lugiax-data@^1.1.9":
   version "1.1.9"
-  resolved "http://192.168.102.79:5001/@lugia%2flugiax-data/-/lugiax-data-1.1.9.tgz#d4d9a424a7f730ea7355d798ce13fccc89587974"
+  resolved "https://registry.npmmirror.com/@lugia%2flugiax-data/-/lugiax-data-1.1.9.tgz#d4d9a424a7f730ea7355d798ce13fccc89587974"
   integrity sha512-nBjURgmc6PjBsu3cxpNxa+DJ27Wa0dEmpmnH//6mDLGNr46LfD0hnR6WSWZNaIviS6sPUua6QV/M8egMwDtjLQ==
   dependencies:
     "@lugia/lugiax-common" "^1.0.2"
@@ -159,7 +159,7 @@
 
 "@lugia/lugiax@^1.2.10":
   version "1.2.10"
-  resolved "http://192.168.102.79:5001/@lugia%2flugiax/-/lugiax-1.2.10.tgz#97e0fad215e1adff3707841d0870e26e97f72353"
+  resolved "https://registry.npmmirror.com/@lugia%2flugiax/-/lugiax-1.2.10.tgz#97e0fad215e1adff3707841d0870e26e97f72353"
   integrity sha512-x/2zU5qL6lW9bAQzbw6jfbajArpV2uz336OroKl+K3rnAW1ESxGd6e21AWkkEvNcbcSpVNGm/x6neFnufXzdcA==
   dependencies:
     "@lugia/combine" "^1.0.2"

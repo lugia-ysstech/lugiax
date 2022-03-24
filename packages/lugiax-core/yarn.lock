@@ -11,11 +11,6 @@
     clone "^2.1.1"
     deep-equal "^1.0.1"
 
-"@lugia/lugiax-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
-  integrity sha512-rOpYqHo+acSgLNzWb31mlIWtd/Mlbog1Y6dUm2FbkyLELGvTyCW1pD8Iy7gi/ytX0PGCVtrFKryU3m4F2RCOtA==
-
 "@lugia/react-test-utils@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@lugia/react-test-utils/-/react-test-utils-1.0.2.tgz#1b1f3c4594118263552d06994f1f551f5ab19b8c"
