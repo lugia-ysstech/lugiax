@@ -465,7 +465,6 @@ class LugiaxImpl implements LugiaxType {
         }
       }
 
-      this.doBefore(model, aopHandle, aopParam);
       return result;
     }
     return modelData;
