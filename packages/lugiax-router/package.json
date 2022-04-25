@@ -83,7 +83,7 @@
     "flow-bin": "^0.77.0",
     "history": "^4.7.2",
     "ramda": "0.22.0",
-    "react-dev-utils": "4.2.2",
+    "react-dev-utils": "11.0.4",
     "react-test-renderer": "16.4.1",
     "styled-components": "^4.2.0"
   }
