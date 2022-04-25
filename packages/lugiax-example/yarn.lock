@@ -116,48 +116,53 @@
     react-error-overlay "1.0.9"
     warning "3.0.0"
 
-"@lugia/lugiax-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
-  integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha512-8R1hw+B5pt9xQS5uv8RI9cinXS/96oUAT0wf7w31hTntm0gJ86QVgnOlhbsGChrtQv+qEMLgVSVn1kRWeV6O8A==
 
-"@lugia/lugiax-core@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.4.tgz#e778d372493d089467a11b75a2e41bb1790e6da6"
-  integrity sha1-53jTckk9CJRnoRt1ouQbsXkObaY=
+"@lugia/lugiax-core@^1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.1.7.tgz#f036ca41bf700ca20f0d5d89caa9032f5626ed0d"
+  integrity sha512-Kma4qkb3IRjaS6Owsca6QRzDA0YaigZUr6284+z/SvMV7rVe3Ru9Fn3oU1XXNHr3KsREzk4jtLQZAUxd4UJNbQ==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.3.tgz#3b40c2b01476f99f710090ddc932a0857e5f0234"
-  integrity sha1-O0DCsBR2+Z9xAJDdyTKghX5fAjQ=
+"@lugia/lugiax-data@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.0.6.tgz#78a725d24edf853e05169ca319b8263a665c363c"
+  integrity sha512-Z6Verwiy8dmuCv13Iin6fXHUnnAAnODpwYFEGvaelhLlhYZ80wWHBGduBynDerC7rwZwEW37WTggSvSKyRJxVA==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     is-plain-object "^3.0.0"
     shortid "^2.2.15"
 
-"@lugia/lugiax-router@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-router/download/@lugia/lugiax-router-1.1.10.tgz#ad9c6a075c12359f919723c0f40dad251f7cdcd2"
-  integrity sha1-rZxqB1wSNZ+RlyPA9A2tJR983NI=
+"@lugia/lugiax-persistence@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-persistence/-/lugiax-persistence-1.0.2.tgz#33a82367862ff580a506233477b019db7a55e285"
+  integrity sha512-oFqCzJiaaw2IiGGNRdNsqohKCj+gg709odx0CkIkYaNXgkjdmlNMxL7E3+UFW++PCXG/3vtdejtH6WFTt0ev8g==
+
+"@lugia/lugiax-router@^1.1.14":
+  version "1.1.14"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-router/-/lugiax-router-1.1.14.tgz#c3b1f022d2cbb9d413e70c8fb8c754868bca092f"
+  integrity sha512-dVCJWW6nhJkIPUIhKBwWga9kBjkK4X/oHY+07lrUktlzQrjUm7i4dxr27sBDfqyc3eDf2UevG75Wk8qmKS1MyA==
   dependencies:
-    "@lugia/lugiax" "^1.1.8"
+    "@lugia/lugiax" "^1.1.11"
     react-loadable "^5.5.0"
     react-router "^4.3.1"
 
-"@lugia/lugiax@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax/download/@lugia/lugiax-1.1.8.tgz#658cb981f2c080daed333cb10e2cf689a894e12d"
-  integrity sha1-ZYy5gfLAgNrtMzyxDiz2iaiU4S0=
+"@lugia/lugiax@^1.1.11":
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax/-/lugiax-1.1.11.tgz#e1c824ad62dcc779ae1c57a2142047f05f4e64c6"
+  integrity sha512-MVXcCiLr23tPHxPc81Z/gPfQZPFQaWX8CZP2aLkGOLA+iYXZuLV89/IMJ7o6gk3uw+LXl7ClgIz3GyhppolNPA==
   dependencies:
     "@lugia/combine" "^1.0.2"
-    "@lugia/lugiax-core" "^1.1.4"
-    "@lugia/lugiax-data" "^1.0.3"
+    "@lugia/lugiax-core" "^1.1.7"
+    "@lugia/lugiax-data" "^1.0.6"
     hoist-non-react-statics "^3.3.2"
     immutable "^3.8.2"
 
@@ -2871,9 +2876,10 @@ event-emitter@~0.3.5:
     d "1"
     es5-ext "~0.10.14"
 
-eventemitter3@^3.0.0:
-  version "3.1.0"
-  resolved "http://registry.npm.taobao.org/eventemitter3/download/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
+eventemitter3@^4.0.0:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
+  integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
 
 events@^1.0.0:
   version "1.1.1"
@@ -3211,10 +3217,9 @@ flatten@^1.0.2:
   resolved "http://registry.npm.taobao.org/flatten/download/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"
 
 follow-redirects@^1.0.0:
-  version "1.5.7"
-  resolved "http://registry.npm.taobao.org/follow-redirects/download/follow-redirects-1.5.7.tgz#a39e4804dacb90202bca76a9e2ac10433ca6a69a"
-  dependencies:
-    debug "^3.1.0"
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.0.tgz#b42e8d93a2a7eea5ed88633676d6597bc8e384db"
+  integrity sha512-aq6gF1BEKje4a9i9+5jimNFIpq4Q1WiwBToeRK5NvZBd/TRsmW8BsJfOEGkr76TbOyPVD3OVDN910EcUNtRYEA==
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
@@ -3676,10 +3681,11 @@ http-proxy-middleware@~0.17.4:
     micromatch "^2.3.11"
 
 http-proxy@^1.16.2:
-  version "1.17.0"
-  resolved "http://registry.npm.taobao.org/http-proxy/download/http-proxy-1.17.0.tgz#7ad38494658f84605e2f6db4436df410f4e5be9a"
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/http-proxy/-/http-proxy-1.18.1.tgz#401541f0534884bbf95260334e72f88ee3976549"
+  integrity sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==
   dependencies:
-    eventemitter3 "^3.0.0"
+    eventemitter3 "^4.0.0"
     follow-redirects "^1.0.0"
     requires-port "^1.0.0"
 
@@ -6659,7 +6665,8 @@ require-uncached@^1.0.3:
 
 requires-port@^1.0.0:
   version "1.0.0"
-  resolved "http://registry.npm.taobao.org/requires-port/download/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
+  resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
+  integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
 
 resize-observer-polyfill@^1.5.0:
   version "1.5.1"
