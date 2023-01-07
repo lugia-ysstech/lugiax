@@ -18,39 +18,39 @@
     clone "^2.1.1"
     deep-equal "^1.0.1"
 
-"@lugia/lugiax-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
-  integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha512-8R1hw+B5pt9xQS5uv8RI9cinXS/96oUAT0wf7w31hTntm0gJ86QVgnOlhbsGChrtQv+qEMLgVSVn1kRWeV6O8A==
 
-"@lugia/lugiax-core@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-core/download/@lugia/lugiax-core-1.1.5.tgz#ab74357a630eff3160cb6230b0bab18a86441556"
-  integrity sha1-q3Q1emMO/zFgy2IwsLqxioZEFVY=
+"@lugia/lugiax-core@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.3.1.tgz#ac2d1651e26d2638631430935b86eb528bdbe738"
+  integrity sha512-XdEzlboU6C3VZe7zHy1Oz8pkrsUDq/Wjg/UfgG8vVwg1NK54+MQZNkOXkNjiFtPRWvvka3peKpPEWC7csIxaCA==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-data/download/@lugia/lugiax-data-1.0.4.tgz#0f27a192d5e0360e9c8c51c04f8228223d4b540c"
-  integrity sha1-DyehktXgNg6cjFHAT4IoIj1LVAw=
+"@lugia/lugiax-data@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.2.1.tgz#0cf618ee74ef5a835e44d820879a83a66e3bb902"
+  integrity sha512-SeHRIz/5tJGxBj9Jh0uDSOuBvDECBJtOJb3oTU+KiMfrJUHYDQEox0d+M0IUYyJLg52gByPqhXbM7oW1suErcg==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     is-plain-object "^3.0.0"
     shortid "^2.2.15"
 
-"@lugia/lugiax@^1.1.9":
-  version "1.1.9"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax/download/@lugia/lugiax-1.1.9.tgz#aa77280379939826e073cd66a5f5410d20f73803"
-  integrity sha1-qncoA3mTmCbgc81mpfVBDSD3OAM=
+"@lugia/lugiax@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax/-/lugiax-1.3.1.tgz#e7f9167eebc828d6abb8e3704b674aad68635b4c"
+  integrity sha512-9PECrsScnYJB9sW97YeKxB7jyuU3xzh/U/5okAKN1WpbBgmTGKxVf0RHdVSZmQ+TrwKyTv/8WkS+uyZUpzlx+w==
   dependencies:
     "@lugia/combine" "^1.0.2"
-    "@lugia/lugiax-core" "^1.1.5"
-    "@lugia/lugiax-data" "^1.0.4"
+    "@lugia/lugiax-core" "^1.3.1"
+    "@lugia/lugiax-data" "^1.2.1"
     hoist-non-react-statics "^3.3.2"
     immutable "^3.8.2"
 
@@ -236,9 +236,9 @@ json-schema-traverse@^0.3.0:
   integrity sha1-NJptRMU6Ud6JtAgFxdXlm0F9M0A=
 
 json5@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/json5/download/json5-1.0.1.tgz#779fb0018604fa854eacbf6252180d83543e3dbe"
-  integrity sha1-d5+wAYYE+oVOrL9iUhgNg1Q+Pb4=
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.2.tgz#63d98d60f21b313b77c4d6da18bfa69d80e1d593"
+  integrity sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==
   dependencies:
     minimist "^1.2.0"
 
@@ -259,9 +259,9 @@ loose-envify@^1.4.0:
     js-tokens "^3.0.0 || ^4.0.0"
 
 minimist@^1.2.0:
-  version "1.2.5"
-  resolved "https://registry.npm.taobao.org/minimist/download/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
-  integrity sha1-Z9ZgFLZqaoqqDAg8X9WN9OTpdgI=
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
+  integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==
 
 nanoid@^2.1.0:
   version "2.1.11"
