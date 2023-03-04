@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@babel/runtime@^7.9.2":
+  version "7.21.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.0.tgz#5b55c9d394e5fcf304909a8b00c07dc217b56673"
+  integrity sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
 "@lugia/jverify@^1.0.1":
   version "1.0.10"
   resolved "https://registry.npm.taobao.org/@lugia/jverify/download/@lugia/jverify-1.0.10.tgz#6b933e7f6620437cf50a632dff09c7fdf9c21355"
@@ -11,12 +18,28 @@
     clone "^2.1.1"
     deep-equal "^1.0.1"
 
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha512-8R1hw+B5pt9xQS5uv8RI9cinXS/96oUAT0wf7w31hTntm0gJ86QVgnOlhbsGChrtQv+qEMLgVSVn1kRWeV6O8A==
+
+"@lugia/lugiax-core@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.3.1.tgz#ac2d1651e26d2638631430935b86eb528bdbe738"
+  integrity sha512-XdEzlboU6C3VZe7zHy1Oz8pkrsUDq/Wjg/UfgG8vVwg1NK54+MQZNkOXkNjiFtPRWvvka3peKpPEWC7csIxaCA==
+  dependencies:
+    "@lugia/lugiax-common" "^1.0.2"
+    "@lugia/type-utils" "^1.0.6"
+    immutable "^3.8.2"
+    redux "^4.0.0"
+    redux-saga "^0.16.0"
+
 "@lugia/react-test-utils@^1.0.2":
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/@lugia/react-test-utils/download/@lugia/react-test-utils-1.0.2.tgz#1b1f3c4594118263552d06994f1f551f5ab19b8c"
   integrity sha1-Gx88RZQRgmNVLQaZTx9VH1qxm4w=
 
-"@lugia/type-utils@^1.0.1":
+"@lugia/type-utils@^1.0.1", "@lugia/type-utils@^1.0.6":
   version "1.0.6"
   resolved "https://registry.npm.taobao.org/@lugia/type-utils/download/@lugia/type-utils-1.0.6.tgz#8ebcab1fadde755291eeeac082ab3d46b186c0eb"
   integrity sha1-jryrH63edVKR7urAgqs9RrGGwOs=
@@ -328,6 +351,11 @@ htmlparser2@^3.9.1:
     inherits "^2.0.1"
     readable-stream "^3.1.1"
 
+immutable@^3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
+  integrity sha512-15gZoQ38eYjEjxkorfbcgBKBL6R7T459OuK+CpcWt7O3KF4uPCx2tD0uFETlUDIyo+1789crbMhTvQBSR5yBMg==
+
 inherits@^2.0.1, inherits@^2.0.3:
   version "2.0.4"
   resolved "https://registry.npm.taobao.org/inherits/download/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
@@ -418,9 +446,9 @@ lodash@^4.15.0, lodash@^4.17.14, lodash@^4.17.4:
   integrity sha1-tEf2ZwoEVbv+7dETku/zMOoJdUg=
 
 minimist@^1.2.0:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
-  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
+  integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
 moo@^0.5.0:
   version "0.5.1"
@@ -540,6 +568,23 @@ readable-stream@^3.1.1:
     inherits "^2.0.3"
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
+
+redux-saga@^0.16.0:
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.2.tgz#993662e86bc945d8509ac2b8daba3a8c615cc971"
+  integrity sha512-iIjKnRThI5sKPEASpUvySemjzwqwI13e3qP7oLub+FycCRDysLSAOwt958niZW6LhxfmS6Qm1BzbU70w/Koc4w==
+
+redux@^4.0.0:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.1.tgz#c08f4306826c49b5e9dc901dee0452ea8fce6197"
+  integrity sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==
+  dependencies:
+    "@babel/runtime" "^7.9.2"
+
+regenerator-runtime@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 regexp.prototype.flags@^1.2.0:
   version "1.3.0"
