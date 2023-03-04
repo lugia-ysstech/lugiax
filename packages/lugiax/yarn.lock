@@ -23,28 +23,28 @@
   resolved "https://registry.npm.taobao.org/@lugia/combine/download/@lugia/combine-1.0.2.tgz?cache=0&sync_timestamp=1583825473390&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40lugia%2Fcombine%2Fdownload%2F%40lugia%2Fcombine-1.0.2.tgz#f1f83ce6e474f612a1a55989dadccab75d0f788f"
   integrity sha1-8fg85uR09hKhpVmJ2tzKt10PeI8=
 
-"@lugia/lugiax-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/@lugia/lugiax-common/download/@lugia/lugiax-common-1.0.1.tgz#9df8981c1e95ff4fd3381c1fb63dfaa4a78e22b5"
-  integrity sha1-nfiYHB6V/0/TOBwftj36pKeOIrU=
+"@lugia/lugiax-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-common/-/lugiax-common-1.0.2.tgz#e6d76609ac071f345189e632e74633b4ffdb60c7"
+  integrity sha512-8R1hw+B5pt9xQS5uv8RI9cinXS/96oUAT0wf7w31hTntm0gJ86QVgnOlhbsGChrtQv+qEMLgVSVn1kRWeV6O8A==
 
-"@lugia/lugiax-core@^1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.1.3.tgz#870ba2f6aa103bc712064fb82dfd87432d8ce1bf"
-  integrity sha512-zJx91g3c5fM1n0ChM3MO7w86H01dar2C/9AMfm7gVpCZwCQw7fEvftwoATtWf2uKKkdzQ6r53ltrYTHBdd+i4g==
+"@lugia/lugiax-core@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-core/-/lugiax-core-1.3.1.tgz#ac2d1651e26d2638631430935b86eb528bdbe738"
+  integrity sha512-XdEzlboU6C3VZe7zHy1Oz8pkrsUDq/Wjg/UfgG8vVwg1NK54+MQZNkOXkNjiFtPRWvvka3peKpPEWC7csIxaCA==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     "@lugia/type-utils" "^1.0.6"
     immutable "^3.8.2"
     redux "^4.0.0"
     redux-saga "^0.16.0"
 
-"@lugia/lugiax-data@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.0.2.tgz#863ce005cb90952b38d5e0a1644a0b078923cb80"
-  integrity sha512-Y05piMxwWPSa2vpeRKUls60+iSgqAzlgC+5XbyodrjaCI8xyIPSJ3kg4I14v685kidUzrc9Vf0Wcx7QMxE3b9A==
+"@lugia/lugiax-data@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@lugia/lugiax-data/-/lugiax-data-1.2.1.tgz#0cf618ee74ef5a835e44d820879a83a66e3bb902"
+  integrity sha512-SeHRIz/5tJGxBj9Jh0uDSOuBvDECBJtOJb3oTU+KiMfrJUHYDQEox0d+M0IUYyJLg52gByPqhXbM7oW1suErcg==
   dependencies:
-    "@lugia/lugiax-common" "^1.0.1"
+    "@lugia/lugiax-common" "^1.0.2"
     is-plain-object "^3.0.0"
     shortid "^2.2.15"
 
@@ -1154,9 +1154,9 @@ minimatch@3.0.4, minimatch@^3.0.4:
     brace-expansion "^1.1.7"
 
 minimist@^1.2.0:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
-  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
+  integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
 mixin-deep@^1.2.0:
   version "1.3.2"
